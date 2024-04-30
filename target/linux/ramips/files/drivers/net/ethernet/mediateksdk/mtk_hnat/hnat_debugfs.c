@@ -3277,7 +3277,6 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 {
 	int ret = 0;
 	struct dentry *root;
-	struct dentry *file;
 	long i;
 	char name[16];
 
@@ -3305,13 +3304,8 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 			ret = -ENOMEM;
 			goto err1;
 		}
-		file = debugfs_create_regset32(name, 0444,
+		debugfs_create_regset32(name, 0444,
 					       root, h->regset[i]);
-		if (!file) {
-			dev_notice(h->dev, "%s:err at %d\n", __func__, __LINE__);
-			ret = -ENOMEM;
-			goto err1;
-		}
 	}
 
 	debugfs_create_file("all_entry", 0444, root, h, &hnat_debug_fops);
