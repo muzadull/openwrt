@@ -241,7 +241,7 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 
 		if (!IS_LAN_GRP(dev) && !IS_WAN(dev) &&
 		    !find_extif_from_devname(dev->name) &&
-		    !dev->netdev_ops->ndo_flow_offload_check)
+		    !dev->netdev_ops->ndo_hnat_check)
 			break;
 
 		foe_clear_all_bind_entries();
@@ -602,7 +602,7 @@ static inline void hnat_set_iif(const struct nf_hook_state *state,
 	} else if (IS_WAN(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_WAN;
 	} else if (!IS_BR(state->in)) {
-		if (state->in->netdev_ops->ndo_flow_offload_check) {
+		if (state->in->netdev_ops->ndo_hnat_check) {
 			skb_hnat_iface(skb) = FOE_MAGIC_GE_VIRTUAL;
 		} else {
 			skb_hnat_iface(skb) = FOE_INVALID;
@@ -832,7 +832,6 @@ static unsigned int
 mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 			     const struct nf_hook_state *state)
 {
-	struct flow_offload_hw_path hw_path;
 
 	if (!skb)
 		goto drop;
@@ -846,22 +845,6 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 	}
 
 	hnat_set_head_frags(state, skb, -1, hnat_set_iif);
-
-	hw_path.dev = skb->dev;
-	hw_path.virt_dev = skb->dev;
-
-	/*
-	 * Avoid mistakenly binding of outer IP, ports in SW L2TP decap flow.
-	 * In pre-routing, if dev is virtual iface, TOPS module is not loaded,
-	 * and it's L2TP flow, then do not bind.
-	 */
-	if (skb_hnat_iface(skb) == FOE_MAGIC_GE_VIRTUAL
-	    && skb->dev->netdev_ops->ndo_flow_offload_check) {
-		skb->dev->netdev_ops->ndo_flow_offload_check(&hw_path);
-
-		if (hw_path.flags & FLOW_OFFLOAD_PATH_TNL)
-			skb_hnat_alg(skb) = 1;
-	}
 
 	pre_routing_print(skb, state->in, state->out, __func__);
 
@@ -989,7 +972,7 @@ drop:
 
 static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 					  const struct net_device *out,
-					  struct flow_offload_hw_path *hw_path)
+					  struct hnat_hw_path *hw_path)
 {
 	const struct in6_addr *ipv6_nexthop;
 	struct neighbour *neigh = NULL;
@@ -997,7 +980,7 @@ static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 	struct ethhdr *eth;
 	u16 eth_pppoe_hlen = ETH_HLEN + PPPOE_SES_HLEN;
 
-	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) {
+	if (hw_path->flags & HNAT_PATH_PPPOE) {
 		if (ipv6_hdr(skb)->nexthdr == NEXTHDR_IPIP) {
 			eth = (struct ethhdr *)(skb->data - eth_pppoe_hlen);
 			eth->h_proto = skb->protocol;
@@ -1047,7 +1030,7 @@ static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 
 static unsigned int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 					  const struct net_device *out,
-					  struct flow_offload_hw_path *hw_path)
+					  struct hnat_hw_path *hw_path)
 {
 	u32 nexthop;
 	struct neighbour *neigh;
@@ -1055,7 +1038,7 @@ static unsigned int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 	struct rtable *rt = (struct rtable *)dst;
 	struct net_device *dev = (__force struct net_device *)out;
 
-	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) {
+	if (hw_path->flags & HNAT_PATH_PPPOE) {
 		memcpy(eth_hdr(skb)->h_source, hw_path->eth_src, ETH_ALEN);
 		memcpy(eth_hdr(skb)->h_dest, hw_path->eth_dest, ETH_ALEN);
 		return 0;
@@ -1106,7 +1089,7 @@ static u16 ppe_get_chkbase(struct iphdr *iph)
 }
 
 struct foe_entry ppe_fill_L2_info(struct ethhdr *eth, struct foe_entry entry,
-				  struct flow_offload_hw_path *hw_path)
+				  struct hnat_hw_path *hw_path)
 {
 	switch ((int)entry.bfib1.pkt_type) {
 	case IPV4_HNAPT:
@@ -1136,10 +1119,10 @@ struct foe_entry ppe_fill_L2_info(struct ethhdr *eth, struct foe_entry entry,
 }
 
 struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
-				   struct flow_offload_hw_path *hw_path)
+				   struct hnat_hw_path *hw_path)
 {
-	entry.bfib1.psn = (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) ? 1 : 0;
-	entry.bfib1.vlan_layer += (hw_path->flags & FLOW_OFFLOAD_PATH_VLAN) ? 1 : 0;
+	entry.bfib1.psn = (hw_path->flags & HNAT_PATH_PPPOE) ? 1 : 0;
+	entry.bfib1.vlan_layer += (hw_path->flags & HNAT_PATH_VLAN) ? 1 : 0;
 	entry.bfib1.vpm = (entry.bfib1.vlan_layer) ? 1 : 0;
 	entry.bfib1.cah = 1;
 	entry.bfib1.time_stamp = (hnat_priv->data->version == MTK_HNAT_V2 ||
@@ -1192,12 +1175,12 @@ struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
 }
 
 static struct ethhdr *get_ipv6_ipip_ethhdr(struct sk_buff *skb,
-					   struct flow_offload_hw_path *hw_path)
+					   struct hnat_hw_path *hw_path)
 {
 	struct ethhdr *eth;
 	u16 eth_pppoe_hlen = ETH_HLEN + PPPOE_SES_HLEN;
 
-	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE)
+	if (hw_path->flags & HNAT_PATH_PPPOE)
 		eth = (struct ethhdr *)(skb->data - eth_pppoe_hlen);
 	else
 		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
@@ -1208,7 +1191,7 @@ static struct ethhdr *get_ipv6_ipip_ethhdr(struct sk_buff *skb,
 static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				     const struct net_device *dev,
 				     struct foe_entry *foe,
-				     struct flow_offload_hw_path *hw_path)
+				     struct hnat_hw_path *hw_path)
 {
 	struct foe_entry entry = { 0 };
 	int whnat = IS_WHNAT(dev);
@@ -1259,13 +1242,15 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		if (ip_is_fragment(iph))
 			return 0;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 		switch (iph->protocol) {
 		case IPPROTO_UDP:
 			udp = 1;
-			/* fallthrough */
+
 		case IPPROTO_TCP:
 			entry.ipv4_hnapt.etype = htons(ETH_P_IP);
-
+#pragma GCC diagnostic pop
 			/* DS-Lite WAN->LAN */
 			if (entry.ipv4_hnapt.bfib1.pkt_type == IPV4_DSLITE ||
 			    entry.ipv4_hnapt.bfib1.pkt_type == IPV4_MAP_E) {
@@ -1384,17 +1369,19 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			skb->data_len);
 		break;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 	case ETH_P_IPV6:
 		ip6h = ipv6_hdr(skb);
 		switch (ip6h->nexthdr) {
 		case NEXTHDR_UDP:
 			udp = 1;
-			/* fallthrough */
+
 		case NEXTHDR_TCP: /* IPv6-5T or IPv6-3T */
 			entry.ipv6_5t_route.etype = htons(ETH_P_IPV6);
 
 			entry.ipv6_5t_route.vlan1 = hw_path->vlan_id;
-
+#pragma GCC diagnostic pop
 			if (skb_vlan_tagged(skb)) {
 				entry.bfib1.vlan_layer += 1;
 
@@ -2672,11 +2659,11 @@ int mtk_464xlat_post_process(struct sk_buff *skb, const struct net_device *out)
 static unsigned int mtk_hnat_nf_post_routing(
 	struct sk_buff *skb, const struct net_device *out,
 	unsigned int (*fn)(struct sk_buff *, const struct net_device *,
-			   struct flow_offload_hw_path *),
+			   struct hnat_hw_path *),
 	const char *func)
 {
 	struct foe_entry *entry;
-	struct flow_offload_hw_path hw_path = { .dev = (struct net_device*)out,
+	struct hnat_hw_path hw_path = { .real_dev = (struct net_device*)out,
 						.virt_dev = (struct net_device*)out };
 	const struct net_device *arp_dev = out;
 
@@ -2696,9 +2683,9 @@ static unsigned int mtk_hnat_nf_post_routing(
 	if (unlikely(skb->mark == HNAT_EXCEPTION_TAG))
 		return 0;
 
-	if (out->netdev_ops->ndo_flow_offload_check) {
-		out->netdev_ops->ndo_flow_offload_check(&hw_path);
-		out = (IS_GMAC1_MODE) ? hw_path.virt_dev : hw_path.dev;
+	if (out->netdev_ops->ndo_hnat_check) {
+		out->netdev_ops->ndo_hnat_check(&hw_path);
+		out = (IS_GMAC1_MODE) ? hw_path.virt_dev : hw_path.real_dev;
 	}
 
 	if (!IS_LAN_GRP(out) && !IS_WAN(out) && !IS_EXT(out))
