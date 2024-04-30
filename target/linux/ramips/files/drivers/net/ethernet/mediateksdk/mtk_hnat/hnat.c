@@ -839,7 +839,7 @@ static int hnat_probe(struct platform_device *pdev)
 	if (!res)
 		return -ENOENT;
 
-	hnat_priv->fe_base = devm_ioremap_nocache(&pdev->dev, res->start,
+	hnat_priv->fe_base = devm_ioremap(&pdev->dev, res->start,
 					     res->end - res->start + 1);
 	if (!hnat_priv->fe_base)
 		return -EADDRNOTAVAIL;
