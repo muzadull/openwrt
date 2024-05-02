@@ -250,6 +250,7 @@ static void mt753x_load_port_cfg(struct gsw_mt753x *gsw)
 	struct device_node *fixed_link_node;
 	struct mt753x_port_cfg *port_cfg;
 	u32 port;
+        int ret;
 
 	for_each_child_of_node(gsw->dev->of_node, port_np) {
 		if (!of_device_is_compatible(port_np, "mediatek,mt753x-port"))
@@ -280,8 +281,8 @@ static void mt753x_load_port_cfg(struct gsw_mt753x *gsw)
 
 		port_cfg->np = port_np;
 
-		port_cfg->phy_mode = of_get_phy_mode(port_np);
-		if (port_cfg->phy_mode < 0) {
+		ret = of_get_phy_mode(port_np, &port_cfg->phy_mode);
+		if (ret < 0) {
 			dev_info(gsw->dev, "incorrect phy-mode %d\n", port);
 			continue;
 		}
@@ -578,6 +579,7 @@ static void mt753x_connect_internal_phys(struct gsw_mt753x *gsw,
 	struct mt753x_phy *phy;
 	phy_interface_t iface;
 	u32 phyad;
+        int ret;
 
 	if (!mii_np)
 		return;
@@ -589,8 +591,8 @@ static void mt753x_connect_internal_phys(struct gsw_mt753x *gsw,
 		if (phyad >= MT753X_NUM_PHYS)
 			continue;
 
-		iface = of_get_phy_mode(phy_np);
-		if (iface < 0) {
+		ret = of_get_phy_mode(phy_np, &iface);
+		if (ret < 0) {
 			dev_info(gsw->dev, "incorrect phy-mode %d for PHY %d\n",
 				 iface, phyad);
 			continue;
