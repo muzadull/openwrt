@@ -1242,15 +1242,13 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		if (ip_is_fragment(iph))
 			return 0;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 		switch (iph->protocol) {
 		case IPPROTO_UDP:
 			udp = 1;
-
+			fallthrough;
 		case IPPROTO_TCP:
 			entry.ipv4_hnapt.etype = htons(ETH_P_IP);
-#pragma GCC diagnostic pop
+
 			/* DS-Lite WAN->LAN */
 			if (entry.ipv4_hnapt.bfib1.pkt_type == IPV4_DSLITE ||
 			    entry.ipv4_hnapt.bfib1.pkt_type == IPV4_MAP_E) {
@@ -1369,19 +1367,17 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			skb->data_len);
 		break;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 	case ETH_P_IPV6:
 		ip6h = ipv6_hdr(skb);
 		switch (ip6h->nexthdr) {
 		case NEXTHDR_UDP:
 			udp = 1;
-
+			fallthrough;
 		case NEXTHDR_TCP: /* IPv6-5T or IPv6-3T */
 			entry.ipv6_5t_route.etype = htons(ETH_P_IPV6);
 
 			entry.ipv6_5t_route.vlan1 = hw_path->vlan_id;
-#pragma GCC diagnostic pop
+
 			if (skb_vlan_tagged(skb)) {
 				entry.bfib1.vlan_layer += 1;
 
