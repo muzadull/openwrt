@@ -907,7 +907,7 @@ static void mtk_mac_pcs_get_state(struct phylink_config *config,
 			state->pause |= MLO_PAUSE_RX;
 		if (pmsr & MAC_MSR_TX_FC)
 			state->pause |= MLO_PAUSE_TX;
-	};	
+	}	
 }
 
 static int mtk_gdm_fsm_get(struct mtk_mac *mac, u32 gdm)
@@ -4491,7 +4491,7 @@ static int __init mtk_init(struct net_device *dev)
 	struct mtk_eth *eth = mac->hw;
 	int ret;
 
-	ret = of_get_mac_address(mac->of_node, dev->dev_addr);
+	ret = of_get_ethdev_address(mac->of_node, dev);
 	if (ret) {
 	/* If the mac address is invalid, use random mac address  */
 	eth_hw_addr_random(dev);
@@ -5251,6 +5251,7 @@ static int mtk_add_mux(struct mtk_eth *eth, struct device_node *np)
 static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 {
 	const __be32 *_id = of_get_property(np, "reg", NULL);
+	const char *name = of_get_property(np, "label", NULL);
 	const char *label;
 	struct phylink *phylink;
 	phy_interface_t phy_mode;
@@ -5321,7 +5322,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 	mac->tx_lpi_timer = 1;
 
 	mac->phylink_config.dev = &eth->netdev[id]->dev;
-	mac->phylink_config.type = PHYLINK_NETDEV;
+	mac->phylink_config.type = PHYLINK_NETDEV;	
+	/* This driver makes use of state->speed/state->duplex in mac_config */
+	mac->phylink_config.legacy_pre_march2020 = true;
 
 	mac->type = 0;
 	if (!of_property_read_string(np, "mac-type", &label)) {
@@ -5361,7 +5364,7 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		if (!IS_ERR(desc)) {
 			struct device_node *phy_np;
 			const char *label;
-			int irq, phyaddr;
+			int err, irq, phyaddr;
 
 			phylink_priv = &mac->phylink_priv;
 
@@ -5371,9 +5374,11 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 
 			irq = gpiod_to_irq(desc);
 			if (irq > 0) {
-				devm_request_irq(eth->dev, irq, mtk_handle_irq_fixed_link,
-						 IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-					         "ethernet:fixed link", mac);
+			err = devm_request_irq(eth->dev, irq, mtk_handle_irq_fixed_link,
+					       IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+			                       "ethernet:fixed link", mac);
+			if (err)
+			        goto free_netdev;	
 			}
 
 			if (!of_property_read_string(to_of_node(fixed_node),
@@ -5415,6 +5420,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		mac->device_notifier.notifier_call = mtk_device_event;
 		register_netdevice_notifier(&mac->device_notifier);
 	}
+
+	if (name)
+		strlcpy(eth->netdev[id]->name, name, IFNAMSIZ);
 
 	return 0;
 
