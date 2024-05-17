@@ -907,7 +907,7 @@ static void mtk_mac_pcs_get_state(struct phylink_config *config,
 			state->pause |= MLO_PAUSE_RX;
 		if (pmsr & MAC_MSR_TX_FC)
 			state->pause |= MLO_PAUSE_TX;
-	};	
+	}	
 }
 
 static int mtk_gdm_fsm_get(struct mtk_mac *mac, u32 gdm)
@@ -4020,9 +4020,7 @@ static int mtk_open(struct net_device *dev)
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	struct mtk_phylink_priv *phylink_priv = &mac->phylink_priv;
-	u32 id = mtk_mac2xgmii_id(eth, mac->id);
 	int err, i;
-	struct device_node *phy_node;
 
 	err = phylink_of_phy_connect(mac->phylink, mac->of_node, 0);
 	if (err) {
@@ -4102,12 +4100,7 @@ static int mtk_open(struct net_device *dev)
 
 	phylink_start(mac->phylink);
 	netif_tx_start_all_queues(dev);
-	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
-	if (!phy_node && eth->sgmii->pcs[id].regmap)
-		regmap_write(eth->sgmii->pcs[id].regmap,
-			     SGMSYS_QPHY_PWR_STATE_CTRL, 0);
-
-	mtk_gdm_config(eth, mac->id, MTK_GDMA_TO_PDMA);
+        mtk_gdm_config(eth, mac->id, MTK_GDMA_TO_PDMA);
 
 	return 0;
 }
@@ -4140,21 +4133,10 @@ static int mtk_stop(struct net_device *dev)
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	int i;
-	u32 id = mtk_mac2xgmii_id(eth, mac->id);
 	u32 val = 0;
-	struct device_node *phy_node;
 
 	mtk_gdm_config(eth, mac->id, MTK_GDMA_DROP_ALL);
 	netif_tx_disable(dev);
-
-	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
-	if (!phy_node && eth->sgmii->pcs[id].regmap) {
-		regmap_read(eth->sgmii->pcs[id].regmap,
-			    SGMSYS_QPHY_PWR_STATE_CTRL, &val);
-		val |= SGMII_PHYA_PWD;
-		regmap_write(eth->sgmii->pcs[id].regmap,
-			     SGMSYS_QPHY_PWR_STATE_CTRL, val);
-	}
 
 	//GMAC RX disable
 	val = mtk_r32(eth, MTK_MAC_MCR(mac->id));
@@ -4167,7 +4149,6 @@ static int mtk_stop(struct net_device *dev)
 	/* only shutdown DMA if this is the last user */
 	if (!refcount_dec_and_test(&eth->dma_refcnt))
 		return 0;
-
 
 	mtk_tx_irq_disable(eth, MTK_TX_DONE_INT(0));
 	mtk_rx_irq_disable(eth, MTK_RX_DONE_INT(0));
@@ -5251,6 +5232,7 @@ static int mtk_add_mux(struct mtk_eth *eth, struct device_node *np)
 static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 {
 	const __be32 *_id = of_get_property(np, "reg", NULL);
+	const char *name = of_get_property(np, "label", NULL);
 	const char *label;
 	struct phylink *phylink;
 	phy_interface_t phy_mode;
@@ -5321,7 +5303,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 	mac->tx_lpi_timer = 1;
 
 	mac->phylink_config.dev = &eth->netdev[id]->dev;
-	mac->phylink_config.type = PHYLINK_NETDEV;
+	mac->phylink_config.type = PHYLINK_NETDEV;	
+	/* This driver makes use of state->speed/state->duplex in mac_config */
+	mac->phylink_config.legacy_pre_march2020 = true;
 
 	mac->type = 0;
 	if (!of_property_read_string(np, "mac-type", &label)) {
@@ -5413,7 +5397,7 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		if (!IS_ERR(desc)) {
 			struct device_node *phy_np;
 			const char *label;
-			int irq, phyaddr;
+			int err, irq, phyaddr;
 
 			phylink_priv = &mac->phylink_priv;
 
@@ -5423,9 +5407,11 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 
 			irq = gpiod_to_irq(desc);
 			if (irq > 0) {
-				devm_request_irq(eth->dev, irq, mtk_handle_irq_fixed_link,
-						 IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-					         "ethernet:fixed link", mac);
+			err = devm_request_irq(eth->dev, irq, mtk_handle_irq_fixed_link,
+					       IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+			                       "ethernet:fixed link", mac);
+			if (err)
+			        goto free_netdev;	
 			}
 
 			if (!of_property_read_string(to_of_node(fixed_node),
@@ -5467,6 +5453,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		mac->device_notifier.notifier_call = mtk_device_event;
 		register_netdevice_notifier(&mac->device_notifier);
 	}
+
+	if (name)
+		strlcpy(eth->netdev[id]->name, name, IFNAMSIZ);
 
 	return 0;
 
