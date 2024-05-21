@@ -484,16 +484,41 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 }
 
 static void mtk_mac_link_up(struct phylink_config *config,
-			    struct phy_device *phy,
-			    unsigned int mode, phy_interface_t interface,
-			    int speed, int duplex, bool tx_pause, bool rx_pause)
+                            struct phy_device *phy,
+                            unsigned int mode, phy_interface_t interface,
+                            int speed, int duplex, bool tx_pause, bool rx_pause)
 {
-	struct mtk_mac *mac = container_of(config, struct mtk_mac,
-					   phylink_config);
-	u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+        struct mtk_mac *mac = container_of(config, struct mtk_mac,
+                                           phylink_config);
+        u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
 
-	mcr |= MAC_MCR_TX_EN | MAC_MCR_RX_EN;
-	mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
+        mcr &= ~(MAC_MCR_SPEED_100 | MAC_MCR_SPEED_1000 |
+                 MAC_MCR_FORCE_DPX | MAC_MCR_FORCE_TX_FC |
+                 MAC_MCR_FORCE_RX_FC);
+
+        /* Configure speed */
+        switch (speed) {
+        case SPEED_2500:
+        case SPEED_1000:
+                mcr |= MAC_MCR_SPEED_1000;
+                break;
+        case SPEED_100:
+                mcr |= MAC_MCR_SPEED_100;
+                break;
+        }
+
+        /* Configure duplex */
+        if (duplex == DUPLEX_FULL)
+                mcr |= MAC_MCR_FORCE_DPX;
+
+        /* Configure pause modes - phylink will avoid these for half duplex */
+        if (tx_pause)
+                mcr |= MAC_MCR_FORCE_TX_FC;
+        if (rx_pause)
+                mcr |= MAC_MCR_FORCE_RX_FC;
+
+        mcr |= MAC_MCR_TX_EN | MAC_MCR_RX_EN;
+        mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
 }
 
 static void mtk_validate(struct phylink_config *config,
