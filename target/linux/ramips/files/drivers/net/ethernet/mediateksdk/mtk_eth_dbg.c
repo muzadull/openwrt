@@ -617,12 +617,11 @@ static int switch_count_open(struct inode *inode, struct file *file)
 	return single_open(file, esw_cnt_read, 0);
 }
 
-static const struct file_operations switch_count_fops = {
-	.owner = THIS_MODULE,
-	.open = switch_count_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release
+static const struct proc_ops switch_count_fops = {
+	.proc_open = switch_count_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release
 };
 
 static struct proc_dir_entry *proc_tx_ring, *proc_rx_ring;
@@ -669,12 +668,11 @@ static int tx_ring_open(struct inode *inode, struct file *file)
 	return single_open(file, tx_ring_read, NULL);
 }
 
-static const struct file_operations tx_ring_fops = {
-	.owner = THIS_MODULE,
-	.open = tx_ring_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release
+static const struct proc_ops tx_ring_fops = {
+	.proc_open = tx_ring_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release
 };
 
 int rx_ring_read(struct seq_file *seq, void *v)
@@ -717,12 +715,11 @@ static int rx_ring_open(struct inode *inode, struct file *file)
 	return single_open(file, rx_ring_read, NULL);
 }
 
-static const struct file_operations rx_ring_fops = {
-	.owner = THIS_MODULE,
-	.open = rx_ring_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release
+static const struct proc_ops rx_ring_fops = {
+	.proc_open = rx_ring_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release
 };
 
 static inline u32 mtk_dbg_r32(u32 reg)
@@ -845,12 +842,11 @@ static int dbg_regs_open(struct inode *inode, struct file *file)
 	return single_open(file, dbg_regs_read, 0);
 }
 
-static const struct file_operations dbg_regs_fops = {
-	.owner = THIS_MODULE,
-	.open = dbg_regs_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release
+static const struct proc_ops dbg_regs_fops = {
+	.proc_open = dbg_regs_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release
 };
 
 void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma *rxd)
@@ -1137,13 +1133,12 @@ static int hw_lro_stats_open(struct inode *inode, struct file *file)
 	return single_open(file, hw_lro_stats_read_wrapper, NULL);
 }
 
-static const struct file_operations hw_lro_stats_fops = {
-	.owner = THIS_MODULE,
-	.open = hw_lro_stats_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.write = hw_lro_stats_write,
-	.release = single_release
+static const struct proc_ops hw_lro_stats_fops = {
+	.proc_open = hw_lro_stats_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_write = hw_lro_stats_write,
+	.proc_release = single_release
 };
 
 int hwlro_agg_cnt_ctrl(int cnt)
@@ -1445,13 +1440,12 @@ static int hw_lro_auto_tlb_open(struct inode *inode, struct file *file)
 	return single_open(file, hw_lro_auto_tlb_read, NULL);
 }
 
-static const struct file_operations hw_lro_auto_tlb_fops = {
-	.owner = THIS_MODULE,
-	.open = hw_lro_auto_tlb_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.write = hw_lro_auto_tlb_write,
-	.release = single_release
+static const struct proc_ops hw_lro_auto_tlb_fops = {
+	.proc_open = hw_lro_auto_tlb_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_write = hw_lro_auto_tlb_write,
+	.proc_release = single_release
 };
 
 struct proc_dir_entry *proc_reg_dir;
