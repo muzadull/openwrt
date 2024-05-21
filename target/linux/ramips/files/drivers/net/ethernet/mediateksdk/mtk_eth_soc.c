@@ -5343,6 +5343,58 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		};
 	}
 
+        if (mac->type == MTK_GDM_TYPE) {
+
+	    __set_bit(PHY_INTERFACE_MODE_MII,
+		      mac->phylink_config.supported_interfaces);
+
+	    __set_bit(PHY_INTERFACE_MODE_REVMII,
+		      mac->phylink_config.supported_interfaces);
+
+	    __set_bit(PHY_INTERFACE_MODE_RMII,
+		      mac->phylink_config.supported_interfaces);		  
+
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_GEPHY)) {  
+	    __set_bit(PHY_INTERFACE_MODE_GMII,
+                      mac->phylink_config.supported_interfaces);
+	    }
+
+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_RGMII)) {
+            phy_interface_set_rgmii(mac->phylink_config.supported_interfaces);
+	    }
+
+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_TRGMII) && !mac->id) {
+            __set_bit(PHY_INTERFACE_MODE_TRGMII,
+                      mac->phylink_config.supported_interfaces);
+	    }
+
+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_SGMII)) {
+	    __set_bit(PHY_INTERFACE_MODE_SGMII,
+		      mac->phylink_config.supported_interfaces);
+            __set_bit(PHY_INTERFACE_MODE_1000BASEX,
+		      mac->phylink_config.supported_interfaces);
+            __set_bit(PHY_INTERFACE_MODE_2500BASEX,
+		      mac->phylink_config.supported_interfaces);
+	    }
+         }				
+              
+         if (mac->type == MTK_XGDM_TYPE) {
+
+	 if (MTK_HAS_CAPS(eth->soc->caps, MTK_XGMII)) {
+             __set_bit(PHY_INTERFACE_MODE_XGMII,
+		       mac->phylink_config.supported_interfaces);
+	     }		  
+
+	 if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_USXGMII)) {	
+	     __set_bit(PHY_INTERFACE_MODE_5GBASER,
+		       mac->phylink_config.supported_interfaces);
+             __set_bit(PHY_INTERFACE_MODE_10GKR,
+		       mac->phylink_config.supported_interfaces);
+	     __set_bit(PHY_INTERFACE_MODE_USXGMII,
+		       mac->phylink_config.supported_interfaces);
+	     }
+	}			
+
 	phylink = phylink_create(&mac->phylink_config,
 				 of_fwnode_handle(mac->of_node),
 				 phy_mode, &mtk_phylink_ops);
