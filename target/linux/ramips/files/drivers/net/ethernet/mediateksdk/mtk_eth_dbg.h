@@ -24,12 +24,8 @@
 #define MTK_FE_CDM2_FSM			0x224
 #define MTK_FE_CDM3_FSM			0x238
 #define MTK_FE_CDM4_FSM			0x298
-#define MTK_FE_CDM5_FSM			0x318
-#define MTK_FE_CDM6_FSM			0x328
-#define MTK_FE_CDM7_FSM			0x338
 #define MTK_FE_GDM1_FSM			0x228
 #define MTK_FE_GDM2_FSM			0x22C
-#define MTK_FE_GDM3_FSM			0x23C
 #define MTK_FE_PSE_FREE			0x240
 #define MTK_FE_DROP_FQ			0x244
 #define MTK_FE_DROP_FC			0x248
@@ -39,10 +35,7 @@
 #define MTK_SGMII_EFUSE			0x11D008C8
 #define MTK_WED_RTQM_GLO_CFG		0x15010B00
 
-#define MTK_FE_GDM_FSM(x)		(((x) == 2) ? MTK_FE_GDM3_FSM :	\
-					 ((x) == 1) ? MTK_FE_GDM2_FSM : MTK_FE_GDM1_FSM)
-
-#if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
+#if defined(CONFIG_MEDIATEK_NETSYS_V2)
 #define MTK_PSE_IQ_STA(x)		(0x180 + (x) * 0x4)
 #define MTK_PSE_OQ_STA(x)		(0x1A0 + (x) * 0x4)
 #else
@@ -59,65 +52,12 @@
 #define REG_ESW_MAX                     0xFC
 
 #define PROCREG_ESW_CNT			"esw_cnt"
-#define PROCREG_XFI_CNT			"xfi_cnt"
 #define PROCREG_TXRING			"tx_ring"
-#define PROCREG_HWTXRING		"hwtx_ring"
 #define PROCREG_RXRING			"rx_ring"
 #define PROCREG_DIR			"mtketh"
 #define PROCREG_DBG_REGS		"dbg_regs"
-#define PROCREG_RSS_CTRL		"rss_ctrl"
 #define PROCREG_HW_LRO_STATS		"hw_lro_stats"
 #define PROCREG_HW_LRO_AUTO_TLB		"hw_lro_auto_tlb"
-#define PROCREG_RESET_EVENT		"reset_event"
-
-/* XFI MAC MIB Register */
-#define MTK_XFI_MIB_BASE(x)		(MTK_XMAC_MCR(x))
-#define MTK_XFI_CNT_CTRL		0x100
-#define MTK_XFI_TX_PKT_CNT		0x108
-#define MTK_XFI_TX_ETH_CNT		0x114
-#define MTK_XFI_TX_PAUSE_CNT		0x120
-#define MTK_XFI_TX_BYTE_CNT		0x134
-#define MTK_XFI_TX_UC_PKT_CNT_L		0x150
-#define MTK_XFI_TX_UC_PKT_CNT_H		0x154
-#define MTK_XFI_TX_MC_PKT_CNT_L		0x160
-#define MTK_XFI_TX_MC_PKT_CNT_H		0x164
-#define MTK_XFI_TX_BC_PKT_CNT_L		0x170
-#define MTK_XFI_TX_BC_PKT_CNT_H		0x174
-
-#define MTK_XFI_RX_PKT_CNT		0x188
-#define MTK_XFI_RX_ETH_CNT		0x18C
-#define MTK_XFI_RX_PAUSE_CNT		0x190
-#define MTK_XFI_RX_LEN_ERR_CNT		0x194
-#define MTK_XFI_RX_CRC_ERR_CNT		0x198
-#define MTK_XFI_RX_UC_PKT_CNT_L		0x1C0
-#define MTK_XFI_RX_UC_PKT_CNT_H		0x1C4
-#define MTK_XFI_RX_MC_PKT_CNT_L		0x1D0
-#define MTK_XFI_RX_MC_PKT_CNT_H		0x1D4
-#define MTK_XFI_RX_BC_PKT_CNT_L		0x1E0
-#define MTK_XFI_RX_BC_PKT_CNT_H		0x1E4
-#define MTK_XFI_RX_UC_DROP_CNT		0x200
-#define MTK_XFI_RX_BC_DROP_CNT		0x204
-#define MTK_XFI_RX_MC_DROP_CNT		0x208
-#define MTK_XFI_RX_ALL_DROP_CNT		0x20C
-
-#define PRINT_FORMATTED_XFI_MIB(seq, reg, mask)			\
-{								\
-	seq_printf(seq, "| XFI%d_%s	: %010lu |\n",		\
-		   gdm_id, #reg,				\
-		   FIELD_GET(mask, mtk_r32(eth,			\
-			     MTK_XFI_MIB_BASE(gdm_id) +		\
-			     MTK_XFI_##reg)));			\
-}
-
-#define PRINT_FORMATTED_XFI_MIB64(seq, reg)			\
-{								\
-	seq_printf(seq, "| XFI%d_%s	: %010llu |\n",		\
-		   gdm_id, #reg,				\
-		   mtk_r32(eth, MTK_XFI_MIB_BASE(gdm_id) +	\
-			   MTK_XFI_##reg##_L) +			\
-		   ((u64)mtk_r32(eth, MTK_XFI_MIB_BASE(gdm_id) +\
-				 MTK_XFI_##reg##_H) << 32));	\
-}
 
 /* HW LRO flush reason */
 #define MTK_HW_LRO_AGG_FLUSH		(1)
@@ -325,11 +265,12 @@ static inline bool mt7530_exist(struct mtk_eth *eth)
 }
 #endif
 
-extern u32 _mtk_mdio_read(struct mtk_eth *eth, int phy_addr, int phy_reg);
-extern u32 _mtk_mdio_write(struct mtk_eth *eth, int phy_addr,
-		    int phy_reg, u16 write_data);
+extern u32 _mtk_mdio_read(struct mtk_eth *eth, u16 phy_addr, u16 phy_reg);
+extern u32 _mtk_mdio_write(struct mtk_eth *eth, u16 phy_addr,
+		    u16 phy_register, u16 write_data);
 
-extern atomic_t force;
+extern u32 mtk_cl45_ind_read(struct mtk_eth *eth, u16 port, u16 devad, u16 reg, u16 *data);
+extern u32 mtk_cl45_ind_write(struct mtk_eth *eth, u16 port, u16 devad, u16 reg, u16 data);
 
 int debug_proc_init(struct mtk_eth *eth);
 void debug_proc_exit(void);
@@ -337,7 +278,7 @@ void debug_proc_exit(void);
 int mtketh_debugfs_init(struct mtk_eth *eth);
 void mtketh_debugfs_exit(struct mtk_eth *eth);
 int mtk_do_priv_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
-void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd);
-void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd);
+void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma *rxd);
+void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma *rxd);
 
 #endif /* MTK_ETH_DBG_H */
