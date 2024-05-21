@@ -342,12 +342,10 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 		}
 
 		/* put the gmac into the right mode */
-		spin_lock(&eth->syscfg0_lock);
 		regmap_read(eth->ethsys, ETHSYS_SYSCFG0, &val);
 		val &= ~SYSCFG0_GE_MODE(SYSCFG0_GE_MASK, mac->id);
 		val |= SYSCFG0_GE_MODE(ge_mode, mac->id);
 		regmap_write(eth->ethsys, ETHSYS_SYSCFG0, val);
-		spin_unlock(&eth->syscfg0_lock);
 
 		mac->interface = state->interface;
 	}
@@ -358,7 +356,6 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 		/* The path GMAC to SGMII will be enabled once the SGMIISYS is
 		 * being setup done.
 		 */
-		spin_lock(&eth->syscfg0_lock);
 		regmap_read(eth->ethsys, ETHSYS_SYSCFG0, &val);
 
 		regmap_update_bits(eth->ethsys, ETHSYS_SYSCFG0,
@@ -377,7 +374,6 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 			err = mtk_sgmii_setup_mode_an(eth->sgmii, sid);
 
 		if (err) {
-			spin_unlock(&eth->syscfg0_lock);
 			goto init_err;
 		}
 
@@ -393,28 +389,8 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 	/* Setup gmac */
 	mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
 	mcr_new = mcr_cur;
-	mcr_new &= ~(MAC_MCR_SPEED_100 | MAC_MCR_SPEED_1000 |
-		     MAC_MCR_FORCE_DPX | MAC_MCR_FORCE_TX_FC |
-		     MAC_MCR_FORCE_RX_FC);
 	mcr_new |= MAC_MCR_MAX_RX_1536 | MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
 		   MAC_MCR_BACKOFF_EN | MAC_MCR_BACKPR_EN | MAC_MCR_FORCE_LINK;
-
-	switch (state->speed) {
-	case SPEED_2500:
-	case SPEED_1000:
-		mcr_new |= MAC_MCR_SPEED_1000;
-		break;
-	case SPEED_100:
-		mcr_new |= MAC_MCR_SPEED_100;
-		break;
-	}
-	if (state->duplex == DUPLEX_FULL) {
-		mcr_new |= MAC_MCR_FORCE_DPX;
-		if (state->pause & MLO_PAUSE_TX)
-			mcr_new |= MAC_MCR_FORCE_TX_FC;
-		if (state->pause & MLO_PAUSE_RX)
-			mcr_new |= MAC_MCR_FORCE_RX_FC;
-	}
 
 	/* Only update control register when needed! */
 	if (mcr_new != mcr_cur)
@@ -2654,7 +2630,6 @@ static int mtk_open(struct net_device *dev)
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	int err, i;
-	struct device_node *phy_node;
 
 	err = phylink_of_phy_connect(mac->phylink, mac->of_node, 0);
 	if (err) {
@@ -2700,10 +2675,6 @@ static int mtk_open(struct net_device *dev)
 
 	phylink_start(mac->phylink);
 	netif_start_queue(dev);
-	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
-	if (!phy_node) {
-		regmap_write(eth->sgmii->regmap[mac->id], SGMSYS_QPHY_PWR_STATE_CTRL, 0);
-	}
 	return 0;
 }
 
@@ -2735,25 +2706,8 @@ static int mtk_stop(struct net_device *dev)
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	int i;
-	u32 val = 0;
-	struct device_node *phy_node;
 
 	netif_tx_disable(dev);
-
-	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
-	if (phy_node) {
-		val = _mtk_mdio_read(eth, 0, 0);
-		val |= BMCR_PDOWN;
-		_mtk_mdio_write(eth, 0, 0, val);
-	}else {
-		regmap_read(eth->sgmii->regmap[mac->id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
-		val |= SGMII_PHYA_PWD;
-		regmap_write(eth->sgmii->regmap[mac->id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
-	}
-
-	//GMAC RX disable
-	val = mtk_r32(eth, MTK_MAC_MCR(mac->id));
-	mtk_w32(eth, val & ~(MAC_MCR_RX_EN), MTK_MAC_MCR(mac->id));
 
 	phylink_stop(mac->phylink);
 
@@ -2780,8 +2734,6 @@ static int mtk_stop(struct net_device *dev)
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
 		mtk_stop_dma(eth, MTK_QDMA_GLO_CFG);
 	mtk_stop_dma(eth, MTK_PDMA_GLO_CFG);
-
-	mtk_dma_free(eth);
 
 	return 0;
 }
@@ -3470,7 +3422,6 @@ static int mtk_probe(struct platform_device *pdev)
 	spin_lock_init(&eth->page_lock);
 	spin_lock_init(&eth->tx_irq_lock);
 	spin_lock_init(&eth->rx_irq_lock);
-	spin_lock_init(&eth->syscfg0_lock);
 
 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628)) {
 		eth->ethsys = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
