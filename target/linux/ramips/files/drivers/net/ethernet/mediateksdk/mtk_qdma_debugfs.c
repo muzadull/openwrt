@@ -427,8 +427,6 @@ int mtk_qdma_debugfs_init(struct mtk_eth *eth)
 	_eth = eth;
 
 	root = debugfs_lookup("mtk_ppe", NULL);
-	if (!root)
-		return -ENOMEM;
 
 	debugfs_create_file("qos_toggle", S_IRUGO, root, eth, &fops_qos);
 
