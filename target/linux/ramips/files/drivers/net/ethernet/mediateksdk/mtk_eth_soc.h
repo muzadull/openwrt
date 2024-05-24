@@ -485,6 +485,9 @@
 #define FC_THRES_DROP_EN	(7 << 16)
 #define FC_THRES_MIN		0x4444
 
+/* QDMA TX Scheduler Rate Control Register */
+#define MTK_QDMA_TX_2SCH_BASE	(QDMA_BASE + 0x214)
+
 /* QDMA Interrupt Status Register */
 #define MTK_QDMA_INT_STATUS	(QDMA_BASE + 0x218)
 #if defined(CONFIG_MEDIATEK_NETSYS_RX_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
@@ -528,6 +531,11 @@
 /* QDMA Interrupt Mask Register */
 #define MTK_QDMA_HRED2		(QDMA_BASE + 0x244)
 
+/* QDMA TX Queue MIB Interface Register */
+#define MTK_QTX_MIB_IF		(QDMA_BASE + 0x2bc)
+#define MTK_MIB_ON_QTX_CFG	BIT(31)
+#define MTK_VQTX_MIB_EN		BIT(28)
+
 /* QDMA TX Forward CPU Pointer Register */
 #define MTK_QTX_CTX_PTR		(QDMA_BASE +0x300)
 
@@ -554,6 +562,14 @@
 
 /* QDMA FQ Free Page Buffer Length Register */
 #define MTK_QDMA_FQ_BLEN	(QDMA_BASE +0x32c)
+
+/* QDMA TX Scheduler Rate Control Register */
+#define MTK_QDMA_TX_4SCH_BASE(x)	(QDMA_BASE + 0x398 + (((x) >> 1) * 0x4))
+#define MTK_QDMA_TX_SCH_MASK		GENMASK(15, 0)
+#define MTK_QDMA_TX_SCH_MAX_WFQ		BIT(15)
+#define MTK_QDMA_TX_SCH_RATE_EN		BIT(11)
+#define MTK_QDMA_TX_SCH_RATE_MAN	GENMASK(10, 4)
+#define MTK_QDMA_TX_SCH_RATE_EXP	GENMASK(3, 0)
 
 /* WDMA Registers */
 #define MTK_WDMA_CTX_PTR(x)	(WDMA_BASE(x) + 0x8)
@@ -1729,6 +1745,7 @@ struct mtk_soc_data {
 		u32	rx_dma_l4_valid;
 		u32	dma_max_len;
 		u32	dma_len_offset;
+		u32	qdma_tx_sch;
 	} txrx;
 };
 
@@ -1921,6 +1938,7 @@ struct mtk_eth {
 	int				ip_align;
 	spinlock_t			syscfg0_lock;
 	struct timer_list		mtk_dma_monitor_timer;
+	u8				qos_toggle;
 };
 
 /* struct mtk_mac -	the structure that holds the info about the MACs of the
@@ -2003,4 +2021,5 @@ void mtk_usxgmii_link_poll(struct work_struct *work);
 
 void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev);
 u32 mtk_rss_indr_table(struct mtk_rss_params *rss_params, int index);
+int mtk_qdma_debugfs_init(struct mtk_eth *eth);
 #endif /* MTK_ETH_H */

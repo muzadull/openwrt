@@ -5812,6 +5812,7 @@ static int mtk_probe(struct platform_device *pdev)
 	}
 
 	mtketh_debugfs_init(eth);
+	mtk_qdma_debugfs_init(eth);
 	debug_proc_init(eth);
 
 	platform_set_drvdata(pdev, eth);
@@ -5885,6 +5886,7 @@ static const struct mtk_soc_data mt2701_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT,
+		.qdma_tx_sch = 2,
 	},
 };
 
@@ -5905,6 +5907,7 @@ static const struct mtk_soc_data mt7621_data = {
 		.rxd_size = sizeof(struct mtk_rx_dma),
 		.dma_max_len = MTK_TX_DMA_BUF_LEN,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT,
+		.qdma_tx_sch = 2,
 	},
 };
 
@@ -5926,6 +5929,7 @@ static const struct mtk_soc_data mt7622_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT,
+		.qdma_tx_sch = 2,
 	},
 };
 
@@ -5946,6 +5950,7 @@ static const struct mtk_soc_data mt7623_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT,
+		.qdma_tx_sch = 2,
 	},
 };
 
@@ -5967,6 +5972,7 @@ static const struct mtk_soc_data mt7629_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT,
+		.qdma_tx_sch = 2,
 	},
 };
 
@@ -5988,6 +5994,7 @@ static const struct mtk_soc_data mt7986_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID_V2,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN_V2,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT_V2,
+		.qdma_tx_sch = 4,
 	},
 };
 
@@ -6009,6 +6016,7 @@ static const struct mtk_soc_data mt7981_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID_V2,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN_V2,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT_V2,
+		.qdma_tx_sch = 4,
 	},
 };
 
@@ -6030,6 +6038,7 @@ static const struct mtk_soc_data mt7988_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID_V2,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN_V2,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT_V2,
+		.qdma_tx_sch = 4,
 	},
 };
 
@@ -6050,6 +6059,7 @@ static const struct mtk_soc_data rt5350_data = {
 		.rx_dma_l4_valid = RX_DMA_L4_VALID_PDMA,
 		.dma_max_len = MTK_TX_DMA_BUF_LEN,
 		.dma_len_offset = MTK_TX_DMA_BUF_SHIFT,
+		.qdma_tx_sch = 4,
 	},
 };
 
