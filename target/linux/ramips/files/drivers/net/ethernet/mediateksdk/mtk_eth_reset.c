@@ -261,7 +261,7 @@ void mtk_check_pse_oq_sta(struct mtk_eth *eth, u32 port, u32 *pre_opq, u32 *err_
 
 	cur_opq = (mtk_r32(eth, MTK_PSE_OQ_STA(id)) & mask);
 	if ((cur_opq != 0) && (cur_opq == *pre_opq))
-		*err_opq++;
+		(*err_opq)++;
 	else
 		*err_opq = 0;
 
@@ -837,7 +837,7 @@ void mtk_pse_port_linkdown(struct mtk_eth *eth, int port)
 
 void mtk_prepare_reset_fe(struct mtk_eth *eth)
 {
-	u32 i = 0, val = 0, mcr = 0;
+	u32 i = 0, val = 0;
 
 	/* Disable NETSYS Interrupt */
 	mtk_w32(eth, 0, MTK_FE_INT_ENABLE);
@@ -853,7 +853,7 @@ void mtk_prepare_reset_fe(struct mtk_eth *eth)
 
 	/* Disable QDMA Tx */
 	val = mtk_r32(eth, MTK_QDMA_GLO_CFG);
-	mtk_w32(eth, val & ~(MTK_TX_DMA_EN), MTK_QDMA_GLO_CFG);
+	mtk_w32(eth, val & ~MTK_TX_DMA_EN, MTK_QDMA_GLO_CFG);
 
 	/* Force mac link down */
 	mtk_mac_linkdown(eth);
@@ -873,7 +873,7 @@ void mtk_prepare_reset_fe(struct mtk_eth *eth)
 
 	/* Disable ADMA Rx */
 	val = mtk_r32(eth, MTK_PDMA_GLO_CFG);
-	mtk_w32(eth, val & ~(MTK_RX_DMA_EN), MTK_PDMA_GLO_CFG);
+	mtk_w32(eth, val & ~MTK_RX_DMA_EN, MTK_PDMA_GLO_CFG);
 }
 
 void mtk_prepare_reset_ppe(struct mtk_eth *eth, u32 ppe_id)

@@ -255,8 +255,10 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
 	struct mtk_foe_entry foe;
 	struct net_device *idev = NULL, *odev = NULL;
 	struct mtk_flow_entry *entry;
+#if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)	
 	struct net_device_path_ctx ctx = {};
 	struct net_device_path path = {};
+#endif
 	int offload_type = 0;
 	int ppe_index = 0;
 	int wed_index = -1;

@@ -91,7 +91,11 @@ static int mtk_ppe_mib_wait_busy(struct mtk_ppe *ppe)
 
 int mtk_mib_entry_read(struct mtk_ppe *ppe, u16 index, u64 *bytes, u64 *packets)
 {
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
 	u32 val, cnt_r0, cnt_r1, cnt_r2, cnt_r3;
+#else
+        u32 val, cnt_r0, cnt_r1, cnt_r2;
+#endif
 	u32 byte_cnt_low, byte_cnt_high, pkt_cnt_low, pkt_cnt_high;
 
 	val = FIELD_PREP(MTK_PPE_MIB_SER_CR_ADDR, index) | MTK_PPE_MIB_SER_CR_ST;
@@ -433,14 +437,17 @@ int mtk_foe_entry_set_wdma(struct mtk_foe_entry *entry, int wdma_idx, int txq,
 
 int mtk_foe_entry_set_qid(struct mtk_foe_entry *entry, int qid)
 {
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
 	struct mtk_foe_mac_info *l2 = mtk_foe_entry_l2(entry);
 	u32 *ib2 = mtk_foe_entry_ib2(entry);
 
 	*ib2 &= ~MTK_FOE_IB2_QID;
 	*ib2 |= FIELD_PREP(MTK_FOE_IB2_QID, qid);
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
 	l2->tport_id = 1;
 #else
+	u32 *ib2 = mtk_foe_entry_ib2(entry);
+	*ib2 &= ~MTK_FOE_IB2_QID;
+	*ib2 |= FIELD_PREP(MTK_FOE_IB2_QID, qid);
 	*ib2 |= MTK_FOE_IB2_PSE_QOS;
 #endif
 

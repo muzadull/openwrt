@@ -635,7 +635,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 			if (!MTK_HAS_CAPS(mac->hw->soc->caps,
 					  MTK_GMAC1_TRGMII))
 				goto err_phy;
-			/* fall through */
+			fallthrough;
 		case PHY_INTERFACE_MODE_RGMII_TXID:
 		case PHY_INTERFACE_MODE_RGMII_RXID:
 		case PHY_INTERFACE_MODE_RGMII_ID:
@@ -829,7 +829,7 @@ static int mtk_mac_finish(struct phylink_config *config, unsigned int mode,
 	return 0;
 }
 
-static int mtk_mac_pcs_get_state(struct phylink_config *config,
+static void mtk_mac_pcs_get_state(struct phylink_config *config,
 				 struct phylink_link_state *state)
 {
 	struct mtk_mac *mac = container_of(config, struct mtk_mac,
@@ -912,7 +912,6 @@ static int mtk_mac_pcs_get_state(struct phylink_config *config,
 			state->pause |= MLO_PAUSE_TX;
 	}
 
-	return 1;
 }
 
 static void mtk_gdm_fsm_poll(struct mtk_mac *mac)
@@ -1105,9 +1104,10 @@ static void mtk_set_queue_speed(struct mtk_eth *eth, unsigned int idx,
 	mtk_w32(eth, val, MTK_QTX_SCH(idx));
 }
 
-static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
-			    phy_interface_t interface,
-			    struct phy_device *phy)
+static void mtk_mac_link_up(struct phylink_config *config,
+			    struct phy_device *phy,
+			    unsigned int mode, phy_interface_t interface,
+			    int speed, int duplex, bool tx_pause, bool rx_pause)
 {
 	struct mtk_mac *mac = container_of(config, struct mtk_mac,
 					   phylink_config);
@@ -1240,25 +1240,25 @@ static void mtk_validate(struct phylink_config *config,
 		phylink_set(mask, 1000baseT_Full);
 		break;
 	case PHY_INTERFACE_MODE_XGMII:
-		/* fall through */
+		fallthrough;
 	case PHY_INTERFACE_MODE_1000BASEX:
 		phylink_set(mask, 1000baseX_Full);
-		/* fall through */
+		fallthrough;
 	case PHY_INTERFACE_MODE_2500BASEX:
 		phylink_set(mask, 2500baseX_Full);
 		phylink_set(mask, 2500baseT_Full);
-		/* fall through */
+		fallthrough;
 	case PHY_INTERFACE_MODE_GMII:
 	case PHY_INTERFACE_MODE_RGMII:
 	case PHY_INTERFACE_MODE_RGMII_ID:
 	case PHY_INTERFACE_MODE_RGMII_RXID:
 	case PHY_INTERFACE_MODE_RGMII_TXID:
 		phylink_set(mask, 1000baseT_Half);
-		/* fall through */
+		fallthrough;
 	case PHY_INTERFACE_MODE_SGMII:
 		phylink_set(mask, 1000baseT_Full);
 		phylink_set(mask, 1000baseX_Full);
-		/* fall through */
+		fallthrough;
 	case PHY_INTERFACE_MODE_MII:
 	case PHY_INTERFACE_MODE_RMII:
 	case PHY_INTERFACE_MODE_REVMII:
@@ -1325,7 +1325,7 @@ static void mtk_validate(struct phylink_config *config,
 static const struct phylink_mac_ops mtk_phylink_ops = {
 	.validate = mtk_validate,
 	.mac_select_pcs = mtk_mac_select_pcs,
-	.mac_link_state = mtk_mac_pcs_get_state,
+	.mac_pcs_get_state = mtk_mac_pcs_get_state,
 	.mac_prepare = mtk_mac_prepare,
 	.mac_config = mtk_mac_config,
 	.mac_finish = mtk_mac_finish,
@@ -2138,7 +2138,7 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 			}
 
 			memset(&txd_info, 0, sizeof(struct mtk_tx_dma_desc_info));
-			txd_info.size = min(frag_size, eth->soc->txrx.dma_max_len);
+			txd_info.size = min_t(unsigned int, frag_size, eth->soc->txrx.dma_max_len);
 			txd_info.qid = queue;
 			txd_info.last = i == skb_shinfo(skb)->nr_frags - 1 &&
 					!(frag_size - txd_info.size);
@@ -3735,7 +3735,7 @@ static void mtk_dma_free(struct mtk_eth *eth)
 	}
 }
 
-static void mtk_tx_timeout(struct net_device *dev)
+static void mtk_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
@@ -4025,16 +4025,11 @@ static int mtk_open(struct net_device *dev)
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	struct mtk_phylink_priv *phylink_priv = &mac->phylink_priv;
-	struct device_node *phy_node;
-	const char *mac_addr;
 	u32 gdm_config = MTK_GDMA_TO_PDMA;
-	u32 id = mtk_mac2xgmii_id(eth, mac->id);
 	int err, i;
 
 	if (unlikely(!is_valid_ether_addr(dev->perm_addr))) {
-		mac_addr = of_get_mac_address(mac->of_node);
-		if (!IS_ERR(mac_addr))
-			ether_addr_copy(dev->perm_addr, mac_addr);
+                     of_get_mac_address(mac->of_node, dev->perm_addr);
 	}
 
 	err = phylink_of_phy_connect(mac->phylink, mac->of_node, 0);
@@ -4115,10 +4110,6 @@ static int mtk_open(struct net_device *dev)
 
 	phylink_start(mac->phylink);
 	netif_tx_start_all_queues(dev);
-	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
-	if (!phy_node && eth->sgmii->pcs[id].regmap)
-		regmap_write(eth->sgmii->pcs[id].regmap,
-			     SGMSYS_QPHY_PWR_STATE_CTRL, 0);
 
 	if (eth->soc->offload_version) {
 		gdm_config = MTK_GDMA_TO_PPE0;
@@ -4160,21 +4151,10 @@ static int mtk_stop(struct net_device *dev)
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	int i;
-	u32 id = mtk_mac2xgmii_id(eth, mac->id);
 	u32 val = 0;
-	struct device_node *phy_node;
 
 	mtk_gdm_config(eth, mac->id, MTK_GDMA_DROP_ALL);
 	netif_tx_disable(dev);
-
-	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
-	if (!phy_node && eth->sgmii->pcs[id].regmap) {
-		regmap_read(eth->sgmii->pcs[id].regmap,
-			    SGMSYS_QPHY_PWR_STATE_CTRL, &val);
-		val |= SGMII_PHYA_PWD;
-		regmap_write(eth->sgmii->pcs[id].regmap,
-			     SGMSYS_QPHY_PWR_STATE_CTRL, val);
-	}
 
 	//GMAC RX disable
 	val = mtk_r32(eth, MTK_MAC_MCR(mac->id));
@@ -4514,13 +4494,8 @@ static int __init mtk_init(struct net_device *dev)
 {
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
-	const char *mac_addr;
 
-	mac_addr = of_get_mac_address(mac->of_node);
-	if (!IS_ERR(mac_addr)) {
-		ether_addr_copy(dev->dev_addr, mac_addr);
-		ether_addr_copy(dev->perm_addr, mac_addr);
-	}
+        of_get_mac_address(mac->of_node, dev->dev_addr);
 
 	/* If the mac address is invalid, use random mac address  */
 	if (!is_valid_ether_addr(dev->dev_addr)) {
@@ -5197,7 +5172,9 @@ static int mtk_add_mux_channel(struct mtk_mux *mux, struct device_node *np)
 	struct mtk_eth *eth = mac->hw;
 	struct mtk_mux_data *data;
 	struct phylink *phylink;
-	int phy_mode, id;
+	phy_interface_t phy_mode;
+	int id, err;
+	
 
 	if (!_id) {
 		dev_err(eth->dev, "missing mux channel id\n");
@@ -5219,8 +5196,8 @@ static int mtk_add_mux_channel(struct mtk_mux *mux, struct device_node *np)
 	mux->data[id] = data;
 
 	/* phylink create */
-	phy_mode = of_get_phy_mode(np);
-	if (phy_mode < 0) {
+	err = of_get_phy_mode(np, &phy_mode);
+	if (err) {
 		dev_err(eth->dev, "incorrect phy-mode\n");
 		return -EINVAL;
 	}
@@ -5299,9 +5276,11 @@ static int mtk_add_mux(struct mtk_eth *eth, struct device_node *np)
 static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 {
 	const __be32 *_id = of_get_property(np, "reg", NULL);
+        const char *name = of_get_property(np, "label", NULL);
 	const char *label;
 	struct phylink *phylink;
-	int mac_type, phy_mode, id, err;
+	phy_interface_t phy_mode;
+	int mac_type, id, err;
 	struct mtk_mac *mac;
 	struct mtk_phylink_priv *phylink_priv;
 	struct fwnode_handle *fixed_node;
@@ -5354,10 +5333,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 	mac->hw_stats->reg_offset = id * MTK_STAT_OFFSET;
 
 	/* phylink create */
-	phy_mode = of_get_phy_mode(np);
-	if (phy_mode < 0) {
+	err = of_get_phy_mode(np, &phy_mode);
+	if (err) {
 		dev_err(eth->dev, "incorrect phy-mode\n");
-		err = -EINVAL;
 		goto free_netdev;
 	}
 
@@ -5370,6 +5348,8 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 
 	mac->phylink_config.dev = &eth->netdev[id]->dev;
 	mac->phylink_config.type = PHYLINK_NETDEV;
+	/* This driver makes use of state->speed/state->duplex in mac_config */
+	mac->phylink_config.legacy_pre_march2020 = true;
 
 	mac->type = 0;
 	if (!of_property_read_string(np, "mac-type", &label)) {
@@ -5391,6 +5371,58 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		};
 	}
 
+        if (mac->type == MTK_GDM_TYPE) {
+
+	    __set_bit(PHY_INTERFACE_MODE_MII,
+		      mac->phylink_config.supported_interfaces);
+
+	    __set_bit(PHY_INTERFACE_MODE_REVMII,
+		      mac->phylink_config.supported_interfaces);
+
+	    __set_bit(PHY_INTERFACE_MODE_RMII,
+		      mac->phylink_config.supported_interfaces);		  
+
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_GEPHY)) {  
+	    __set_bit(PHY_INTERFACE_MODE_GMII,
+                      mac->phylink_config.supported_interfaces);
+	    }
+
+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_RGMII)) {
+            phy_interface_set_rgmii(mac->phylink_config.supported_interfaces);
+	    }
+
+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_TRGMII) && !mac->id) {
+            __set_bit(PHY_INTERFACE_MODE_TRGMII,
+                  mac->phylink_config.supported_interfaces);
+	    }
+
+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_SGMII)) {
+	    __set_bit(PHY_INTERFACE_MODE_SGMII,
+		  mac->phylink_config.supported_interfaces);
+	    __set_bit(PHY_INTERFACE_MODE_1000BASEX,
+		  mac->phylink_config.supported_interfaces);
+	    __set_bit(PHY_INTERFACE_MODE_2500BASEX,
+		  mac->phylink_config.supported_interfaces);
+	    }
+	}
+
+	if (mac->type == MTK_XGDM_TYPE) {
+
+        if (MTK_HAS_CAPS(eth->soc->caps, MTK_XGMII)) {
+            __set_bit(PHY_INTERFACE_MODE_XGMII,
+		  mac->phylink_config.supported_interfaces);
+	    }	  
+
+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_USXGMII)) {
+	    __set_bit(PHY_INTERFACE_MODE_5GBASER,
+                  mac->phylink_config.supported_interfaces);     
+            __set_bit(PHY_INTERFACE_MODE_10GKR,
+                  mac->phylink_config.supported_interfaces);
+	    __set_bit(PHY_INTERFACE_MODE_USXGMII,
+		  mac->phylink_config.supported_interfaces);
+	    }
+	}
+
 	phylink = phylink_create(&mac->phylink_config,
 				 of_fwnode_handle(mac->of_node),
 				 phy_mode, &mtk_phylink_ops);
@@ -5409,7 +5441,7 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		if (!IS_ERR(desc)) {
 			struct device_node *phy_np;
 			const char *label;
-			int irq, phyaddr;
+			int err, irq, phyaddr;
 
 			phylink_priv = &mac->phylink_priv;
 
@@ -5419,9 +5451,11 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 
 			irq = gpiod_to_irq(desc);
 			if (irq > 0) {
-				devm_request_irq(eth->dev, irq, mtk_handle_irq_fixed_link,
-						 IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-					         "ethernet:fixed link", mac);
+			err = devm_request_irq(eth->dev, irq, mtk_handle_irq_fixed_link,
+					       IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+			                       "ethernet:fixed link", mac);
+			if (err)
+			        goto free_netdev;
 			}
 
 			if (!of_property_read_string(to_of_node(fixed_node),
@@ -5463,6 +5497,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		mac->device_notifier.notifier_call = mtk_device_event;
 		register_netdevice_notifier(&mac->device_notifier);
 	}
+
+	if (name)
+		strlcpy(eth->netdev[id]->name, name, IFNAMSIZ);
 
 	return 0;
 

@@ -1312,21 +1312,21 @@ enum mtk_clks_map {
 				 BIT(MTK_CLK_TOP_USXGMII_SBUS_1_SEL) | \
 				 BIT(MTK_CLK_TOP_SGM_0_SEL) | \
 				 BIT(MTK_CLK_TOP_SGM_1_SEL) | \
-				 BIT(MTK_CLK_TOP_XFI_PHY_0_XTAL_SEL) | \
-				 BIT(MTK_CLK_TOP_XFI_PHY_1_XTAL_SEL) | \
-				 BIT(MTK_CLK_TOP_ETH_GMII_SEL) | \
-				 BIT(MTK_CLK_TOP_ETH_REFCK_50M_SEL) | \
-				 BIT(MTK_CLK_TOP_ETH_SYS_200M_SEL) | \
-				 BIT(MTK_CLK_TOP_ETH_SYS_SEL) | \
-				 BIT(MTK_CLK_TOP_ETH_XGMII_SEL) | \
-				 BIT(MTK_CLK_TOP_ETH_MII_SEL) | \
-				 BIT(MTK_CLK_TOP_NETSYS_SEL) | \
-				 BIT(MTK_CLK_TOP_NETSYS_500M_SEL) | \
-				 BIT(MTK_CLK_TOP_NETSYS_PAO_2X_SEL) | \
-				 BIT(MTK_CLK_TOP_NETSYS_SYNC_250M_SEL) | \
-				 BIT(MTK_CLK_TOP_NETSYS_PPEFB_250M_SEL) | \
-				 BIT(MTK_CLK_TOP_NETSYS_WARP_SEL) | \
-				 BIT(MTK_CLK_TOP_MACSEC_SEL))
+				 BIT_ULL(MTK_CLK_TOP_XFI_PHY_0_XTAL_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_XFI_PHY_1_XTAL_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_ETH_GMII_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_ETH_REFCK_50M_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_ETH_SYS_200M_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_ETH_SYS_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_ETH_XGMII_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_ETH_MII_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_NETSYS_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_NETSYS_500M_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_NETSYS_PAO_2X_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_NETSYS_SYNC_250M_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_NETSYS_PPEFB_250M_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_NETSYS_WARP_SEL) | \
+				 BIT_ULL(MTK_CLK_TOP_MACSEC_SEL))
 
 enum mtk_dev_state {
 	MTK_HW_INIT,
@@ -2094,8 +2094,6 @@ int mtk_toprgu_init(struct mtk_eth *eth, struct device_node *r);
 int mtk_eth_offload_init(struct mtk_eth *eth, int id);
 int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
 		     void *type_data);
-int mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f,
-			   struct mtk_eth *eth);
 void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev);
 u32 mtk_rss_indr_table(struct mtk_rss_params *rss_params, int index);
 
