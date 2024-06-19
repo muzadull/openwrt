@@ -2407,8 +2407,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 
 		if (mac == 5)
 			mac = 0;
-		else									   
-			mac--;
 
 		if (unlikely(mac < 0 || mac >= MTK_MAC_COUNT ||
 			     !eth->netdev[mac]))
