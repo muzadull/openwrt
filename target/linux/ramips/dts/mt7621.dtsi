@@ -543,6 +543,22 @@
 		};
 	};
 
+	hnat: hnat@1e100000 {
+
+	compatible = "mediatek,mtk-hnat_v1";
+	reg = <0x1e100000 0x3000>;
+        resets = <&rstctrl 6>, <&rstctrl 23>;
+        reset-names = "fe", "eth";
+
+        mtketh-wan = "eth1";
+        mtketh-ppd = "eth0";
+        mtketh-lan = "eth0";
+	ext-devices = "phy0-ap0","phy1-ap0";
+        mtketh-max-gmac = <2>;
+        status = "okay";
+
+	};
+
 	gsw: gsw@1e110000 {
 	status = "disabled";
 	compatible = "mediatek,mt753x";

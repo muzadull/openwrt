@@ -10,9 +10,9 @@
  struct net_device_ops {
  	int			(*ndo_init)(struct net_device *dev);
 @@ -1589,6 +1598,8 @@ struct net_device_ops {
- 	struct net_device *	(*ndo_get_peer_dev)(struct net_device *dev);
  	int                     (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx,
                                                           struct net_device_path *path);
+        int                     (*ndo_hnat_check)(struct hnat_hw_path *path);
 +	int                     (*ndo_fill_receive_path)(struct net_device_path_ctx *ctx,
 +							 struct net_device_path *path);
  };
