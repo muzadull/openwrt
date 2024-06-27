@@ -21,6 +21,7 @@
 #include <linux/mod_devicetable.h>
 #include "hnat_mcast.h"
 #include "nf_hnat_mtk.h"
+#include <net/netfilter/nf_hnat.h>
 
 /*--------------------------------------------------------------------------*/
 /* Register Offset*/
@@ -1264,7 +1265,7 @@ static inline int is_hnat_pre_filled(struct foe_entry *entry)
 #if defined(CONFIG_NET_DSA_MT7530)
 u32 hnat_dsa_fill_stag(const struct net_device *netdev,
 		       struct foe_entry *entry,
-		       struct flow_offload_hw_path *hw_path,
+		       struct hnat_hw_path *hw_path,
 		       u16 eth_proto, int mape);
 
 static inline bool hnat_dsa_is_enable(struct mtk_hnat *priv)
@@ -1274,7 +1275,7 @@ static inline bool hnat_dsa_is_enable(struct mtk_hnat *priv)
 #else
 static inline u32 hnat_dsa_fill_stag(const struct net_device *netdev,
 				     struct foe_entry *entry,
-				     struct flow_offload_hw_path *hw_path,
+				     struct hnat_hw_path *hw_path,
 				     u16 eth_proto, int mape)
 {
 	return 0;

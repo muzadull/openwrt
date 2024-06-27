@@ -989,7 +989,7 @@ static int hnat_nfct_counter_update(struct mtk_hnat *h, u32 ppe_id,
 
 	nfct = h->acct[ppe_id][index].nfct;
 	ctinfo = nfct & NFCT_INFOMASK;
-	ct = (struct nf_conn *)(nfct & NFCT_PTRMASK);
+	ct = (struct nf_conn *)(uintptr_t)(nfct & NFCT_PTRMASK);
 	if (ct) {
 		acct = nf_conn_acct_find(ct);
 		if (acct) {
@@ -3358,7 +3358,6 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 {
 	int ret = 0;
 	struct dentry *root;
-	struct dentry *file;
 	long i;
 	char name[16];
 
@@ -3386,13 +3385,8 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 			ret = -ENOMEM;
 			goto err1;
 		}
-		file = debugfs_create_regset32(name, 0444,
+		debugfs_create_regset32(name, 0444,
 					       root, h->regset[i]);
-		if (!file) {
-			dev_notice(h->dev, "%s:err at %d\n", __func__, __LINE__);
-			ret = -ENOMEM;
-			goto err1;
-		}
 	}
 
 	debugfs_create_file("all_entry", 0444, root, h, &hnat_debug_fops);
