@@ -7,9 +7,9 @@ config NET_VENDOR_MEDIATEK_SDK
 
 if NET_VENDOR_MEDIATEK_SDK
 
-config NET_MEDIATEK_SOC_WED
+config NET_MEDIATEK_SOC_WED_SDK
 	depends on ARCH_MEDIATEK || COMPILE_TEST
-	def_bool NET_MEDIATEK_SOC != n
+	def_bool NET_MEDIATEK_SOC_SDK != n
 
 config NET_MEDIATEK_SOC_SDK
 	tristate "MediaTek SoC Gigabit Ethernet support(SDK)"
