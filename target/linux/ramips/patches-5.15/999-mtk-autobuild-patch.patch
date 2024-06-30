@@ -70,7 +70,7 @@
  	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_META) |
  				      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
  				      BIT(FLOW_DISSECTOR_KEY_BASIC) |
- 				      BIT(FLOW_DISSECTOR_KEY_PORTS);
+- 				      BIT(FLOW_DISSECTOR_KEY_PORTS);
 +				      BIT(FLOW_DISSECTOR_KEY_PORTS) |
 +				      BIT(FLOW_DISSECTOR_KEY_IP);
  	return 0;
