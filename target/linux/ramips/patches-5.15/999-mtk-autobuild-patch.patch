@@ -59,7 +59,7 @@
  
  	if (other_dst && other_dst->lwtstate) {
  		tun_info = lwt_tun_info(other_dst->lwtstate);
-@@ -182,11 +183,16 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+@@ -182,11 +183,15 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
  	mask->tp.src = 0xffff;
  	key->tp.dst = tuple->dst_port;
  	mask->tp.dst = 0xffff;
@@ -70,13 +70,13 @@
  	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_META) |
  				      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
  				      BIT(FLOW_DISSECTOR_KEY_BASIC) |
-- 				      BIT(FLOW_DISSECTOR_KEY_PORTS);
+-				      BIT(FLOW_DISSECTOR_KEY_PORTS);
 +				      BIT(FLOW_DISSECTOR_KEY_PORTS) |
 +				      BIT(FLOW_DISSECTOR_KEY_IP);
  	return 0;
  }
  
-@@ -809,11 +815,13 @@ static int nf_flow_offload_alloc(const struct flow_offload_work *offload,
+@@ -809,11 +814,13 @@ static int nf_flow_offload_alloc(const struct flow_offload_work *offload,
  }
  
  static void nf_flow_offload_init(struct flow_cls_offload *cls_flow,
@@ -90,7 +90,7 @@
  	cls_flow->common.protocol = proto;
  	cls_flow->common.prio = priority;
  	cls_flow->common.extack = extack;
-@@ -835,7 +843,7 @@ static int nf_flow_offload_tuple(struct nf_flowtable *flowtable,
+@@ -835,7 +842,7 @@ static int nf_flow_offload_tuple(struct nf_flowtable *flowtable,
  	__be16 proto = ETH_P_ALL;
  	int err, i = 0;
  
