@@ -2324,7 +2324,6 @@ static int mtk_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct netdev_queue *txq;
 	bool gso = false;
 	int tx_num;
-	int i = 0;
 	int qid = skb_get_queue_mapping(skb);
 
 	/* normally we can rely on the stack not calling this more than once,
@@ -3877,7 +3876,6 @@ static irqreturn_t mtk_handle_irq_txrx(int irq, void *priv)
 	struct mtk_eth *eth = txrx_napi->eth;
 	struct mtk_tx_ring *tx_ring = txrx_napi->tx_ring;
 	struct mtk_rx_ring *rx_ring = txrx_napi->rx_ring;
-	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 
 	if (tx_ring) {
 		if (unlikely(!(mtk_r32(eth, eth->soc->reg_map->pdma.irq_status) &

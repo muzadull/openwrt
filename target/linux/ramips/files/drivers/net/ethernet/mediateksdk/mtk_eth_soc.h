@@ -2108,7 +2108,7 @@ int mtk_toprgu_init(struct mtk_eth *eth, struct device_node *r);
 int mtk_eth_offload_init(struct mtk_eth *eth, int id);
 int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
 		     void *type_data);
-int mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f,
+int mtk_eth_setup_tc_block(struct net_device *dev,
 			   struct mtk_eth *eth);
 int mtk_eth_fill_receive_path(struct net_device_path_ctx *ctx,
 			      struct net_device_path *path);
