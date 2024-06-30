@@ -20,13 +20,13 @@ config NET_MEDIATEK_SOC_SDK
 
 config MEDIATEK_NETSYS_V2
 	tristate "MediaTek Ethernet NETSYS V2 support"
-	 depends on ARCH_MEDIATEK && NET_MEDIATEK_SOC_SDK
+	depends on ARCH_MEDIATEK || NET_MEDIATEK_SOC_SDK
 	help
 	  This options enable MTK Ethernet NETSYS V2 support
 
 config MEDIATEK_NETSYS_V3
 	tristate "MediaTek Ethernet NETSYS V3 support"
-	depends on ARCH_MEDIATEK && NET_MEDIATEK_SOC_SDK
+	depends on ARCH_MEDIATEK || NET_MEDIATEK_SOC_SDK
 	help
 	  This options enable MTK Ethernet NETSYS V3 support for
 	  XGMAC and USXGMII.
