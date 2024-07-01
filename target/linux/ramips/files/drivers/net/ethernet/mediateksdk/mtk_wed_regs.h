@@ -489,7 +489,7 @@ struct mtk_wdma_desc {
 #define MTK_WDMA_RING_RX(_n)				(0x100 + (_n) * 0x10)
 
 #define MTK_WDMA_INFO					0x200
-#define MTK_WDMA_GLO_CFG				0x204
+
 #define MTK_WDMA_GLO_CFG_TX_DMA_EN			BIT(0)
 #define MTK_WDMA_GLO_CFG_TX_DMA_BUSY			BIT(1)
 #define MTK_WDMA_GLO_CFG_RX_DMA_EN			BIT(2)

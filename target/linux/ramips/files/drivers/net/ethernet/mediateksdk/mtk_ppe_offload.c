@@ -102,7 +102,9 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
 		return -1;
 
 	memcpy(ctx.daddr, addr, sizeof(ctx.daddr));
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
 	path.mtk_wdma.tid = dscp;
+#endif	
 	if (dev->netdev_ops->ndo_fill_forward_path(&ctx, &path))
 		return -1;
 
@@ -114,11 +116,12 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
 	info->bss = path.mtk_wdma.bss;
 	info->wcid = path.mtk_wdma.wcid;
 	info->amsdu = path.mtk_wdma.amsdu;
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
 	info->tid = path.mtk_wdma.tid;
+#endif	
 
 	return 0;
 }
-
 
 static int
 mtk_flow_mangle_ports(const struct flow_action_entry *act,

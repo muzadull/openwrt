@@ -1192,7 +1192,7 @@ int mtk_flow_offload_teardown_by_mac(struct mtk_ppe *ppe, u8 *mac)
 		if (type > MTK_PPE_PKT_TYPE_IPV4_DSLITE) {
 			tuple.l3proto = NFPROTO_IPV6;
 			tuple.src_port = htons(entry->ipv6.src_port);
-			tuple.dst_port = htons(entry->ipv6.src_port);
+			tuple.dst_port = htons(entry->ipv6.dest_port);
 			for (j = 0; j < 4; j ++) {
 				tuple.src_v6.s6_addr32[j] = htonl(entry->ipv6.src_ip[j]);
 				tuple.dst_v6.s6_addr32[j] = htonl(entry->ipv6.dest_ip[j]);
@@ -1205,7 +1205,6 @@ int mtk_flow_offload_teardown_by_mac(struct mtk_ppe *ppe, u8 *mac)
 			tuple.dst_v4.s_addr = htonl(entry->ipv4.orig.dest_ip);
 		}
 
-		flow_offload_teardown_by_tuple(&tuple);
 		count++;
 
 		pr_info("mtk_ppe: the roamiing entry (%x) has been deleted\n", i);

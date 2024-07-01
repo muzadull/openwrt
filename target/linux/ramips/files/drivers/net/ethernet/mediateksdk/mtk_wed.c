@@ -25,6 +25,7 @@
 
 #define MTK_WED_AMSDU_BUF_SIZE		(PAGE_SIZE << 4)
 #define MTK_WED_AMSDU_NPAGES		32
+#define MTK_WDMA_GLO_CFG		0x204
 
 static struct mtk_wed_hw *hw_list[3];
 static DEFINE_MUTEX(hw_lock);
