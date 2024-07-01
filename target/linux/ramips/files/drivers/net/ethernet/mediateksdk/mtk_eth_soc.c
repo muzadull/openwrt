@@ -28,6 +28,7 @@
 #include "mtk_eth_soc.h"
 #include "mtk_eth_dbg.h"
 #include "mtk_eth_reset.h"
+#include "mtk_wed.h"
 
 #if defined(CONFIG_NET_MEDIATEK_HNAT) || defined(CONFIG_NET_MEDIATEK_HNAT_MODULE)
 #include "mtk_hnat/nf_hnat_mtk.h"
