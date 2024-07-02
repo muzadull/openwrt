@@ -463,17 +463,18 @@ int mtk_foe_entry_set_qid(struct mtk_foe_entry *entry, int qid)
 
 void mtk_foe_entry_adjust_qid(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
 {
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
 	struct mtk_foe_mac_info *l2 = mtk_foe_entry_l2(&entry->data);
+#endif
 	u32 *ib2 = mtk_foe_entry_ib2(&entry->data);
 	u8 qid;
 
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 	if (l2->tport_id != 1)
 		return;
-#else
+#endif
 	if (!(*ib2 & MTK_FOE_IB2_PSE_QOS))
 		return;
-#endif
 
 	qid = FIELD_GET(MTK_FOE_IB2_QID, *ib2);
 	/* To enhance performance in the unbalanced PHY rate test,
@@ -1174,7 +1175,6 @@ int mtk_flow_offload_teardown_by_mac(struct mtk_ppe *ppe, u8 *mac)
 			tuple.dst_v4.s_addr = htonl(entry->ipv4.orig.dest_ip);
 		}
 
-		flow_offload_teardown_by_tuple(&tuple);
 		count++;
 
 		pr_info("mtk_ppe: the roamiing entry (%x) has been deleted\n", i);
