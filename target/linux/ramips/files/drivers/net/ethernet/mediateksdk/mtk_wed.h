@@ -8,18 +8,12 @@
 #include <linux/debugfs.h>
 #include <linux/regmap.h>
 #include <linux/netdevice.h>
-
-#include "mtk_wed_regs.h"
-
 #define MTK_PCIE_BASE(n)		(0x1a143000 + (n) * 0x2000)
 
-#define MTK_WED_PKT_SIZE		1920//1900
+#define MTK_WED_PKT_SIZE		1900
 #define MTK_WED_BUF_SIZE		2048
-#define MTK_WED_PAGE_BUF_SIZE		128
 #define MTK_WED_BUF_PER_PAGE		(PAGE_SIZE / 2048)
-#define MTK_WED_RX_PAGE_BUF_PER_PAGE	(PAGE_SIZE / 128)
 #define MTK_WED_RX_RING_SIZE		1536
-#define MTK_WED_RX_PG_BM_CNT		8192
 
 #define MTK_WED_TX_RING_SIZE		2048
 #define MTK_WED_WDMA_RING_SIZE		512
@@ -33,27 +27,12 @@
 #define MTK_WED_RRO_QUE_CNT		8192
 #define MTK_WED_MIOD_ENTRY_CNT		128
 
-#define MTK_WED_TX_BM_DMA_SIZE		65536
-#define MTK_WED_TX_BM_PKT_CNT		32768
-
 #define MTK_WED_MODULE_ID_WO		1
 
 struct mtk_eth;
 struct mtk_wed_wo;
 
-struct mtk_wed_soc_data {
-	struct {
-		u32 tx_bm_tkid;
-		u32 wpdma_rx_ring0;
-		u32 reset_idx_tx_mask;
-		u32 reset_idx_rx_mask;
-	} regmap;
-	u32 tx_ring_desc_size;
-	u32 wdma_desc_size;
-};
-
 struct mtk_wed_hw {
-	const struct mtk_wed_soc_data *soc;
 	struct device_node *node;
 	struct mtk_eth *eth;
 	struct regmap *regs;
@@ -65,15 +44,12 @@ struct mtk_wed_hw {
 	struct dentry *debugfs_dir;
 	struct mtk_wed_device *wed_dev;
 	struct mtk_wed_wo *wed_wo;
-	struct mtk_wed_amsdu *wed_amsdu;
-	u32 pci_base;
 	u32 debugfs_reg;
 	u32 num_flows;
 	u8 version;
 	char dirname[5];
 	int irq;
 	int index;
-	int token_id;
 };
 
 struct mtk_wdma_info {
@@ -81,41 +57,9 @@ struct mtk_wdma_info {
 	u8 queue;
 	u16 wcid;
 	u8 bss;
-	u32 usr_info;
-	u8 tid;
-	u8 is_fixedrate;
-	u8 is_prior;
-	u8 is_sp;
-	u8 hf;
-	u8 amsdu;
-};
-
-struct mtk_wed_amsdu {
-	void *txd;
-	dma_addr_t txd_phy;
 };
 
 #ifdef CONFIG_NET_MEDIATEK_SOC_WED
-static inline bool mtk_wed_is_v1(struct mtk_wed_hw *hw)
-{
-	return hw->version == 1;
-}
-
-static inline bool mtk_wed_is_v2(struct mtk_wed_hw *hw)
-{
-	return hw->version == 2;
-}
-
-static inline bool mtk_wed_is_v3(struct mtk_wed_hw *hw)
-{
-	return hw->version == 3;
-}
-
-static inline bool mtk_wed_is_v3_or_greater(struct mtk_wed_hw *hw)
-{
-	return hw->version > 2;
-}
-
 static inline void
 wed_w32(struct mtk_wed_device *dev, u32 reg, u32 val)
 {
@@ -208,21 +152,6 @@ wpdma_txfree_w32(struct mtk_wed_device *dev, u32 reg, u32 val)
 		return;
 
 	writel(val, dev->txfree_ring.wpdma + reg);
-}
-
-static inline u32 mtk_wed_get_pci_base(struct mtk_wed_device *dev)
-{
-	if (!mtk_wed_is_v3_or_greater(dev->hw))
-		return MTK_WED_PCIE_BASE;
-
-	switch (dev->hw->index) {
-	case 1:
-		return MTK_WED_PCIE_BASE1;
-	case 2:
-		return MTK_WED_PCIE_BASE2;
-	default:
-		return MTK_WED_PCIE_BASE0;
-	}
 }
 
 void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,

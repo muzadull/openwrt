@@ -88,7 +88,7 @@ woif_q_rx_fill(struct mtk_wed_wo *wo, struct wed_wo_queue *q, bool rx)
 		page = &q->rx_page;
 
 	while (q->queued < q->ndesc) {
-		buf = page_frag_alloc(page, len, GFP_ATOMIC | GFP_DMA32);
+		buf = page_frag_alloc(page, len, GFP_ATOMIC);
 		if (!buf)
 			break;
 
@@ -555,7 +555,7 @@ void mtk_wed_wo_exit(struct mtk_wed_hw *hw)
 
 	if (wo->exp.log) {
 		dma_unmap_single(wo->hw->dev, wo->exp.phys, wo->exp.log_size, DMA_FROM_DEVICE);
-		skb_free_frag(wo->exp.log);
+		kfree(wo->exp.log);
 	}
 
 	wo->hw = NULL;

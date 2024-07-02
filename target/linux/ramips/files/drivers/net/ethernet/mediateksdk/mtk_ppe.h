@@ -89,8 +89,8 @@ enum {
 #define MTK_FOE_IB2_DEST_PORT		GENMASK(7, 5)
 #define MTK_FOE_IB2_MULTICAST		BIT(8)
 
-#define MTK_FOE_IB2_MIB_CNT		BIT(10)
 #define MTK_FOE_IB2_WDMA_QID2		GENMASK(13, 12)
+#define MTK_FOE_IB2_MIB_CNT		BIT(15)
 #define MTK_FOE_IB2_WDMA_DEVIDX		BIT(16)
 #define MTK_FOE_IB2_WDMA_WINFO		BIT(17)
 
@@ -384,8 +384,6 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int versio
 			     int accounting);
 int mtk_ppe_start(struct mtk_ppe *ppe);
 int mtk_ppe_stop(struct mtk_ppe *ppe);
-int mtk_ppe_roaming_start(struct mtk_eth *eth);
-int mtk_ppe_roaming_stop(struct mtk_eth *eth);
 
 void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash);
 
@@ -430,7 +428,7 @@ int mtk_foe_entry_set_dsa(struct mtk_foe_entry *entry, int port);
 int mtk_foe_entry_set_vlan(struct mtk_foe_entry *entry, int vid);
 int mtk_foe_entry_set_pppoe(struct mtk_foe_entry *entry, int sid);
 int mtk_foe_entry_set_wdma(struct mtk_foe_entry *entry, int wdma_idx, int txq,
-			   int bss, int wcid, int tid, bool amsdu_en);
+			   int bss, int wcid);
 int mtk_foe_entry_set_qid(struct mtk_foe_entry *entry, int qid);
 int mtk_foe_entry_set_dscp(struct mtk_foe_entry *entry, int dscp);
 bool mtk_foe_entry_match(struct mtk_foe_entry *entry, struct mtk_foe_entry *data);

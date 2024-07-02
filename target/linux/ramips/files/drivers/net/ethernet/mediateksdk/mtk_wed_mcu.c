@@ -91,7 +91,7 @@ mtk_wed_mcu_msg_update(struct mtk_wed_device *dev, int id, void *data, int len)
 {
 	struct mtk_wed_wo *wo = dev->hw->wed_wo;
 
-	if (!mtk_wed_get_rx_capa(dev))
+	if (dev->hw->version == 1)
 		return 0;
 
 	if (WARN_ON(!wo))
@@ -145,7 +145,7 @@ int mtk_wed_exception_init(struct mtk_wed_wo *wo)
 	}req;
 
 	exp->log_size = EXCEPTION_LOG_SIZE;
-	exp->log = page_frag_alloc(&wo->page, exp->log_size, GFP_ATOMIC | GFP_DMA32);
+	exp->log = kmalloc(exp->log_size, GFP_ATOMIC);
 	if (!exp->log)
 		return -ENOMEM;
 
@@ -165,7 +165,7 @@ int mtk_wed_exception_init(struct mtk_wed_wo *wo)
 				    &req, sizeof(req), false);
 
 free:
-	skb_free_frag(exp->log);
+	kfree(exp->log);
 	return -ENOMEM;
 }
 
@@ -248,7 +248,7 @@ mtk_wed_load_firmware(struct mtk_wed_wo *wo)
 		u8 reserved1[15];
 	} __packed *region;
 
-	char *fw_name;
+	char *mcu;
 	const struct mtk_wed_fw_trailer *hdr;
 	static u8 shared[MAX_REGION_SIZE] = {0};
 	const struct firmware *fw;
@@ -256,24 +256,13 @@ mtk_wed_load_firmware(struct mtk_wed_wo *wo)
 	u32 ofs = 0;
 	u32 boot_cr, val;
 
-	switch (wo->hw->version) {
-	case 2:
-		if (of_device_is_compatible(wo->hw->node,
-					    "mediatek,mt7981-wed"))
-			fw_name = MT7981_FIRMWARE_WO;
-		else
-			fw_name = wo->hw->index ? MT7986_FIRMWARE_WO1
-						: MT7986_FIRMWARE_WO0;
-		break;
-	case 3:
-		fw_name = wo->hw->index ? MT7988_FIRMWARE_WO1
-					: MT7988_FIRMWARE_WO0;
-		break;
-	default:
-		return -EINVAL;
-	}
+	if (of_device_is_compatible(wo->hw->node, "mediatek,mt7981-wed"))
+		mcu = MT7981_FIRMWARE_WO;
+	else
+		mcu = wo->hw->index ? MT7986_FIRMWARE_WO_2 :
+				      MT7986_FIRMWARE_WO_1;
 
-	ret = request_firmware(&fw, fw_name, wo->hw->dev);
+	ret = request_firmware(&fw, mcu, wo->hw->dev);
 	if (ret)
 		return ret;
 
@@ -318,11 +307,8 @@ mtk_wed_load_firmware(struct mtk_wed_wo *wo)
 	}
 
 	/* write the start address */
-	if (!mtk_wed_is_v3_or_greater(wo->hw) && wo->hw->index)
-		boot_cr = WOX_MCU_CFG_LS_WA_BOOT_ADDR_ADDR;
-	else
-		boot_cr = WOX_MCU_CFG_LS_WM_BOOT_ADDR_ADDR;
-
+	boot_cr = wo->hw->index ?
+		WOX_MCU_CFG_LS_WA_BOOT_ADDR_ADDR : WOX_MCU_CFG_LS_WM_BOOT_ADDR_ADDR;
 	wo_w32(wo, boot_cr, (wo->region[WO_REGION_EMI].addr_pa >> 16));
 
 	/* wo firmware reset */
@@ -330,10 +316,8 @@ mtk_wed_load_firmware(struct mtk_wed_wo *wo)
 
 	val = wo_r32(wo, WOX_MCU_CFG_LS_WF_MCU_CFG_WM_WA_ADDR);
 
-	if (!mtk_wed_is_v3_or_greater(wo->hw) && wo->hw->index)
-		val |= WOX_MCU_CFG_LS_WF_MCU_CFG_WM_WA_WA_CPU_RSTB_MASK;
-	else
-		val |= WOX_MCU_CFG_LS_WF_MCU_CFG_WM_WA_WM_CPU_RSTB_MASK;
+	val |= wo->hw->index ? WOX_MCU_CFG_LS_WF_MCU_CFG_WM_WA_WA_CPU_RSTB_MASK :
+		WOX_MCU_CFG_LS_WF_MCU_CFG_WM_WA_WM_CPU_RSTB_MASK;
 
 	wo_w32(wo, WOX_MCU_CFG_LS_WF_MCU_CFG_WM_WA_ADDR, val);
 
