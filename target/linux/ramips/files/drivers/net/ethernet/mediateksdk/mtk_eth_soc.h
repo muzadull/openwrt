@@ -2094,8 +2094,6 @@ int mtk_toprgu_init(struct mtk_eth *eth, struct device_node *r);
 int mtk_eth_offload_init(struct mtk_eth *eth, int id);
 int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
 		     void *type_data);
-int mtk_eth_setup_tc_block(struct net_device *dev,
-			   struct mtk_eth *eth);
 void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev);
 u32 mtk_rss_indr_table(struct mtk_rss_params *rss_params, int index);
 
