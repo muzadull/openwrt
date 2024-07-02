@@ -685,7 +685,7 @@
 #define MTK_RXD4_FOE_ENTRY	GENMASK(13, 0)
 #define MTK_RXD4_PPE_CPU_REASON	GENMASK(18, 14)
 #define MTK_RXD4_SRC_PORT	GENMASK(21, 19)
-#define MTK_RXD4_ALG		GENMASK(31, 22
+#define MTK_RXD4_ALG		GENMASK(31, 22)
 
 /* QDMA descriptor rxd4 */
 #define MTK_RXD5_FOE_ENTRY_V2	GENMASK(14, 0)
@@ -1778,7 +1778,7 @@ struct mtk_soc_data {
 		u32	rx_dma_l4_valid;
 		u32	dma_max_len;
 		u32	dma_len_offset;
-		u32	qdma_tx_sch;		
+		u32	qdma_tx_sch;
 	} txrx;
 };
 
@@ -1979,14 +1979,10 @@ struct mtk_eth {
 	struct notifier_block		netdevice_notifier;
 	struct timer_list		mtk_dma_monitor_timer;
 
-	u8				debug_level;
 	u8				qos_toggle;
 	u8				ppe_num;
 	struct mtk_ppe			*ppe[MTK_MAX_PPE_NUM];
 	struct rhashtable		flow_table;
-	struct socket			*ppe_roam_sock;
-	struct work_struct		ppe_roam_work;
-	unsigned char			ppe_roam_buf[1024];
 };
 
 /* struct mtk_mac -	the structure that holds the info about the MACs of the
@@ -2002,7 +1998,6 @@ struct mtk_mac {
 	phy_interface_t			interface;
 	unsigned int			mode;
 	unsigned int			type;
-	unsigned int			ppe_idx;
 	int				speed;
 	struct device_node		*of_node;
 	struct phylink			*phylink;
@@ -2108,8 +2103,6 @@ int mtk_toprgu_init(struct mtk_eth *eth, struct device_node *r);
 int mtk_eth_offload_init(struct mtk_eth *eth, int id);
 int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
 		     void *type_data);
-int mtk_eth_fill_receive_path(struct net_device_path_ctx *ctx,
-			      struct net_device_path *path);
 void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev);
 u32 mtk_rss_indr_table(struct mtk_rss_params *rss_params, int index);
 

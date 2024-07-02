@@ -158,7 +158,7 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, struct mtk_ppe *ppe, bool bind)
 
 		seq_printf(m, " eth=%pM->%pM etype=%04x"
 			      " vlan=%d,%d ib1=%08x ib2=%08x"
-			      " packets=%lld bytes=%lld\n",
+				  " packets=%lld bytes=%lld\n",
 			   h_source, h_dest, ntohs(l2->etype),
 			   l2->vlan1, l2->vlan2, entry->ib1, ib2,
 			   acct->packets, acct->bytes
@@ -206,52 +206,6 @@ mtk_ppe_debugfs_foe_open_bind(struct inode *inode, struct file *file)
 			   inode->i_private);
 }
 
-static int
-mtk_ppe_debugfs_foe_show_debug(struct seq_file *m, void *private)
-{
-	struct mtk_eth *eth = m->private;
-
-	seq_printf(m, "PPE debug level=%d\n", eth->debug_level);
-
-	return 0;
-}
-
-static int
-mtk_ppe_debugfs_foe_open_debug(struct inode *inode, struct file *file)
-{
-	return single_open(file, mtk_ppe_debugfs_foe_show_debug,
-			   inode->i_private);
-}
-
-static ssize_t
-mtk_ppe_debugfs_foe_write_debug(struct file *file, const char __user *buf,
-				size_t count, loff_t *offset)
-{
-	struct seq_file *m = file->private_data;
-	struct mtk_eth *eth = (struct mtk_eth *)m->private;
-	char tmp[8] = {0};
-	u32 level;
-
-	if ((count > sizeof(tmp)))
-		return -EFAULT;
-
-	if (copy_from_user(tmp, buf, count))
-		return -EFAULT;
-
-	if (sscanf(tmp, "%d", &level) != 1)
-		return -EFAULT;
-
-	if (level < 0 || level > 7) {
-		pr_warn("The input debug level is invalid, "
-			"it should range from 0 to 7.\n");
-		return -EINVAL;
-	}
-
-	eth->debug_level = level;
-
-	return count;
-}
-
 int mtk_ppe_debugfs_init(struct mtk_eth *eth)
 {
 	static const struct file_operations fops_all = {
@@ -268,14 +222,6 @@ int mtk_ppe_debugfs_init(struct mtk_eth *eth)
 		.release = single_release,
 	};
 
-	static const struct file_operations fops_debug = {
-		.open = mtk_ppe_debugfs_foe_open_debug,
-		.read = seq_read,
-		.write = mtk_ppe_debugfs_foe_write_debug,
-		.llseek = seq_lseek,
-		.release = single_release,
-	};
-
 	struct dentry *root;
 
 	root = debugfs_create_dir("mtk_ppe", NULL);
@@ -284,7 +230,6 @@ int mtk_ppe_debugfs_init(struct mtk_eth *eth)
 
 	debugfs_create_file("entries", S_IRUGO, root, eth, &fops_all);
 	debugfs_create_file("bind", S_IRUGO, root, eth, &fops_bind);
-	debugfs_create_file("debug_level", S_IRUGO, root, eth, &fops_debug);
 
 	return 0;
 }

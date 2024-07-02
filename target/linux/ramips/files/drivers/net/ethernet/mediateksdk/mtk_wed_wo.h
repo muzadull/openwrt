@@ -193,7 +193,6 @@ struct mtk_wed_wo {
 	const struct wed_wo_drv_ops *drv_ops;
 	const struct wed_wo_mcu_ops *mcu_ops;
 	const struct wed_wo_queue_ops *queue_ops;
-	struct page_frag_cache page;
 
 	struct net_device napi_dev;
 	spinlock_t rx_lock;

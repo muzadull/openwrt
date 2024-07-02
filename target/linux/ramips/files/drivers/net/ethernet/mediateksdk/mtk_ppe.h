@@ -15,7 +15,7 @@
 #define MTK_MAX_PPE_NUM			2
 #define MTK_ETH_PPE_BASE		0x2000
 #else
-#define MTK_MAX_PPE_NUM			1
+#define MTK_MAX_PPE_NUM			1	
 #define MTK_ETH_PPE_BASE		0xc00
 #endif
 
@@ -362,7 +362,7 @@ struct mtk_ppe {
 	int id;
 	int accounting;
 
-	struct mtk_foe_entry *foe_table;
+	void *foe_table;
 	dma_addr_t foe_phys;
 
 	struct mtk_mib_entry *mib_table;
@@ -374,15 +374,13 @@ struct mtk_ppe {
 	struct rhashtable l2_flows;
 
 	void *acct_table;
-	void *acct_updated_table;	
+	void *acct_updated_table;
 };
 
 struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index);
 void mtk_ppe_deinit(struct mtk_eth *eth);
 int mtk_ppe_start(struct mtk_ppe *ppe);
 int mtk_ppe_stop(struct mtk_ppe *ppe);
-int mtk_ppe_roaming_start(struct mtk_eth *eth);
-int mtk_ppe_roaming_stop(struct mtk_eth *eth);
 
 void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash);
 
@@ -416,7 +414,7 @@ int mtk_foe_entry_set_dsa(struct mtk_foe_entry *entry, int port);
 int mtk_foe_entry_set_vlan(struct mtk_foe_entry *entry, int vid);
 int mtk_foe_entry_set_pppoe(struct mtk_foe_entry *entry, int sid);
 int mtk_foe_entry_set_wdma(struct mtk_foe_entry *entry, int wdma_idx, int txq,
-			   int bss, int wcid, int tid, bool amsdu_en);
+			   int bss, int wcid);
 int mtk_foe_entry_set_qid(struct mtk_foe_entry *entry, int qid);
 int mtk_foe_entry_set_dscp(struct mtk_foe_entry *entry, int dscp);
 bool mtk_foe_entry_match(struct mtk_foe_entry *entry, struct mtk_foe_entry *data);

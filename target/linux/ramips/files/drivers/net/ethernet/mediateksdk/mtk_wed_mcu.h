@@ -17,11 +17,8 @@
 #define WARP_ALREADY_DONE_STATUS (1)
 
 #define MT7981_FIRMWARE_WO		"mediatek/mt7981_wo.bin"
-#define MT7986_FIRMWARE_WO0		"mediatek/mt7986_wo_0.bin"
-#define MT7986_FIRMWARE_WO1		"mediatek/mt7986_wo_1.bin"
-#define MT7988_FIRMWARE_WO0		"mediatek/mtk_wo_0.bin"
-#define MT7988_FIRMWARE_WO1		"mediatek/mtk_wo_1.bin"
-#define MT7988_FIRMWARE_WO2		"mediatek/mtk_wo_2.bin"
+#define MT7986_FIRMWARE_WO_1		"mediatek/mt7986_wo_0.bin"
+#define MT7986_FIRMWARE_WO_2		"mediatek/mt7986_wo_1.bin"
 
 #define WOCPU_EMI_DEV_NODE		"mediatek,wocpu_emi"
 #define WOCPU_ILM_DEV_NODE		"mediatek,wocpu_ilm"

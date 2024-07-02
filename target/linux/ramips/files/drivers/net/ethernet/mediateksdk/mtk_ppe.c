@@ -9,8 +9,6 @@
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
 #include <net/dsa.h>
-#include <net/route.h>
-#include <net/netfilter/nf_flow_table.h>
 #include "mtk_eth_soc.h"
 #include "mtk_ppe.h"
 #include "mtk_ppe_regs.h"
@@ -98,8 +96,7 @@ int mtk_mib_entry_read(struct mtk_ppe *ppe, u16 index, u64 *bytes, u64 *packets)
 #else
         u32 val, cnt_r0, cnt_r1, cnt_r2;
 #endif
- 	u32 byte_cnt_low, byte_cnt_high, pkt_cnt_low, pkt_cnt_high;
-	
+	u32 byte_cnt_low, byte_cnt_high, pkt_cnt_low, pkt_cnt_high;
 
 	val = FIELD_PREP(MTK_PPE_MIB_SER_CR_ADDR, index) | MTK_PPE_MIB_SER_CR_ST;
 	ppe_w32(ppe, MTK_PPE_MIB_SER_CR, val);
@@ -121,14 +118,13 @@ int mtk_mib_entry_read(struct mtk_ppe *ppe, u16 index, u64 *bytes, u64 *packets)
 	*bytes = ((u64)byte_cnt_high << 32) | byte_cnt_low;
 	*packets = ((u64)pkt_cnt_high << 32) | pkt_cnt_low;
 #else
-
 	byte_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R0_BYTE_CNT_LOW, cnt_r0);
 	byte_cnt_high = FIELD_GET(MTK_PPE_MIB_SER_R1_BYTE_CNT_HIGH, cnt_r1);
 	pkt_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R1_PKT_CNT_LOW, cnt_r1);
 	pkt_cnt_high = FIELD_GET(MTK_PPE_MIB_SER_R2_PKT_CNT_HIGH, cnt_r2);
 	*bytes = ((u64)byte_cnt_high << 32) | byte_cnt_low;
 	*packets = (pkt_cnt_high << 16) | pkt_cnt_low;
-#endif	
+#endif
 
 	return 0;
 }
@@ -415,7 +411,7 @@ int mtk_foe_entry_set_pppoe(struct mtk_foe_entry *entry, int sid)
 }
 
 int mtk_foe_entry_set_wdma(struct mtk_foe_entry *entry, int wdma_idx, int txq,
-			   int bss, int wcid, int tid, bool amsdu_en)
+			   int bss, int wcid)
 {
 	struct mtk_foe_mac_info *l2 = mtk_foe_entry_l2(entry);
 	u32 *ib2 = mtk_foe_entry_ib2(entry);
@@ -427,11 +423,6 @@ int mtk_foe_entry_set_wdma(struct mtk_foe_entry *entry, int wdma_idx, int txq,
 
 	l2->winfo = FIELD_PREP(MTK_FOE_WINFO_WCID, wcid) |
 		    FIELD_PREP(MTK_FOE_WINFO_BSS, bss);
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
-	l2->winfo_pao = FIELD_PREP(MTK_FOE_WINFO_PAO_AMSDU_EN, amsdu_en);
-	if (amsdu_en)
-		l2->winfo_pao |= FIELD_PREP(MTK_FOE_WINFO_PAO_TID, tid);
-#endif
 #else
 	if (wdma_idx)
 		*ib2 |= MTK_FOE_IB2_WDMA_DEVIDX;
@@ -448,42 +439,19 @@ int mtk_foe_entry_set_qid(struct mtk_foe_entry *entry, int qid)
 {
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 	struct mtk_foe_mac_info *l2 = mtk_foe_entry_l2(entry);
-#endif
 	u32 *ib2 = mtk_foe_entry_ib2(entry);
 
 	*ib2 &= ~MTK_FOE_IB2_QID;
 	*ib2 |= FIELD_PREP(MTK_FOE_IB2_QID, qid);
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
 	l2->tport_id = 1;
-#endif
+#else
+	u32 *ib2 = mtk_foe_entry_ib2(entry);
+	*ib2 &= ~MTK_FOE_IB2_QID;
+	*ib2 |= FIELD_PREP(MTK_FOE_IB2_QID, qid);
 	*ib2 |= MTK_FOE_IB2_PSE_QOS;
+#endif
 
 	return 0;
-}
-
-void mtk_foe_entry_adjust_qid(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
-{
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
-	struct mtk_foe_mac_info *l2 = mtk_foe_entry_l2(&entry->data);
-#endif	
-	u32 *ib2 = mtk_foe_entry_ib2(&entry->data);
-	u8 qid;
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
-	if (l2->tport_id != 1)
-		return;
-#endif
-	if (!(*ib2 & MTK_FOE_IB2_PSE_QOS))
-		return;
-
-	qid = FIELD_GET(MTK_FOE_IB2_QID, *ib2);
-	/* To enhance performance in the unbalanced PHY rate test,
-	 * dispatching short packets to the high priority TXQ.
-	 */
-	if (ppe->eth->qos_toggle == 2 && qid < 6) {
-		qid += 6;
-		*ib2 &= ~MTK_FOE_IB2_QID;
-		*ib2 |= FIELD_PREP(MTK_FOE_IB2_QID, qid);
-	}
 }
 
 int mtk_foe_entry_set_dscp(struct mtk_foe_entry *entry, int dscp)
@@ -516,28 +484,6 @@ bool mtk_foe_entry_match(struct mtk_foe_entry *entry, struct mtk_foe_entry *data
 		len = offsetof(struct mtk_foe_entry, ipv4.ib2);
 
 	return !memcmp(&entry->data, &data->data, len - 4);
-}
-
-static bool mtk_foe_mac_match(struct mtk_foe_entry *entry, u8 *mac)
-{
-	int type;
-
-	type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->ib1);
-	if (type > MTK_PPE_PKT_TYPE_IPV4_DSLITE) {
-		if(((swab32(entry->ipv6.l2.dest_mac_hi) == *(u32 *)mac) &&
-		    (swab16(entry->ipv6.l2.dest_mac_lo) == *(u16 *)&mac[4])) ||
-		   ((swab32(entry->ipv6.l2.src_mac_hi) == *(u32 *)mac) &&
-		    (swab16(entry->ipv6.l2.src_mac_lo) == *(u16 *)&mac[4])))
-			return true;
-	} else {
-		if(((swab32(entry->ipv4.l2.dest_mac_hi) == *(u32 *)mac) &&
-		    (swab16(entry->ipv4.l2.dest_mac_lo) == *(u16 *)&mac[4])) ||
-		   ((swab32(entry->ipv4.l2.src_mac_hi) == *(u32 *)mac) &&
-		    (swab16(entry->ipv4.l2.src_mac_lo) == *(u16 *)&mac[4])))
-			return true;
-	}
-
-	return false;
 }
 
 int mtk_foe_entry_set_sp(struct mtk_ppe *ppe, struct mtk_foe_entry *entry)
@@ -614,7 +560,7 @@ __mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
 			acct_updated = ppe->acct_updated_table + entry->hash * sizeof(*acct_updated);
 			acct_updated->packets = 0;
 			acct_updated->bytes = 0;
-		}
+		}		
 	}
 	entry->hash = 0xffff;
 
@@ -717,7 +663,7 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
 	memcpy(&hwe->data, &entry->data, eth->soc->foe_entry_size - sizeof(hwe->ib1));
 	wmb();
 	hwe->ib1 = entry->ib1;
-	
+
 	if (ppe->accounting) {
 		int type;
 
@@ -726,7 +672,7 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
 			hwe->ipv6.ib2 |= MTK_FOE_IB2_MIB_CNT;
 		else
 			hwe->ipv4.ib2 |= MTK_FOE_IB2_MIB_CNT;
-	}	
+	}
 
 	dma_wmb();
 
@@ -843,9 +789,6 @@ void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
 			continue;
 		}
 
-		if (skb && skb->len < 100)
-			mtk_foe_entry_adjust_qid(ppe, entry);
-
 		entry->hash = hash;
 		__mtk_foe_entry_commit(ppe, &entry->data, hash);
 		found = true;
@@ -930,7 +873,7 @@ struct mtk_foe_accounting *mtk_foe_entry_get_mib(struct mtk_ppe *ppe, u32 index,
 
 struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index)
 {
-	bool accounting = eth->soc->has_accounting;	
+	bool accounting = eth->soc->has_accounting;
 	const struct mtk_soc_data *soc = eth->soc;
 	struct device *dev = eth->dev;
 	struct mtk_foe_entry *foe;
@@ -955,9 +898,9 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index)
 	ppe->id = index;
 	ppe->accounting = accounting;
 
- 	foe = dmam_alloc_coherent(ppe->dev, MTK_PPE_ENTRIES * sizeof(*foe),
- 				  &ppe->foe_phys, GFP_KERNEL);
-
+	foe = dmam_alloc_coherent(ppe->dev,
+				  MTK_PPE_ENTRIES * soc->foe_entry_size,
+				  &ppe->foe_phys, GFP_KERNEL);
 	if (!foe)
 		goto err_free_l2_flows;
 
@@ -968,7 +911,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index)
 	ppe->foe_flow = devm_kzalloc(dev, foe_flow_size, GFP_KERNEL);
 	if (!ppe->foe_flow)
 		goto err_free_l2_flows;
-	
+
 	if (accounting) {
 		mib = dmam_alloc_coherent(ppe->dev, MTK_PPE_ENTRIES * sizeof(*mib),
 				  &ppe->mib_phys, GFP_KERNEL);
@@ -992,7 +935,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index)
 			return NULL;
 
 		ppe->acct_updated_table = acct_updated;
-	}	
+	}
 
 	return ppe;
 
@@ -1004,12 +947,13 @@ err_free_l2_flows:
 void mtk_ppe_deinit(struct mtk_eth *eth)
 {
 	int i;
-
+	
 	for (i = 0; i < ARRAY_SIZE(eth->ppe); i++) {
 		if (!eth->ppe[i])
 			return;
 		rhashtable_destroy(&eth->ppe[i]->l2_flows);
 	}
+
 }
 
 static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
@@ -1163,153 +1107,6 @@ int mtk_ppe_stop(struct mtk_ppe *ppe)
 	/* disable offload engine */
 	ppe_clear(ppe, MTK_PPE_GLO_CFG, MTK_PPE_GLO_CFG_EN);
 	ppe_w32(ppe, MTK_PPE_FLOW_CFG, 0);
-
-	return 0;
-}
-
-int mtk_flow_offload_teardown_by_mac(struct mtk_ppe *ppe, u8 *mac)
-{
-	struct mtk_eth *eth = ppe->eth;
-	int i, j, count = 0;
-
-	for (i = 0; i < MTK_PPE_ENTRIES; i++) {
-		struct mtk_foe_entry *entry = mtk_foe_get_entry(ppe, i);
-		struct flow_offload_tuple tuple;
-		int type, state;
-
-		state = FIELD_GET(MTK_FOE_IB1_STATE, entry->ib1);
-		if (state != MTK_FOE_STATE_BIND || !mtk_foe_mac_match(entry, mac))
-			continue;
-
-		memset(&tuple, 0, sizeof(tuple));
-
-		if (entry->ib1 & MTK_FOE_IB1_UDP)
-			tuple.l4proto = IPPROTO_UDP;
-		else
-			tuple.l4proto = IPPROTO_TCP;
-
-		type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->ib1);
-		if (type > MTK_PPE_PKT_TYPE_IPV4_DSLITE) {
-			tuple.l3proto = NFPROTO_IPV6;
-			tuple.src_port = htons(entry->ipv6.src_port);
-			tuple.dst_port = htons(entry->ipv6.dest_port);
-			for (j = 0; j < 4; j ++) {
-				tuple.src_v6.s6_addr32[j] = htonl(entry->ipv6.src_ip[j]);
-				tuple.dst_v6.s6_addr32[j] = htonl(entry->ipv6.dest_ip[j]);
-			}
-		} else {
-			tuple.l3proto = NFPROTO_IPV4;
-			tuple.src_port = htons(entry->ipv4.orig.src_port);
-			tuple.dst_port = htons(entry->ipv4.orig.dest_port);
-			tuple.src_v4.s_addr = htonl(entry->ipv4.orig.src_ip);
-			tuple.dst_v4.s_addr = htonl(entry->ipv4.orig.dest_ip);
-		}
-
-		count++;
-
-		pr_info("mtk_ppe: the roamiing entry (%x) has been deleted\n", i);
-	}
-
-	if (!count && eth->debug_level >= 4)
-		pr_warn("mtk_ppe: the roaming entry was not found in the PPE(%d)\n", ppe->id);
-
-	return count;
-}
-
-static void mtk_ppe_roam_handler(struct work_struct *work)
-{
-	struct mtk_eth *eth = container_of(work, struct mtk_eth, ppe_roam_work);
-	struct kvec iov;
-	struct msghdr msg;
-	struct nlmsghdr *nlh;
-	struct ndmsg *ndm;
-	struct nlattr *nla;
-	int len, ifindex, i;
-	u8 mac[ETH_ALEN];
-
-	if (!eth->ppe_roam_sock)
-		return;
-
-	iov.iov_base = eth->ppe_roam_buf;
-	iov.iov_len = sizeof(eth->ppe_roam_buf);
-	memset(&msg, 0, sizeof(msg));
-	msg.msg_namelen = sizeof(struct sockaddr_nl);
-
-	len = kernel_recvmsg(eth->ppe_roam_sock, &msg, &iov, 1, iov.iov_len, 0);
-	if (len <= 0)
-		goto out;
-
-	nlh = (struct nlmsghdr*)eth->ppe_roam_buf;
-	if (!NLMSG_OK(nlh, len) || nlh->nlmsg_type != RTM_NEWNEIGH)
-		goto out;
-
-	len = nlh->nlmsg_len - NLMSG_HDRLEN;
-	ndm = (struct ndmsg *)NLMSG_DATA(nlh);
-	if (ndm->ndm_family != PF_BRIDGE)
-		goto out;
-
-	ifindex = ndm->ndm_ifindex;
-	nla = (struct nlattr *)((unsigned char *)ndm + sizeof(struct ndmsg));
-	len -= NLMSG_LENGTH(sizeof(struct ndmsg));
-	while (nla_ok(nla, len)) {
-		if (nla_type(nla) == NDA_LLADDR) {
-			memcpy(mac, nla_data(nla), ETH_ALEN);
-			for (i = 0; i < eth->ppe_num; i++)
-				mtk_flow_offload_teardown_by_mac(eth->ppe[i], mac);
-			if (eth->debug_level >= 6)
-				pr_info("mtk_ppe: the neighbor (%pM) has been updated\n", mac);
-		}
-		nla = nla_next(nla, &len);
-	}
-
-out:
-	schedule_work(&eth->ppe_roam_work);
-}
-
-int mtk_ppe_roaming_start(struct mtk_eth *eth)
-{
-	struct socket *sock = NULL;
-	struct sockaddr_nl addr;
-	int ret;
-
-	INIT_WORK(&eth->ppe_roam_work, mtk_ppe_roam_handler);
-
-	ret = sock_create_kern(&init_net, AF_NETLINK, SOCK_RAW, NETLINK_ROUTE, &sock);
-	if (ret < 0)
-		goto out;
-
-	eth->ppe_roam_sock = sock;
-
-	addr.nl_family = AF_NETLINK;
-	addr.nl_pad = 0;
-	addr.nl_pid = 65534;
-	addr.nl_groups = 1 << (RTNLGRP_NEIGH - 1);
-	ret = kernel_bind(sock, (struct sockaddr *)&addr, sizeof(addr));
-	if (ret < 0)
-		goto out;
-
-	schedule_work(&eth->ppe_roam_work);
-
-	pr_info("mtk_ppe: roaming work has been activated\n");
-
-	return 0;
-
-out:
-	if (sock)
-		sock_release(sock);
-
-	return ret;
-}
-
-int mtk_ppe_roaming_stop(struct mtk_eth *eth)
-{
-	if (!eth->ppe_roam_sock)
-		return -ENOENT;
-
-	sock_release(eth->ppe_roam_sock);
-	eth->ppe_roam_sock = NULL;
-
-	pr_info("mtk_ppe: roaming work has been deactivated\n");
 
 	return 0;
 }

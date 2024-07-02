@@ -2212,7 +2212,6 @@ static const struct proc_ops reset_event_fops = {
 	.proc_release = single_release
 };
 
-
 struct proc_dir_entry *proc_reg_dir;
 static struct proc_dir_entry *proc_esw_cnt, *proc_xfi_cnt,
 			     *proc_dbg_regs, *proc_reset_event;

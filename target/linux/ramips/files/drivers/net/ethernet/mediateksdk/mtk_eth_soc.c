@@ -2324,6 +2324,7 @@ static int mtk_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct netdev_queue *txq;
 	bool gso = false;
 	int tx_num;
+	int i = 0;
 	int qid = skb_get_queue_mapping(skb);
 
 	/* normally we can rely on the stack not calling this more than once,
@@ -2406,7 +2407,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 	u8 *data, *new_data;
 	struct mtk_rx_dma_v2 *rxd, trxd;
 	int done = 0;
-	int i;
 
 	if (unlikely(!ring))
 		goto rx_done;
@@ -2517,10 +2517,8 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 			skb_set_hash(skb, jhash_1word(hash, 0), PKT_HASH_TYPE_L4);
 #endif
 
-		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED) {
-			i = eth->mac[mac]->ppe_idx;
-			mtk_ppe_check_skb(eth->ppe[i], skb, hash);
-		}
+		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
+			mtk_ppe_check_skb(eth->ppe[0], skb, hash);
 
 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_RX_V2)) {
@@ -3876,6 +3874,7 @@ static irqreturn_t mtk_handle_irq_txrx(int irq, void *priv)
 	struct mtk_eth *eth = txrx_napi->eth;
 	struct mtk_tx_ring *tx_ring = txrx_napi->tx_ring;
 	struct mtk_rx_ring *rx_ring = txrx_napi->rx_ring;
+	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 
 	if (tx_ring) {
 		if (unlikely(!(mtk_r32(eth, eth->soc->reg_map->pdma.irq_status) &
@@ -4147,7 +4146,7 @@ static int mtk_open(struct net_device *dev)
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	struct mtk_phylink_priv *phylink_priv = &mac->phylink_priv;
-	u32 gdm_config = MTK_GDMA_TO_PDMA;	
+	u32 gdm_config = MTK_GDMA_TO_PDMA;
 	int err, i;
 
 	if (unlikely(!is_valid_ether_addr(dev->perm_addr))) {
@@ -4168,12 +4167,6 @@ static int mtk_open(struct net_device *dev)
 		if (err)
 			return err;
 
-		if (eth->soc->offload_version) {
-			err = mtk_ppe_roaming_start(eth);
-			if (err)
-				netdev_err(dev, "%s: could not start ppe roaming work: %d\n",
-					   __func__, err);
-		}
 
 		/* Indicates CDM to parse the MTK special tag from CPU */
 		if (netdev_uses_dsa(dev)) {
@@ -4245,19 +4238,7 @@ static int mtk_open(struct net_device *dev)
 	netif_tx_start_all_queues(dev);
 
 	if (eth->soc->offload_version) {
-#if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
-		if (eth->ppe_num >= 3 && mac->id == 2) {
-			mac->ppe_idx = 2;
-			gdm_config = MTK_GDMA_TO_PPE2;
-		} else if (eth->ppe_num >= 2 && mac->id == 1) {
-			mac->ppe_idx = 1;
-			gdm_config = MTK_GDMA_TO_PPE1;
-		} else
-#endif
-		{
-			mac->ppe_idx = 0;
-			gdm_config = MTK_GDMA_TO_PPE0;
-		}
+		gdm_config = MTK_GDMA_TO_PPE0;
 
 		for (i = 0; i < eth->ppe_num; i++)
 			mtk_ppe_start(eth->ppe[i]);
@@ -4346,8 +4327,6 @@ static int mtk_stop(struct net_device *dev)
 	if (eth->soc->offload_version) {
 		for (i = 0; i < eth->ppe_num; i++)
 			mtk_ppe_stop(eth->ppe[i]);
-
-		mtk_ppe_roaming_stop(eth);
 	}
 
 	return 0;
@@ -5293,7 +5272,6 @@ static const struct net_device_ops mtk_netdev_ops = {
 	.ndo_poll_controller	= mtk_poll_controller,
 #endif
 	.ndo_setup_tc		= mtk_eth_setup_tc,
-	.ndo_fill_receive_path	= mtk_eth_fill_receive_path,
 };
 
 static void mux_poll(struct work_struct *work)

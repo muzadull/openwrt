@@ -88,7 +88,7 @@ mtk_flow_offload_mangle_eth(const struct flow_action_entry *act, void *eth)
 }
 
 static int
-mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_info *info, int dscp)
+mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_info *info)
 {
 	struct net_device_path_ctx ctx = {
 		.dev = dev,
@@ -102,9 +102,6 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
 		return -1;
 
 	memcpy(ctx.daddr, addr, sizeof(ctx.daddr));
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
-	path.mtk_wdma.tid = dscp;
-#endif	
 	if (dev->netdev_ops->ndo_fill_forward_path(&ctx, &path))
 		return -1;
 
@@ -115,13 +112,10 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
 	info->queue = path.mtk_wdma.queue;
 	info->bss = path.mtk_wdma.bss;
 	info->wcid = path.mtk_wdma.wcid;
-	info->amsdu = path.mtk_wdma.amsdu;
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
-	info->tid = path.mtk_wdma.tid;
-#endif	
 
 	return 0;
 }
+
 
 static int
 mtk_flow_mangle_ports(const struct flow_action_entry *act,
@@ -197,17 +191,15 @@ mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
 	struct mtk_wdma_info info = {};
 	int pse_port, dsa_port;
 
-	if (mtk_flow_get_wdma_info(dev, dest_mac, &info, dscp) == 0) {
+	if (mtk_flow_get_wdma_info(dev, dest_mac, &info) == 0) {
 		mtk_foe_entry_set_wdma(foe, info.wdma_idx, info.queue, info.bss,
-				       info.wcid, info.tid, info.amsdu);
+				       info.wcid);
 		pse_port = PSE_PPE0_PORT;
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 		if (info.wdma_idx == 0)
 			pse_port = PSE_WDMA0_PORT;
 		else if (info.wdma_idx == 1)
 			pse_port = PSE_WDMA1_PORT;
-		else if (info.wdma_idx == 2)
-			pse_port = PSE_WDMA2_PORT;
 		else
 			return -EOPNOTSUPP;
 #endif
@@ -699,16 +691,6 @@ int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
 	default:
 		return -EOPNOTSUPP;
 	}
-}
-
-int mtk_eth_fill_receive_path(struct net_device_path_ctx *ctx,
-			      struct net_device_path *path)
-{
-	struct mtk_mac *mac = netdev_priv(ctx->dev);
-
-	path->mtk_wdma.wdma_idx = mac->ppe_idx;
-
-	return 0;
 }
 
 int mtk_eth_offload_init(struct mtk_eth *eth, int id)
