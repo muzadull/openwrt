@@ -78,7 +78,7 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, struct mtk_ppe *ppe, bool bind)
 	int i;
 
 	for (i = 0; i < MTK_PPE_ENTRIES; i++) {
-		struct mtk_foe_entry *entry = mtk_foe_get_entry(ppe, i);
+		struct mtk_foe_entry *entry = &ppe->foe_table[i];
 		struct mtk_foe_mac_info *l2;
 		struct mtk_flow_addr_info ai = {};
 		struct mtk_foe_accounting *acct;
@@ -94,7 +94,7 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, struct mtk_ppe *ppe, bool bind)
 
 		if (bind && state != MTK_FOE_STATE_BIND)
 			continue;
-		
+
 		acct = mtk_foe_entry_get_mib(ppe, i, NULL);
 
 		type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->ib1);

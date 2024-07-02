@@ -25,7 +25,6 @@
 
 #define MTK_WED_AMSDU_BUF_SIZE		(PAGE_SIZE << 4)
 #define MTK_WED_AMSDU_NPAGES		32
-#define MTK_WDMA_GLO_CFG		0x204
 
 static struct mtk_wed_hw *hw_list[3];
 static DEFINE_MUTEX(hw_lock);
@@ -667,7 +666,7 @@ mtk_wed_tx_buffer_alloc(struct mtk_wed_device *dev)
 							   MTK_WED_BUF_SIZE - txd_size);
 				desc->info = 0;
 			} else {
-				ctrl = token << 16 | TX_DMA_PREP_ADDR64(buf_phys);
+				ctrl = token << 16 | TX_DMA_SDP1(buf_phys);
 			}
 			desc->ctrl = cpu_to_le32(ctrl);
 
@@ -771,7 +770,7 @@ mtk_wed_hwrro_buffer_alloc(struct mtk_wed_device *dev)
 		buf_phys = page_phys;
 		for (s = 0; s < MTK_WED_RX_PAGE_BUF_PER_PAGE; s++) {
 			desc->buf0 = cpu_to_le32(buf_phys);
-			desc->token = cpu_to_le32(RX_DMA_PREP_ADDR64(buf_phys));
+			desc->token = cpu_to_le32(RX_DMA_SDP1(buf_phys));
 			desc++;
 			buf += MTK_WED_PAGE_BUF_SIZE;
 			buf_phys += MTK_WED_PAGE_BUF_SIZE;
@@ -1659,8 +1658,8 @@ mtk_wed_rx_reset(struct mtk_wed_device *dev)
 	/* reset tx wdma drv */
 	wed_clr(dev, MTK_WED_WDMA_GLO_CFG, MTK_WED_WDMA_GLO_CFG_TX_DRV_EN);
 	if (mtk_wed_is_v3_or_greater(dev->hw))
-		mtk_wed_poll_busy(dev, MTK_WED_WDMA_STATUS,
-				  MTK_WED_WDMA_STATUS_TX_DRV);
+		mtk_wed_poll_busy(dev, MTK_WED_WPDMA_STATUS,
+				  MTK_WED_WPDMA_STATUS_TX_DRV);
 	else
 		mtk_wed_poll_busy(dev, MTK_WED_CTRL,
 				  MTK_WED_CTRL_WDMA_INT_AGENT_BUSY);

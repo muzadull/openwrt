@@ -264,10 +264,6 @@ struct mtk_foe_ipv6_6rd {
 	struct mtk_foe_mac_info l2;
 };
 
-#define MTK_FOE_ENTRY_V1_SIZE	80
-#define MTK_FOE_ENTRY_V2_SIZE	96
-#define MTK_FOE_ENTRY_V3_SIZE	128
-
 struct mtk_foe_entry {
 	u32 ib1;
 
@@ -277,7 +273,13 @@ struct mtk_foe_entry {
 		struct mtk_foe_ipv4_dslite dslite;
 		struct mtk_foe_ipv6 ipv6;
 		struct mtk_foe_ipv6_6rd ipv6_6rd;
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
 		u32 data[31];
+#elif defined(CONFIG_MEDIATEK_NETSYS_V2)
+		u32 data[23];
+#else
+		u32 data[19];
+#endif
 	};
 };
 
@@ -360,6 +362,7 @@ struct mtk_ppe {
 	void __iomem *base;
 	int version;
 	int id;
+	int way;
 	int accounting;
 
 	struct mtk_foe_entry *foe_table;
@@ -374,11 +377,11 @@ struct mtk_ppe {
 	struct rhashtable l2_flows;
 
 	void *acct_table;
-	void *acct_updated_table;	
+	void *acct_updated_table;
 };
 
-struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index);
-void mtk_ppe_deinit(struct mtk_eth *eth);
+struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int version, int way, int id,
+			     int accounting);
 int mtk_ppe_start(struct mtk_ppe *ppe);
 int mtk_ppe_stop(struct mtk_ppe *ppe);
 int mtk_ppe_roaming_start(struct mtk_eth *eth);
@@ -403,6 +406,17 @@ mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
 	__mtk_ppe_check_skb(ppe, skb, hash);
 }
 
+static inline int
+mtk_foe_entry_timestamp(struct mtk_ppe *ppe, u16 hash)
+{
+	u32 ib1 = READ_ONCE(ppe->foe_table[hash].ib1);
+
+	if (FIELD_GET(MTK_FOE_IB1_STATE, ib1) != MTK_FOE_STATE_BIND)
+		return -1;
+
+	return FIELD_GET(MTK_FOE_IB1_BIND_TIMESTAMP, ib1);
+}
+
 int mtk_foe_entry_prepare(struct mtk_foe_entry *entry, int type, int l4proto,
 			  u8 pse_port, u8 *src_mac, u8 *dest_mac);
 int mtk_foe_entry_set_pse_port(struct mtk_foe_entry *entry, u8 port);
@@ -425,6 +439,6 @@ int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
 void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
 int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
 struct mtk_foe_accounting *mtk_foe_entry_get_mib(struct mtk_ppe *ppe, u32 index, struct mtk_foe_accounting *diff);
-u32 mtk_ppe_hash_entry(struct mtk_eth *eth, struct mtk_foe_entry *e);
+u32 mtk_ppe_hash_entry(struct mtk_ppe *ppe, struct mtk_foe_entry *e);
 
 #endif

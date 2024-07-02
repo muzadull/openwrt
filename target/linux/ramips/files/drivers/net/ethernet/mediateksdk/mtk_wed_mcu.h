@@ -30,7 +30,7 @@
 #define WOCPU_BOOT_DEV_NODE		"mediatek,wocpu_boot"
 
 #define FW_DL_TIMEOUT		((3000 * HZ) / 1000)
-#define WOCPU_TIMEOUT		2000000
+#define WOCPU_TIMEOUT		((1000 * HZ) / 1000)
 
 #define MAX_REGION_SIZE	3
 

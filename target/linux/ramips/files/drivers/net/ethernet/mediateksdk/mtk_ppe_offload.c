@@ -102,9 +102,7 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
 		return -1;
 
 	memcpy(ctx.daddr, addr, sizeof(ctx.daddr));
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
 	path.mtk_wdma.tid = dscp;
-#endif	
 	if (dev->netdev_ops->ndo_fill_forward_path(&ctx, &path))
 		return -1;
 
@@ -116,12 +114,11 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
 	info->bss = path.mtk_wdma.bss;
 	info->wcid = path.mtk_wdma.wcid;
 	info->amsdu = path.mtk_wdma.amsdu;
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)	
 	info->tid = path.mtk_wdma.tid;
-#endif	
 
 	return 0;
 }
+
 
 static int
 mtk_flow_mangle_ports(const struct flow_action_entry *act,
@@ -192,7 +189,7 @@ mtk_flow_get_dsa_port(struct net_device **dev)
 static int
 mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
 			   struct net_device *dev, struct nf_conn *ct, const u8 *dest_mac,
-			   int *wed_index, int dscp)
+			   int *wed_index)
 {
 	struct mtk_wdma_info info = {};
 	int pse_port, dsa_port;
@@ -232,8 +229,6 @@ mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
 		return -EOPNOTSUPP;
 
 out:
-	mtk_foe_entry_set_dscp(foe, dscp);
-
 	if (eth->qos_toggle == 1 || (ct->mark & MTK_QDMA_TX_MASK) >= 6) {
 		u8 qos_ul_toggle;
 
@@ -493,10 +488,12 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
 	if (data.pppoe.num == 1)
 		mtk_foe_entry_set_pppoe(&foe, data.pppoe.sid);
 
+	mtk_foe_entry_set_dscp(&foe, dscp);
+
 	mtk_foe_entry_set_sp(eth->ppe[ppe_index], &foe);
 
 	err = mtk_flow_set_output_device(eth, &foe, odev, f->flow->ct, data.eth.h_dest,
-					 &wed_index, dscp);
+					 &wed_index);
 	if (err)
 		return err;
 
