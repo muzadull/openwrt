@@ -465,17 +465,17 @@ void mtk_foe_entry_adjust_qid(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
 {
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)	
 	struct mtk_foe_mac_info *l2 = mtk_foe_entry_l2(&entry->data);
-#endif
+#else
 	u32 *ib2 = mtk_foe_entry_ib2(&entry->data);
 	u8 qid;
-
+#endif
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 	if (l2->tport_id != 1)
 		return;
-#endif
+#else
 	if (!(*ib2 & MTK_FOE_IB2_PSE_QOS))
 		return;
-
+#endif
 	qid = FIELD_GET(MTK_FOE_IB2_QID, *ib2);
 	/* To enhance performance in the unbalanced PHY rate test,
 	 * dispatching short packets to the high priority TXQ.
