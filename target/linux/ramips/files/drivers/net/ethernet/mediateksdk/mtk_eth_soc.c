@@ -4119,10 +4119,6 @@ static int mtk_open(struct net_device *dev)
 
 	phylink_start(mac->phylink);
 	netif_tx_start_all_queues(dev);
-	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
-	if (!phy_node && eth->sgmii->pcs[id].regmap)
-		regmap_write(eth->sgmii->pcs[id].regmap,
-			     SGMSYS_QPHY_PWR_STATE_CTRL, 0);
 
 	if (eth->soc->offload_version) {
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
