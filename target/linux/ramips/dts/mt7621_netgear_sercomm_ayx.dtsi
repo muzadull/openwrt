@@ -115,9 +115,7 @@
     };
 };
 
-
 &switch0 {
-    /delete-property/ compatible;
     status = "disabled";
 };	
 
