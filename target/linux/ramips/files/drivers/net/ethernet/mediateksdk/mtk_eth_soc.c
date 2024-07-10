@@ -6088,9 +6088,6 @@ static int mtk_probe(struct platform_device *pdev)
 	eth->mtk_dma_monitor_timer.expires = jiffies;
 	add_timer(&eth->mtk_dma_monitor_timer);
 #endif
- 
-	mtk_w32(eth, 0x00000404, MTK_QTX_CFG(MTK_QDMA_GMAC2_QID));
-	mtk_w32(eth, 0x40000000, MTK_QTX_SCH(MTK_QDMA_GMAC2_QID));
 
 	return 0;
 
