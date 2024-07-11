@@ -2399,14 +2399,17 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 				case PSE_GDM3_PORT:
 					mac = MTK_GMAC3_ID;
 					break;
-				}
-			} else
-				mac = (trxd.rxd4 & RX_DMA_SPECIAL_TAG) ?
-				      0 : RX_DMA_GET_SPORT(trxd.rxd4) - 1;
-		}
-
-		if (mac == 5)
-			mac = 0;
+			        }
+		} else {
+                         if (mac == 5)
+                             mac = 0;
+                         if (trxd.rxd4 & RX_DMA_SPECIAL_TAG)
+                             mac = 0;
+                         else {
+                             mac = (RX_DMA_GET_SPORT(trxd.rxd4) - 1);
+                        }
+            	    }
+                }
 
 		if (unlikely(mac < 0 || mac >= MTK_MAC_COUNT ||
 			     !eth->netdev[mac]))
