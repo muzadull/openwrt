@@ -104,7 +104,7 @@ int ingress_rate_set(int on_off, unsigned int port, unsigned int bw);
 int egress_rate_set(int on_off, int port, int bw);
 
 /*QoS*/
-int qos_sch_select(int argc, char *argv[]);
+void qos_sch_select(int argc, char *argv[]);
 void qos_set_base(int argc, char *argv[]);
 void qos_wfq_set_weight(int argc, char *argv[]);
 void qos_set_portpri(int argc, char *argv[]);

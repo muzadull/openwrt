@@ -11,6 +11,7 @@
 #include <linux/if.h>
 #include <stdbool.h>
 #include <time.h>
+#include <errno.h>
 
 #include "switch_extend.h"
 #include "switch_netlink.h"
@@ -2348,41 +2349,42 @@ int global_set_mac_fc(int argc, char *argv[])
 	return 0;
 } /*end mac_set_fc*/
 
-int qos_sch_select(int argc, char *argv[])
+void qos_sch_select(int argc, char *argv[])
 {
-	unsigned char port, queue;
+	unsigned char port = 0, queue = 0;
 	unsigned char type = 0;
-	unsigned int value, reg;
-
+	unsigned int value = 0, reg = 0;
+	char *endptr;
 	if (argc < 7)
-		return -1;
-
-	port = atoi(argv[3]);
-	queue = atoi(argv[4]);
-	type = atoi(argv[6]);
-
-	if (port > 6 || queue > 7) {
-		printf("\n Illegal input parameters\n");
-		return -1;
+		return;
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
 	}
-
-	if ((type != 0 && type != 1 && type != 2)) {
+	errno = 0;
+	queue = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || queue > 7) {
+		printf("Error: wrong port queue member\n");
+		return;
+	}
+	errno = 0;
+	type = strtoul(argv[6], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || type > 2) {
 		printf(HELP_QOS_TYPE);
-		return -1;
+		return;
 	}
-
-	printf("\r\nswitch qos type: %d.\n",type);
-
+	printf("\r\nswitch qos type: %d.\n", type);
 	if (!strncmp(argv[5], "min", 4)) {
-
 		if (type == 0) {
-			/*min sharper-->round roubin, disable min sharper rate limit*/
+			/*min sharper-->round roubin, disable min sharper rate limit */
 			reg = GSW_MMSCR0_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
 			value = 0x0;
 			reg_write(reg, value);
 		} else if (type == 1) {
-			/*min sharper-->sp, disable min sharper rate limit*/
+			/*min sharper-->sp, disable min sharper rate limit */
 			reg = GSW_MMSCR0_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
 			value = 0x0;
@@ -2390,133 +2392,116 @@ int qos_sch_select(int argc, char *argv[])
 			reg_write(reg, value);
 		} else {
 			printf("min sharper only support: rr or sp\n");
-			return -1;
+			return;
 		}
 	} else if (!strncmp(argv[5], "max", 4)) {
 		if (type == 1) {
-			/*max sharper-->sp, disable max sharper rate limit*/
+			/*max sharper-->sp, disable max sharper rate limit */
 			reg = GSW_MMSCR1_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
 			value = 0x0;
 			value |= (1 << 31);
 			reg_write(reg, value);
 		} else if (type == 2) {
-			/*max sharper-->wfq, disable max sharper rate limit*/
+			/*max sharper-->wfq, disable max sharper rate limit */
 			reg = GSW_MMSCR1_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
 			value = 0x0;
 			reg_write(reg, value);
 		} else {
 			printf("max sharper only support: wfq or sp\n");
-			return -1;
+			return;
 		}
 	} else {
-		printf("\r\nIllegal sharper:%s\n",argv[5]);
-		return -1;
+		printf("\r\nIllegal sharper:%s\n", argv[5]);
+		return;
 	}
-	printf("reg:0x%x--value:0x%x\n",reg,value);
-
-	return 0;
+	printf("reg:0x%x--value:0x%x\n", reg, value);
 }
-
 void get_upw(unsigned int *value, unsigned char base)
 {
 	*value &= (~((0x7 << 0) | (0x7 << 4) | (0x7 << 8) | (0x7 << 12) |
 		     (0x7 << 16) | (0x7 << 20)));
-	switch (base)
-	{
-		case 0: /* port-based 0x2x40[18:16] */
-			*value |= ((0x2 << 0) | (0x2 << 4) | (0x2 << 8) |
-				(0x2 << 12) | (0x7 << 16) | (0x2 << 20));
-			break;
-		case 1: /* tagged-based 0x2x40[10:8] */
-			*value |= ((0x2 << 0) | (0x2 << 4) | (0x7 << 8) |
-				(0x2 << 12) | (0x2 << 16) | (0x2 << 20));
-			break;
-		case 2: /* DSCP-based 0x2x40[14:12] */
-			*value |= ((0x2 << 0) | (0x2 << 4) | (0x2 << 8) |
-				(0x7 << 12) | (0x2 << 16) | (0x2 << 20));
-			break;
-		case 3: /* acl-based 0x2x40[2:0] */
-			*value |= ((0x7 << 0) | (0x2 << 4) | (0x2 << 8) |
-				(0x2 << 12) | (0x2 << 16) | (0x2 << 20));
-			break;
-		case 4: /* arl-based 0x2x40[22:20] */
-			*value |= ((0x2 << 0) | (0x2 << 4) | (0x2 << 8) |
-				(0x2 << 12) | (0x2 << 16) | (0x7 << 20));
-			break;
-		case 5: /* stag-based 0x2x40[6:4] */
-			*value |= ((0x2 << 0) | (0x7 << 4) | (0x2 << 8) |
-				(0x2 << 12) | (0x2 << 16) | (0x2 << 20));
-			break;
-		default:
-			break;
+	switch (base) {
+	case 0:		/* port-based 0x2x40[18:16] */
+		*value |= ((0x2 << 0) | (0x2 << 4) | (0x2 << 8) |
+			   (0x2 << 12) | (0x7 << 16) | (0x2 << 20));
+		break;
+	case 1:		/* tagged-based 0x2x40[10:8] */
+		*value |= ((0x2 << 0) | (0x2 << 4) | (0x7 << 8) |
+			   (0x2 << 12) | (0x2 << 16) | (0x2 << 20));
+		break;
+	case 2:		/* DSCP-based 0x2x40[14:12] */
+		*value |= ((0x2 << 0) | (0x2 << 4) | (0x2 << 8) |
+			   (0x7 << 12) | (0x2 << 16) | (0x2 << 20));
+		break;
+	case 3:		/* acl-based 0x2x40[2:0] */
+		*value |= ((0x7 << 0) | (0x2 << 4) | (0x2 << 8) |
+			   (0x2 << 12) | (0x2 << 16) | (0x2 << 20));
+		break;
+	case 4:		/* arl-based 0x2x40[22:20] */
+		*value |= ((0x2 << 0) | (0x2 << 4) | (0x2 << 8) |
+			   (0x2 << 12) | (0x2 << 16) | (0x7 << 20));
+		break;
+	case 5:		/* stag-based 0x2x40[6:4] */
+		*value |= ((0x2 << 0) | (0x7 << 4) | (0x2 << 8) |
+			   (0x2 << 12) | (0x2 << 16) | (0x2 << 20));
+		break;
+	default:
+		break;
 	}
 }
-
 void qos_set_base(int argc, char *argv[])
 {
 	unsigned char base = 0;
-	unsigned char port;
-	unsigned int value;
-
+	unsigned char port = 0;
+	unsigned int value = 0;
+	char *endptr;
 	if (argc < 5)
 		return;
-
-	port = atoi(argv[3]);
-	base = atoi(argv[4]);
-
-	if (base > 6) {
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
+	errno = 0;
+	base = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || base > 5) {
 		printf(HELP_QOS_BASE);
 		return;
 	}
-
-	if (port > 6) {
-		printf("Illegal port index:%d\n",port);
-		return;
-	}
-
 	printf("\r\nswitch qos base : %d. (port-based:0, tag-based:1,\
-		dscp-based:2, acl-based:3, arl-based:4, stag-based:5)\n",
-	       base);
+		dscp-based:2, acl-based:3, arl-based:4, stag-based:5)\n", base);
 	if (chip_name == 0x7530) {
-
 		reg_read(0x44, &value);
 		get_upw(&value, base);
 		reg_write(0x44, value);
 		printf("reg: 0x44, value: 0x%x\n", value);
-
 	} else if (chip_name == 0x7531 || chip_name == 0x7988) {
-
 		reg_read(GSW_UPW(port), &value);
 		get_upw(&value, base);
 		reg_write(GSW_UPW(port), value);
-		printf("reg:0x%x, value: 0x%x\n",GSW_UPW(port),value);
-
+		printf("reg:0x%x, value: 0x%x\n", GSW_UPW(port), value);
 	} else {
 		printf("unknown switch device");
 		return;
 	}
 }
-
 void qos_wfq_set_weight(int argc, char *argv[])
 {
-	int port, weight[8], i;
-	unsigned char queue;
-	unsigned int reg, value;
-
+	int port = 0, weight[8], i = 0;
+	unsigned char queue = 0;
+	unsigned int reg = 0, value = 0;
 	port = atoi(argv[3]);
-
 	for (i = 0; i < 8; i++) {
 		weight[i] = atoi(argv[i + 4]);
 	}
-
 	/* MT7530 total 7 port */
 	if (port < 0 || port > 6) {
 		printf(HELP_QOS_PORT_WEIGHT);
 		return;
 	}
-
 	for (i = 0; i < 8; i++) {
 		if (weight[i] < 1 || weight[i] > 16) {
 			printf(HELP_QOS_PORT_WEIGHT);
@@ -2524,53 +2509,56 @@ void qos_wfq_set_weight(int argc, char *argv[])
 		}
 	}
 	printf("port: %x, q0: %x, q1: %x, q2: %x, q3: %x, \
-		q4: %x, q5: %x, q6: %x, q7: %x\n",
-	       port, weight[0], weight[1], weight[2], weight[3], weight[4],
-	       weight[5], weight[6], weight[7]);
-
+		q4: %x, q5: %x, q6: %x, q7: %x\n", port, weight[0], weight[1], weight[2], weight[3], weight[4], weight[5], weight[6], weight[7]);
 	for (queue = 0; queue < 8; queue++) {
 		reg = GSW_MMSCR1_Q(queue) + 0x100 * port;
 		reg_read(reg, &value);
-		value &= (~(0xf << 24)); //bit24~27
+		value &= (~(0xf << 24));	//bit24~27
 		value |= (((weight[queue] - 1) & 0xf) << 24);
 		printf("reg: %x, value: %x\n", reg, value);
 		reg_write(reg, value);
 	}
 }
-
 void qos_set_portpri(int argc, char *argv[])
 {
-	unsigned char port, prio;
-	unsigned int value;
-
-	port = atoi(argv[3]);
-	prio = atoi(argv[4]);
-
-	if (port >= 7 || prio > 7) {
-		printf(HELP_QOS_PORT_PRIO);
+	unsigned char port = 0, prio = 0;
+	unsigned int value = 0;
+	char *endptr;
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
 		return;
 	}
-
+	errno = 0;
+	prio = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || prio > 7) {
+		printf("Error: wrong priority, should be within 0~7\n");
+		return;
+	}
 	reg_read(GSW_PCR(port), &value);
 	value &= (~(0x7 << 24));
 	value |= (prio << 24);
 	reg_write(GSW_PCR(port), value);
 	printf("write reg: %x, value: %x\n", GSW_PCR(port), value);
 }
-
 void qos_set_dscppri(int argc, char *argv[])
 {
-	unsigned char prio, dscp, pim_n, pim_offset;
-	unsigned int reg, value;
-
-	dscp = atoi(argv[3]);
-	prio = atoi(argv[4]);
-
-	if (dscp > 63 || prio > 7) {
+	unsigned char prio = 0, dscp = 0, pim_n = 0, pim_offset = 0;
+	unsigned int value = 0, reg = 0;
+	char *endptr;
+	errno = 0;
+	dscp = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || dscp > 63) {
 		printf(HELP_QOS_DSCP_PRIO);
 		return;
 	}
-
+	errno = 0;
+	prio = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || prio > 7) {
+		printf(HELP_QOS_DSCP_PRIO);
+		return;
+	}
 	pim_n = dscp / 10;
 	pim_offset = (dscp - pim_n * 10) * 3;
 	reg = 0x0058 + pim_n * 4;
@@ -2580,20 +2568,28 @@ void qos_set_dscppri(int argc, char *argv[])
 	reg_write(reg, value);
 	printf("write reg: %x, value: %x\n", reg, value);
 }
-
 void qos_pri_mapping_queue(int argc, char *argv[])
 {
-	unsigned char prio, queue, pem_n, port;
-	unsigned int reg, value;
-
+	unsigned char prio = 0, queue = 0, pem_n = 0, port = 0;
+	unsigned int value = 0, reg = 0;
+	char *endptr;
 	if (argc < 6)
 		return;
-
-	port = atoi(argv[3]);
-	prio = atoi(argv[4]);
-	queue = atoi(argv[5]);
-
-	if (prio > 7 || queue > 7) {
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
+	errno = 0;
+	prio = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || prio > 7) {
+		printf(HELP_QOS_PRIO_QMAP);
+		return;
+	}
+	errno = 0;
+	queue = strtoul(argv[5], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || queue > 7) {
 		printf(HELP_QOS_PRIO_QMAP);
 		return;
 	}
@@ -2614,17 +2610,16 @@ void qos_pri_mapping_queue(int argc, char *argv[])
 		pem_n = prio / 2;
 		reg = GSW_PEM(pem_n) + 0x100 * port;
 		reg_read(reg, &value);
-		if (prio % 2) { // 1 1
+		if (prio % 2) {	// 1 1
 			value &= (~(0x7 << 25));
 			value |= ((queue & 0x7) << 25);
-		} else { // 0 0
+		} else {	// 0 0
 			value &= (~(0x7 << 9));
 			value |= ((queue & 0x7) << 9);
 		}
 		reg_write(reg, value);
 		printf("write reg: %x, value: %x\n", reg, value);
-	}
-	else {
+	} else {
 		printf("unknown switch device");
 		return;
 	}
