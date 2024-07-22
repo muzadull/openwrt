@@ -2057,17 +2057,12 @@ static inline u32 mtk_get_ib1_sp(struct mtk_eth *eth, struct mtk_foe_entry *foe)
 static inline int
 mtk_ppe_check_pppq_path(struct mtk_eth *eth, struct mtk_foe_entry *foe, int dsa_port)
 {
-
-       if (dsa_port == 5)
-     
-#if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 	u32 sp = mtk_get_ib1_sp(eth, foe);
 
 	if ((dsa_port >= 0 && dsa_port <= 4) ||
 	    (dsa_port == 5 && (sp == PSE_WDMA0_PORT ||
 			       sp == PSE_WDMA1_PORT ||
 			       sp == PSE_WDMA2_PORT)))
-#endif
 		return 1;
 
 	return 0;
