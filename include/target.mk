@@ -54,9 +54,14 @@ DEFAULT_PACKAGES.nas:=\
 # For router targets
 DEFAULT_PACKAGES.router:=\
 	dnsmasq \
-	firewall4 \
-	nftables \
-	kmod-nft-offload \
+	firewall \
+	iptables-zz-legacy \
+	ip6tables-zz-legacy \
+	kmod-ipt-offload \
+	luci \
+	luci-app-adblock \
+	luci-app-https-dns-proxy \
+	luci-app-ttyd \
 	odhcp6c \
 	odhcpd-ipv6only \
 	ppp \
