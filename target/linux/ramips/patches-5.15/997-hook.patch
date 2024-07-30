@@ -1,5 +1,5 @@
---- a/net/core/skbuff.c	2022-05-18 11:03:02.361259000 +0800
-+++ b/net/core/skbuff.c	2022-05-18 11:02:09.832117270 +0800
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
 @@ -82,6 +82,8 @@
  #include "datagram.h"
  #include "sock_destructor.h"
@@ -43,8 +43,8 @@
 +};
 
 
---- a/drivers/net/ppp/ppp_generic.c	2022-05-19 13:46:26.673641000 +0800
-+++ b/drivers/net/ppp/ppp_generic.c	2022-05-19 13:58:49.992600593 +0800
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
 @@ -52,7 +52,7 @@
  #include <linux/nsproxy.h>
  #include <net/net_namespace.h>
@@ -90,8 +90,8 @@
  
  static struct device_type ppp_type = {
 
---- a/drivers/net/ppp/pppoe.c	2022-05-19 13:46:26.673641000 +0800
-+++ b/drivers/net/ppp/pppoe.c	2022-05-19 14:00:15.419387398 +0800
+--- a/drivers/net/ppp/pppoe.c
++++ b/drivers/net/ppp/pppoe.c
 @@ -79,7 +79,7 @@
  #include <net/sock.h>
  
@@ -136,8 +136,8 @@
  
  static int pppoe_recvmsg(struct socket *sock, struct msghdr *m,
 
---- a/include/linux/netdevice.h	2022-05-19 13:46:28.677790000 +0800
-+++ b/include/linux/netdevice.h	2022-05-19 13:56:13.845845770 +0800
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
 @@ -1003,7 +1003,7 @@
  	struct list_head list;
  	struct notifier_block *nb;
@@ -156,8 +156,8 @@
  
  /**
 
---- a/include/linux/ppp_channel.h	2022-05-19 13:46:26.677641000 +0800
-+++ b/include/linux/ppp_channel.h	2022-05-19 14:01:01.777387085 +0800
+--- a/include/linux/ppp_channel.h
++++ b/include/linux/ppp_channel.h
 @@ -31,6 +31,7 @@
  	int	(*fill_forward_path)(struct net_device_path_ctx *,
  				     struct net_device_path *,
@@ -167,8 +167,8 @@
  
  struct ppp_channel {
 
---- a/net/8021q/vlan_dev.c	2022-05-19 13:46:26.665640000 +0800
-+++ b/net/8021q/vlan_dev.c	2022-05-19 14:03:23.747097484 +0800
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
 @@ -31,6 +31,8 @@
  #include "vlanproc.h"
  #include <linux/if_vlan.h>
@@ -212,8 +212,8 @@
  
  static void vlan_dev_free(struct net_device *dev)
 
---- a/net/ipv6/ip6_tunnel.c	2022-05-19 13:46:28.161751000 +0800
-+++ b/net/ipv6/ip6_tunnel.c	2022-05-19 14:05:25.500612911 +0800
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
 @@ -56,7 +56,7 @@
  #include <net/net_namespace.h>
  #include <net/netns/generic.h>
@@ -256,8 +256,8 @@
  
  #define IPXIPX_FEATURES (NETIF_F_SG |		\
 		
---- a/include/linux/mdio.h	2022-03-28 15:57:11.000000000 +0800
-+++ b/include/linux/mdio.h	2022-12-27 16:18:35.806004570 +0800
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
 @@ -5,7 +5,7 @@
   */
  #ifndef __LINUX_MDIO_H__

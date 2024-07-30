@@ -1,0 +1,102 @@
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1370,6 +1377,8 @@ struct netdev_net_notifier {
+  *	The caller must be under RCU read context.
+  * int (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx, struct net_device_path *path);
+  *     Get the forwarding path to reach the real device from the HW destination address
++ * int (*ndo_fill_receive_path)(struct net_device_path_ctx *ctx, struct net_device_path *path);
++ *     Get the receiving path to reach the real device from the HW source address
+  */
+ struct net_device_ops {
+ 	int			(*ndo_init)(struct net_device *dev);
+@@ -1589,6 +1598,8 @@ struct net_device_ops {
+ 	struct net_device *	(*ndo_get_peer_dev)(struct net_device *dev);
+ 	int                     (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx,
+                                                          struct net_device_path *path);
+        int                     (*ndo_hnat_check)(struct hnat_hw_path *path);
++	int                     (*ndo_fill_receive_path)(struct net_device_path_ctx *ctx,
++							 struct net_device_path *path);
+ };
+ 
+ /**
+
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -547,6 +547,7 @@ struct flow_cls_offload {
+ 	struct flow_cls_common_offload common;
+ 	enum flow_cls_command command;
+ 	unsigned long cookie;
++	struct flow_offload *flow;
+ 	struct flow_rule *rule;
+ 	struct flow_stats stats;
+ 	u32 classid;
+
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -36,6 +36,7 @@ struct nf_flow_key {
+ 	};
+ 	struct flow_dissector_key_tcp			tcp;
+ 	struct flow_dissector_key_ports			tp;
++	struct flow_dissector_key_ip			ip;
+ } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+ 
+ struct nf_flow_match {
+@@ -145,6 +146,7 @@ struct flow_offload_tuple {
+ 			u8		h_dest[ETH_ALEN];
+ 		} out;
+ 	};
++	u8				tos;
+ };
+ 
+ struct flow_offload_tuple_rhash {
+
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -104,6 +104,7 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_IPV6_ADDRS, ipv6);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_TCP, tcp);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_PORTS, tp);
++	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_IP, ip);	
+ 
+ 	if (other_dst && other_dst->lwtstate) {
+ 		tun_info = lwt_tun_info(other_dst->lwtstate);
+@@ -182,11 +183,15 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+ 	mask->tp.src = 0xffff;
+ 	key->tp.dst = tuple->dst_port;
+ 	mask->tp.dst = 0xffff;
++	
++	key->ip.tos = tuple->tos;
++	mask->ip.tos = 0xff;
+ 
+ 	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_META) |
+ 				      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
+ 				      BIT(FLOW_DISSECTOR_KEY_BASIC) |
+-				      BIT(FLOW_DISSECTOR_KEY_PORTS);
++				      BIT(FLOW_DISSECTOR_KEY_PORTS) |
++				      BIT(FLOW_DISSECTOR_KEY_IP);
+ 	return 0;
+ }
+ 
+@@ -809,11 +814,13 @@ static int nf_flow_offload_alloc(const struct flow_offload_work *offload,
+ }
+ 
+ static void nf_flow_offload_init(struct flow_cls_offload *cls_flow,
++				 struct flow_offload *flow,
+ 				 __be16 proto, int priority,
+ 				 enum flow_cls_command cmd,
+ 				 const struct flow_offload_tuple *tuple,
+ 				 struct netlink_ext_ack *extack)
+ {
++	cls_flow->flow = flow;
+ 	cls_flow->common.protocol = proto;
+ 	cls_flow->common.prio = priority;
+ 	cls_flow->common.extack = extack;
+@@ -835,7 +842,7 @@ static int nf_flow_offload_tuple(struct nf_flowtable *flowtable,
+ 	__be16 proto = ETH_P_ALL;
+ 	int err, i = 0;
+ 
+-	nf_flow_offload_init(&cls_flow, proto, priority, cmd,
++	nf_flow_offload_init(&cls_flow, flow, proto, priority, cmd,
+ 			     &flow->tuplehash[dir].tuple, &extack);
+ 	if (cmd == FLOW_CLS_REPLACE)
+ 		cls_flow.rule = flow_rule->rule;
