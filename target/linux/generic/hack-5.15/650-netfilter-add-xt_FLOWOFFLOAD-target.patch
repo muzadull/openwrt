@@ -98,7 +98,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  obj-$(CONFIG_NETFILTER_XT_TARGET_LED) += xt_LED.o
 --- /dev/null
 +++ b/net/netfilter/xt_FLOWOFFLOAD.c
-@@ -0,0 +1,702 @@
+@@ -0,0 +1,734 @@
 +/*
 + * Copyright (C) 2018-2021 Felix Fietkau <nbd@nbd.name>
 + *
@@ -149,6 +149,35 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 +static DEFINE_SPINLOCK(hooks_lock);
 +
 +struct xt_flowoffload_table flowtable[2];
++
++static int
++xt_flowoffload_dscp_init(struct sk_buff *skb, struct flow_offload *flow,
++			 enum ip_conntrack_dir dir)
++{
++	const struct flow_offload_tuple *flow_tuple = &flow->tuplehash[dir].tuple;
++	struct iphdr *iph;
++	struct ipv6hdr *ip6h;
++	u32 offset = 0;
++	u8 tos = 0;
++
++	switch (flow_tuple->l3proto) {
++	case NFPROTO_IPV4:
++		iph = (struct iphdr *)(skb_network_header(skb) + offset);
++		tos = iph->tos;
++		break;
++	case NFPROTO_IPV6:
++		ip6h = (struct ipv6hdr *)(skb_network_header(skb) + offset);
++		tos = ipv6_get_dsfield(ip6h);
++		break;
++	default:
++		return -1;
++	};
++
++	flow->tuplehash[dir].tuple.tos = tos;
++	flow->tuplehash[!dir].tuple.tos = tos;
++
++	return 0;
++}
 +
 +static unsigned int
 +xt_flowoffload_net_hook(void *priv, struct sk_buff *skb,
@@ -629,6 +658,9 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 +		goto err_flow_alloc;
 +
 +	flow_offload_route_init(flow, &route);
++
++	if (xt_flowoffload_dscp_init(skb, flow, dir) < 0)
++		goto err_flow_add;
 +
 +	if (tcph) {
 +		ct->proto.tcp.seen[0].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
