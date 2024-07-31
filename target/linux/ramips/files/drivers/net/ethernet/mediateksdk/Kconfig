@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config NET_VENDOR_MEDIATEK_SDK
+	bool "MediaTek ethernet sdk driver"
+	depends on ARCH_MEDIATEK || SOC_MT7621 || SOC_MT7620
+	help
+	  If you have a Mediatek SoC with ethernet, say Y.
+
+if NET_VENDOR_MEDIATEK_SDK
+
+config NET_MEDIATEK_SOC_SDK
+	tristate "MediaTek SoC Gigabit Ethernet support"
+	select PHYLINK
+	help
+	  This driver supports the gigabit ethernet MACs in the
+	  MediaTek SoC family.
+
+config MEDIATEK_NETSYS_V2
+	tristate "MediaTek Ethernet NETSYS V2 support"
+	 help
+	  This options enable MTK Ethernet NETSYS V2 support
+
+config MEDIATEK_NETSYS_V3
+	tristate "MediaTek Ethernet NETSYS V3 support"
+	help
+	  This options enable MTK Ethernet NETSYS V3 support for
+	  XGMAC and USXGMII.
+
+endif #NET_VENDOR_MEDIATEK_SDK
