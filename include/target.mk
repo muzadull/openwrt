@@ -61,6 +61,7 @@ DEFAULT_PACKAGES.router:=\
 	luci \
 	luci-app-adblock \
 	luci-app-https-dns-proxy \
+	luci-app-sqm \
 	luci-app-ttyd \
 	odhcp6c \
 	odhcpd-ipv6only \
