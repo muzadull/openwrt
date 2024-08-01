@@ -1450,9 +1450,11 @@ VOID WscEapEnrolleeAction(
 	{
 		case WSC_MSG_EAP_RSP_ID:
 			DBGPRINT(RT_DEBUG_TRACE, ("WscEapEnrolleeAction : Rx Identity(ReComputePke=%d)\n", pWscControl->RegData.ReComputePke));
+			break;
 		case WSC_MSG_EAP_REQ_START:
 			if (MsgType == WSC_MSG_EAP_REQ_START)
 				DBGPRINT(RT_DEBUG_TRACE, ("WscEapEnrolleeAction : Rx Wsc_Start(ReComputePke=%d)\n", pWscControl->RegData.ReComputePke));
+			break;
 			
 #ifdef WSC_NFC_SUPPORT
 			if (pWscControl->bTriggerByNFC)
@@ -3655,18 +3657,20 @@ VOID WscSendEapReqId(
     /* RFC 3748 Ch 4.1: recommended to initalize Identifier with a
 	 * random number */
 	Id = RandomByte(pAd);
-    if (Id == pWpsCtrl->lastId)
+    if (Id == pWpsCtrl->lastId) {
         Id += 1;
 	EapFrame.Code   = EAP_CODE_REQ;
 	EapFrame.Id     = Id;
 	EapFrame.Length = cpu2be16(Length);
 	EapFrame.Type   = EAP_TYPE_ID;
     pWpsCtrl->lastId = Id;
+	}
 	
     /* Out buffer for transmitting EAP-Req(Identity) */
 	os_alloc_mem(NULL, (UCHAR **)&pOutBuffer, MAX_LEN_OF_MLME_BUFFER);
-    if(pOutBuffer == NULL)
+    if(pOutBuffer == NULL) {
         return;
+	}
 
 	FrameLen = 0;
 	
@@ -3826,8 +3830,9 @@ VOID WscSendEapRspId(
 
     /* Out buffer for transmitting EAP-Req(Identity) */
 	os_alloc_mem(NULL, (UCHAR **)&pOutBuffer, MAX_LEN_OF_MLME_BUFFER);
-    if(pOutBuffer == NULL)
+    if(pOutBuffer == NULL) {
         return;
+	}
 
 	FrameLen = 0;
 
@@ -4752,8 +4757,9 @@ VOID	WscSendEapFail(
 	
     /* Out buffer for transmitting EAP-Req(Identity) */
 	os_alloc_mem(NULL, (UCHAR **)&pOutBuffer, MAX_LEN_OF_MLME_BUFFER);
-    if(pOutBuffer == NULL)
+    if(pOutBuffer == NULL) {
         return;
+	}
 
 	FrameLen = 0;
 	
@@ -7999,11 +8005,13 @@ INT	WscGetConfWithoutTrigger(
 		return FALSE;
     }
 
-    if (bFromUPnP)
+    if (bFromUPnP) {
         WscStop(pAd, FALSE, pWscControl);
+	}
     
-	if (pWscControl->WscMode == 1)
+	if (pWscControl->WscMode == 1) {
 		WscMode = DEV_PASS_ID_PIN;
+	}
 	else
 		WscMode = DEV_PASS_ID_PBC;
     
