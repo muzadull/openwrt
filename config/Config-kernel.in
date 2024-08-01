@@ -1095,7 +1095,7 @@ config KERNEL_XDP_SOCKETS
 	  userspace applications.
 
 config KERNEL_WIRELESS_EXT
-	def_bool n
+	def_bool y
 
 config KERNEL_WEXT_CORE
 	def_bool KERNEL_WIRELESS_EXT
