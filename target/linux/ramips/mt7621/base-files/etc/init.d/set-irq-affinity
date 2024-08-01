@@ -1,0 +1,11 @@
+#!/bin/sh /etc/rc.common
+#MTK-Wi-Fi
+
+chmod 0775 /sbin/mtk-wifi
+chmod 0775 /sbin/mtk-wifi.sh
+
+START=99
+
+start() {
+	/sbin/mtk-wifi.sh &
+}
