@@ -30,11 +30,15 @@ config MEDIATEK_NETSYS_V3
 config NET_MEDIATEK_HNAT
 	tristate "MediaTek HW NAT support"
 	depends on NET_MEDIATEK_SOC_SDK
-	select NF_CONNTRACK
+	select NETFILTER
+	select NETFILTER_ADVANCED
+	select NETFILTER_FAMILY_BRIDGE
+	select NETFILTER_INGRESS
+	select NETFILTER_XTABLES
+	select BRIDGE_NETFILTER
+	select IP_NF_IPTABLES
 	select IP_NF_NAT
-	select CONFIG_BRIDGE_NETFILTER
-	select CONFIG_NETFILTER_FAMILY_BRIDGE
-	
+	select NF_CONNTRACK	
 	help
 	  This driver supports the hardward Network Address Translation
 	  in the MediaTek MT7986/MT2701/MT7622/MT7629/MT7621 chipset
