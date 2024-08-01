@@ -2079,6 +2079,7 @@ BOOLEAN ApCliPeerAssocRspSanity(
 					("RESP IE_WLAN_EXTENSION: no handler for extension_id:%d\n", *extension_id));
 				break;
 				}
+			break;
 #endif
 				default:
 					DBGPRINT(RT_DEBUG_TRACE, ("%s():ignore unrecognized EID = %d\n", __FUNCTION__, pEid->Eid));

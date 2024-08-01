@@ -392,10 +392,11 @@ typedef spinlock_t			OS_NDIS_SPIN_LOCK;
 #else
 #define OS_IRQ_LOCK(__lock, __irqflags)			\
 {												\
-    if (__irqflags);                            \
+    if (__irqflags) {                          \
 	__irqflags = 0;								\
-	spin_lock_bh((spinlock_t *)(__lock));		\
-}
+	spin_lock_bh((spinlock_t *)(__lock));       \
+	}	                                        \
+}                                               \
 
 #define OS_IRQ_UNLOCK(__lock, __irqflag)		\
 {												\
@@ -882,10 +883,10 @@ void linux_pci_unmap_single(void *handle, ra_dma_addr_t dma_addr, size_t size, i
 
 #define PCI_MAP_SINGLE_DEV(_handle, _ptr, _size, _sd_idx, _dir)				\
 	linux_pci_map_single(_handle, _ptr, _size, _sd_idx, _dir)
-
+/*
 #define DMA_MAPPING_ERROR(_handle, _ptr)	\
 	dma_mapping_error(&((struct pci_dev *)(_handle))->dev, _ptr)
-
+*/
 #define PCI_UNMAP_SINGLE(_pAd, _ptr, _size, _dir)						\
 	linux_pci_unmap_single(((POS_COOKIE)(_pAd->OS_Cookie))->pci_dev, _ptr, _size, _dir)
 
