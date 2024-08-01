@@ -971,7 +971,7 @@ INT rtmp_ee_write_to_bin(
 	INT ret_val;
 	RTMP_OS_FD srcf;
 	RTMP_OS_FS_INFO osFSInfo;
-	const INT PCI_EFUSE_SIZE = 10;
+	#define PCI_EFUSE_SIZE (10)
 	UCHAR pci_pm[PCI_EFUSE_SIZE];
 	UCHAR pci_efuse[PCI_EFUSE_SIZE];
 	INT i = 0;

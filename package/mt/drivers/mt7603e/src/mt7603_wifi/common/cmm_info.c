@@ -1791,7 +1791,11 @@ VOID RTMPIoctlMAC(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 
 	if (wrq->u.data.length > 1) {
 #ifdef LINUX
-		copy_from_user(arg, wrq->u.data.pointer, (wrq->u.data.length > 255) ? 255 : wrq->u.data.length);
+        if (copy_from_user(arg, wrq->u.data.pointer, (wrq->u.data.length > 255) ? 255 : wrq->u.data.length))
+		{
+			DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlMAC - wrq->u.data.length = %d\n", wrq->u.data.length));
+			return;
+		}			
 #else
 		NdisMoveMemory(arg, wrq->u.data.pointer, (wrq->u.data.length > 255) ? 255 : wrq->u.data.length);
 #endif /* LINUX */
@@ -2695,8 +2699,9 @@ RTMP_STRING *GetEncryptType(CHAR enc)
     	return "WEP";
     if(enc == Ndis802_11TKIPEnable)
     	return "TKIP";
-    if(enc == Ndis802_11AESEnable)
+    if(enc == Ndis802_11AESEnable) {
     	return "AES";
+	}
 	if(enc == Ndis802_11TKIPAESMix)
     	return "TKIPAES";
 #ifdef WAPI_SUPPORT
@@ -2711,10 +2716,12 @@ RTMP_STRING *GetAuthMode(CHAR auth)
 {
     if(auth == Ndis802_11AuthModeOpen)
     	return "OPEN";
-    if(auth == Ndis802_11AuthModeShared)
+    if(auth == Ndis802_11AuthModeShared) {
     	return "SHARED";
-	if(auth == Ndis802_11AuthModeAutoSwitch)
+	}
+	if(auth == Ndis802_11AuthModeAutoSwitch) {
 		return "WEPAUTO";
+	}
     if(auth == Ndis802_11AuthModeWPA)
     	return "WPA";
     if(auth == Ndis802_11AuthModeWPAPSK)
@@ -2723,8 +2730,9 @@ RTMP_STRING *GetAuthMode(CHAR auth)
     	return "WPANONE";
     if(auth == Ndis802_11AuthModeWPA2)
     	return "WPA2";
-    if(auth == Ndis802_11AuthModeWPA2PSK)
+    if(auth == Ndis802_11AuthModeWPA2PSK) {
     	return "WPA2PSK";
+	}
 	if(auth == Ndis802_11AuthModeWPA1WPA2)
     	return "WPA1WPA2";
 	if(auth == Ndis802_11AuthModeWPA1PSKWPA2PSK)
@@ -3237,9 +3245,12 @@ VOID RTMPIoctlGetSiteSurvey(
 		wrq->u.data.length = strlen(msg);
 	else 
 		wrq->u.data.length = last_msg_len;
-	/*Status =*/ copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length);
-
-	DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlGetSiteSurvey - wrq->u.data.length = %d\n", wrq->u.data.length));
+	
+	if (copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length))
+	{
+		DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlGetSiteSurvey - wrq->u.data.length = %d\n", wrq->u.data.length));
+		return;
+	}
 	os_free_mem(NULL, (PUCHAR)msg);	
 }
 #endif
@@ -3308,7 +3319,11 @@ VOID RTMPIoctlGetMacTableStaInfo(
 			copy_mac_table_entry(pDst, pEntry);
 			
 			wrq->u.data.length = sizeof(RT_802_11_MAC_ENTRY);
-			copy_to_user(wrq->u.data.pointer, pDst, wrq->u.data.length);
+			if (copy_to_user(wrq->u.data.pointer, pDst, wrq->u.data.length))
+			{
+				DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlGetMacTableStaInfo - wrq->u.data.length = %d\n", wrq->u.data.length));
+				return;
+			}
 		}
 		
 		return;
@@ -6067,8 +6082,9 @@ INT	Show_PMK_Proc(
 
 	
     sprintf(pBuf, "\tPMK = ");
-    for (idx = 0; idx < 32; idx++)
+    for (idx = 0; idx < 32; idx++) {
         sprintf(pBuf+strlen(pBuf), "%02X", PMK[idx]);
+	}
 
 	return 0;
 }

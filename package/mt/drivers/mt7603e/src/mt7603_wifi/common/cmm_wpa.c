@@ -2693,8 +2693,9 @@ VOID WPAStart2WayGroupHS(
 
 	DBGPRINT(RT_DEBUG_TRACE, ("===> WPAStart2WayGroupHS\n"));
 
-    if ((!pEntry) || !IS_ENTRY_CLIENT(pEntry))
+    if ((!pEntry) || !IS_ENTRY_CLIENT(pEntry)) {
         return;
+	}
 
 	/* delete retry timer*/
 	RTMPCancelTimer(&pEntry->RetryTimer, &Cancelled);
@@ -3093,15 +3094,15 @@ VOID MlmeDeAuthAction(
                           END_OF_ARGS);
 
 #ifdef DOT11W_PMF_SUPPORT
+		#define MAX_BUF_SIZE (LEN_CCMP_HDR + LEN_CCMP_MIC)
 		if (CLIENT_STATUS_TEST_FLAG(pEntry, fCLIENT_STATUS_PMF_CAPABLE))
 		{
 			ULONG	TmpLen;
-			UINT	res_len = LEN_CCMP_HDR + LEN_CCMP_MIC;
-			UCHAR	res_buf[res_len];
+			UCHAR res_buf[MAX_BUF_SIZE];
 
 			/* reserve a buffer for PMF CCMP calculation later */
 			MakeOutgoingFrame(pOutBuffer + FrameLen,	&TmpLen,
-	                          res_len,   				res_buf,
+	                          MAX_BUF_SIZE,   			res_buf,
     	                      END_OF_ARGS);
 			FrameLen += TmpLen;
 
