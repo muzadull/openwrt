@@ -1,0 +1,14 @@
+--- a/drivers/net/wireless/Kconfig
++++ b/drivers/net/wireless/Kconfig
+@@ -8,6 +8,11 @@ menuconfig WLAN
+ 	depends on !S390
+ 	depends on NET
+ 	select WIRELESS
++	select WIRELESS_EXT
++	select WEXT_CORE
++	select WEXT_PRIV
++	select WEXT_PROC
++	select WEXT_SPY
+ 	default y
+ 	help
+ 	  This section contains all the pre 802.11 and 802.11 wireless

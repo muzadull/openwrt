@@ -1,0 +1,64 @@
+# Single SKU Max Power Table (unit is 1 dBm)
+# 2.4G Channel
+Band: 2.4G MaxPower_4T MaxPower_3T MaxPower_2T
+Ch1 6 7 9
+Ch2 6 7 9
+Ch3 6 7 9
+Ch4 6 7 9
+Ch5 6 7 9
+Ch6 6 7 9
+Ch7 6 7 9
+Ch8 6 7 9
+Ch9 6 7 9
+Ch10 6 7 9
+Ch11 6 7 9
+Ch12 6 7 9
+Ch13 6 7 9
+Ch14 6 7 9
+
+# 5G Channel
+Band: 5G MaxPower_4T MaxPower_3T MaxPower_2T
+Ch184 6 7 9
+Ch188 6 7 9
+Ch192 6 7 9
+Ch196 6 7 9
+Ch8 6 7 9
+Ch12 6 7 9
+Ch16 6 7 9
+Ch36 6 7 9
+Ch40 6 7 9
+Ch44 6 7 9
+Ch48 6 7 9
+Ch52 6 7 9
+Ch56 6 7 9
+Ch60 6 7 9
+Ch64 6 7 9
+Ch68 6 7 9
+Ch72 6 7 9
+Ch76 6 7 9
+Ch80 6 7 9
+Ch84 6 7 9
+Ch88 6 7 9
+Ch92 6 7 9
+Ch96 6 7 9
+Ch100 6 7 9
+Ch104 6 7 9
+Ch108 6 7 9
+Ch112 6 7 9
+Ch116 6 7 9
+Ch120 6 7 9
+Ch124 6 7 9
+Ch128 6 7 9
+Ch132 6 7 9
+Ch136 6 7 9
+Ch140 6 7 9
+Ch144 6 7 9
+Ch149 6 7 9
+Ch153 6 7 9
+Ch157 6 7 9
+Ch161 6 7 9
+Ch165 6 7 9
+Ch169 6 7 9
+Ch173 6 7 9
+Ch177 6 7 9
+Ch181 6 7 9
