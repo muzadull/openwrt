@@ -2078,7 +2078,9 @@ VOID APMlmeDynamicTxRateSwitchingAdapt(RTMP_ADAPTER *pAd, UINT i)
 	}
 
     if(TxTotalCnt > 100)
+	{
 	pEntry->lowTrafficCount = 0;
+	}
 
 	/*
 		After pEntry->fLastSecAccordingRSSI = TRUE; the for loop

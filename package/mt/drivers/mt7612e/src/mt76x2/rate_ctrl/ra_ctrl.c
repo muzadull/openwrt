@@ -3186,6 +3186,7 @@ VOID RTMPSetSupportMCS(
 
 						pEntry->SupportRateMode |= SUPPORT_VHT_MODE;
 					}
+					break;
 				case 1:
 					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss1 < VHT_MCS_CAP_NA)
 					{
@@ -3201,6 +3202,7 @@ VOID RTMPSetSupportMCS(
 
 						pEntry->SupportRateMode |= SUPPORT_VHT_MODE;
 					}
+					break;
 				default:
 					break;
 			}

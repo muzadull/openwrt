@@ -719,9 +719,12 @@ do{                                   \
     if (__gLevel <= RTDebugLevel)      \
     {                               \
     	if ((RTDebugFunc == 0) || \
-		((RTDebugFunc != 0) && (((__fLevel & RTDebugFunc)!= 0) || (__gLevel <= RT_DEBUG_ERROR))))\
+		((__fLevel && RTDebugFunc) || \
+		(__gLevel <= RT_DEBUG_ERROR)) ) \
+	   {		                \
         printk Fmt;               \
-    }                               \
+       }                            \
+	}                                 \
 }while(0)
 
 #define DBGPRINT(Level, Fmt)    DBGPRINT_RAW(Level, Fmt)

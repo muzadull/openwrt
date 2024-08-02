@@ -391,7 +391,9 @@ MAC_TABLE_ENTRY *MacTableInsertEntry(
 	BOOLEAN Cancelled;
 
 	if (pAd->MacTab.Size >= MAX_LEN_OF_MAC_TABLE)
+	{
 		return NULL;
+	}
 
 		FirstWcid = 1;
 
