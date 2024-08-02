@@ -2558,7 +2558,9 @@ PSTRING GetEncryptType(CHAR enc)
     if(enc == Ndis802_11TKIPEnable)
     	return "TKIP";
     if(enc == Ndis802_11AESEnable)
+	{
     	return "AES";
+	}
 	if(enc == Ndis802_11TKIPAESMix)
     	return "TKIPAES";
 #ifdef WAPI_SUPPORT
@@ -2574,7 +2576,9 @@ PSTRING GetAuthMode(CHAR auth)
     if(auth == Ndis802_11AuthModeOpen)
     	return "OPEN";
     if(auth == Ndis802_11AuthModeShared)
+	{
     	return "SHARED";
+	}
 	if(auth == Ndis802_11AuthModeAutoSwitch)
     	return "AUTOWEP";
     if(auth == Ndis802_11AuthModeWPA)
@@ -2586,9 +2590,13 @@ PSTRING GetAuthMode(CHAR auth)
     if(auth == Ndis802_11AuthModeWPA2)
     	return "WPA2";
     if(auth == Ndis802_11AuthModeWPA2PSK)
+	{
     	return "WPA2PSK";
+	}
 	if(auth == Ndis802_11AuthModeWPA1WPA2)
+	{
     	return "WPA1WPA2";
+	}
 	if(auth == Ndis802_11AuthModeWPA1PSKWPA2PSK)
     	return "WPA1PSKWPA2PSK";
 #ifdef WAPI_SUPPORT
@@ -3302,9 +3310,11 @@ VOID RTMPIoctlGetSiteSurvey(
 	pAdapter->StaCfg.bSkipAutoScanConn = FALSE;
 #endif /* CONFIG_STA_SUPPORT */
 	wrq->u.data.length = strlen(msg);
-	copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length);
-
-	DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlGetSiteSurvey - wrq->u.data.length = %d\n", wrq->u.data.length));
+	if (copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length))
+	{
+		DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlGetSiteSurvey - wrq->u.data.length = %d\n", wrq->u.data.length));
+		return;
+	}
 	os_free_mem(NULL, (PUCHAR)msg);	
 }
 #endif
@@ -3369,7 +3379,6 @@ VOID RTMPIoctlGetMacTableStaInfo(
 			copy_mac_table_entry(pDst, pEntry);
 			
 			wrq->u.data.length = sizeof(RT_802_11_MAC_ENTRY);
-			copy_to_user(wrq->u.data.pointer, pDst, wrq->u.data.length);
 		}
 		
 		return;
@@ -3398,7 +3407,6 @@ VOID RTMPIoctlGetMacTableStaInfo(
 			copy_mac_table_entry(pDst, pEntry);
 			
 			wrq->u.data.length = sizeof(RT_802_11_MAC_ENTRY);
-			copy_to_user(wrq->u.data.pointer, pDst, wrq->u.data.length);
 		}
 		
 		return;
@@ -6163,7 +6171,9 @@ INT	Show_PMK_Proc(
 	
     sprintf(pBuf, "\tPMK = ");
     for (idx = 0; idx < 32; idx++)
+	{
         sprintf(pBuf+strlen(pBuf), "%02X", PMK[idx]);
+	}
 
 	return 0;
 }

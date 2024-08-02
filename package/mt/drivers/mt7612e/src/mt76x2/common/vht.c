@@ -538,9 +538,11 @@ INT build_vht_op_ie(RTMP_ADAPTER *pAd, UCHAR *buf)
 			if (IS_MT76x2(pAd)) {
 				vht_op.basic_mcs_set.mcs_ss2 = (((pAd->CommonCfg.vht_bw == VHT_BW_2040) 
 					&& (pAd->CommonCfg.RegTransmitSetting.field.BW == BW_20)) ? VHT_MCS_CAP_8 : VHT_MCS_CAP_9);
-			} else
+			} else {
 #endif /* MT76x2 */
 				vht_op.basic_mcs_set.mcs_ss2 = VHT_MCS_CAP_7;
+				break;
+			}
 		case 1:
 #if	defined(MT76x0) || defined(MT76x2)
 			if (IS_MT76x0(pAd) || IS_MT76x2(pAd))

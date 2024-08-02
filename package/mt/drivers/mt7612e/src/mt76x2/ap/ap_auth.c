@@ -177,8 +177,10 @@ static VOID APPeerDeauthReqAction(
 
 
 
-    if (! PeerDeauthReqSanity(pAd, Elem->Msg, Elem->MsgLen, Addr2, &SeqNum, &Reason)) 
+    if (! PeerDeauthReqSanity(pAd, Elem->Msg, Elem->MsgLen, Addr2, &SeqNum, &Reason))
+	{
         return;
+	}
 
 	pEntry = NULL;
 

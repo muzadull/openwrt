@@ -383,7 +383,7 @@ VOID MlmeHandler(RTMP_ADAPTER *pAd)
 					Queue->Entry[Tail].MsgLen = Elem->MsgLen;	
 					Queue->Entry[Tail].Priv = Elem->Priv;
 					NdisZeroMemory(Queue->Entry[Tail].Msg, MGMT_DMA_BUFFER_SIZE);
-					if (Elem->Msg != NULL)
+					if (Elem->Msg > 0)
 					{
 						NdisMoveMemory(Queue->Entry[Tail].Msg, Elem->Msg, Elem->MsgLen);
 					}

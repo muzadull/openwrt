@@ -3500,6 +3500,7 @@ INT RTMPAPSetInformation(
 
 #endif /* WSC_AP_SUPPORT */
 			}
+			break;
 
 #ifdef HOSTAPD_SUPPORT
 	case HOSTAPD_OID_SET_802_1X:/*pure 1x is enabled. */
@@ -5673,7 +5674,10 @@ INT RTMPAPQueryInformation(
 			pMbssStat->bcPktsTx=  pMbss->bcPktsTx;
 			pMbssStat->bcPktsRx=  pMbss->bcPktsRx;
 			wrq->u.data.length = sizeof(MBSS_STATISTICS);
-			copy_to_user(wrq->u.data.pointer, pMbssStat, wrq->u.data.length);
+			if (copy_to_user(wrq->u.data.pointer, pMbssStat, wrq->u.data.length))
+			{
+				DBGPRINT(RT_DEBUG_ERROR, ("PMBSS_STATISTICS: copy_from_user failed\n"));
+			}			
 			os_free_mem(pAd, pMbssStat);			
 		}
 		break;
@@ -9735,7 +9739,11 @@ VOID RTMPIoctlStaticWepCopy(
     }
     else
     {
-        copy_from_user(&MacAddr, wrq->u.data.pointer, wrq->u.data.length);    
+		if (copy_from_user(&MacAddr, wrq->u.data.pointer, wrq->u.data.length))
+		{
+			DBGPRINT(RT_DEBUG_ERROR, ("RTMPIoctlStaticWepCopy: copy_from_user failed\n"));
+			return;
+		}
         pEntry = MacTableLookup(pAd, MacAddr);
         if (!pEntry)
         {
@@ -9835,7 +9843,11 @@ VOID RTMPIoctlQueryStaAid(
 	}
 	else
 	{
-		copy_from_user(&macBuf, wrq->u.data.pointer, wrq->u.data.length);
+		if (copy_from_user(&macBuf, wrq->u.data.pointer, wrq->u.data.length))
+		{
+			DBGPRINT(RT_DEBUG_ERROR, ("%s: copy_from_user() fail\n", __FUNCTION__));
+			return;
+		}
 		pEntry = MacTableLookup(pAd, macBuf.StaAddr);
 	
 		if (pEntry != NULL) 
@@ -11431,8 +11443,9 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 
 	/* Copy the information into the user buffer */
 	wrq->u.data.length = strlen(msg);
-	copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length);
-
+    if (copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length) != 0) {
+		printk("Failed to copy message to user buffer\n");
+	}
 	os_free_mem(NULL, msg);
 
 #if defined(TXBF_SUPPORT) && defined(ENHANCED_STAT_DISPLAY)

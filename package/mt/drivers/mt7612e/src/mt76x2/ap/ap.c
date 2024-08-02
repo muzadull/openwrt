@@ -2601,7 +2601,7 @@ BOOLEAN DOT1X_InternalCmdAction(
 	UCHAR			s_addr[MAC_ADDR_LEN];
 	UCHAR			EAPOL_IE[] = {0x88, 0x8e};
 	UINT8			frame_len = LENGTH_802_3 + sizeof(RalinkIe);
-	UCHAR			FrameBuf[frame_len];
+	UCHAR *FrameBuf = kmalloc(frame_len, GFP_KERNEL);
 	UINT8			offset = 0;
 	
 	/* Init the frame buffer */
@@ -2662,7 +2662,7 @@ BOOLEAN DOT1X_EapTriggerAction(
 	INT				apidx = MAIN_MBSSID;
 	UCHAR 			eapol_start_1x_hdr[4] = {0x01, 0x01, 0x00, 0x00};
 	UINT8			frame_len = LENGTH_802_3 + sizeof(eapol_start_1x_hdr);
-	UCHAR			FrameBuf[frame_len + 32];
+	UCHAR *FrameBuf = kmalloc(frame_len + 32, GFP_ATOMIC);
 	UINT8			offset = 0;
 
     if((pEntry->AuthMode == Ndis802_11AuthModeWPA) || (pEntry->AuthMode == Ndis802_11AuthModeWPA2) || (pAd->ApCfg.MBSSID[apidx].wdev.IEEE8021X == TRUE))

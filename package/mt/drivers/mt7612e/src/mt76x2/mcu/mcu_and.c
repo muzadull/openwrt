@@ -203,8 +203,10 @@ int andes_pci_erase_rom_patch(RTMP_ADAPTER *ad)
 
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		if (cap->rom_patch)
+		{
 			os_free_mem(NULL, cap->rom_patch);
 			cap->rom_patch = NULL;
+		}
 	}
 
 	return 0;
@@ -309,8 +311,10 @@ int andes_pci_erasefw(RTMP_ADAPTER *ad)
 	
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		if (cap->FWImageName)
+		{
 			os_free_mem(NULL, cap->FWImageName);
 			cap->FWImageName = NULL;
+		}
 	}
 
 	return ret;
@@ -554,8 +558,10 @@ int andes_usb_erasefw(RTMP_ADAPTER *ad)
 
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		if (cap->FWImageName)
+		{
 			os_free_mem(NULL, cap->FWImageName);
 			cap->FWImageName = NULL;
+		}
 	}
 
 	return 0;

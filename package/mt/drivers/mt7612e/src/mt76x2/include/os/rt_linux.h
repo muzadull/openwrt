@@ -716,12 +716,10 @@ extern ULONG		RTDebugFunc;
 do{                                   \
 	ULONG __gLevel = (Level) & 0xff;\
 	ULONG __fLevel = ((Level) & 0xffffff00);\
-    if (__gLevel <= RTDebugLevel)      \
-    {                               \
-    	if ((RTDebugFunc == 0) || \
-		((RTDebugFunc != 0) && (((__fLevel & RTDebugFunc)!= 0) || (__gLevel <= RT_DEBUG_ERROR))))\
-        printk Fmt;               \
-    }                               \
+    if ((__gLevel <= RTDebugLevel) && ((RTDebugFunc == 0) || ((__fLevel & RTDebugFunc) != 0) || (__gLevel <= RT_DEBUG_ERROR)))\
+	{          \
+    printk Fmt; \
+	}            \
 }while(0)
 
 #define DBGPRINT(Level, Fmt)    DBGPRINT_RAW(Level, Fmt)
