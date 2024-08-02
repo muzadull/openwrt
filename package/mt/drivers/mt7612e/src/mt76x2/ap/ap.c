@@ -2596,16 +2596,16 @@ BOOLEAN DOT1X_InternalCmdAction(
     IN  MAC_TABLE_ENTRY *pEntry,
     IN	UINT8			cmd)
 {
-	INT				apidx = MAIN_MBSSID;	
+	INT 			apidx = MAIN_MBSSID;	
 	UCHAR 			RalinkIe[9] = {221, 7, 0x00, 0x0c, 0x43, 0x00, 0x00, 0x00, 0x00};
 	UCHAR			s_addr[MAC_ADDR_LEN];
 	UCHAR			EAPOL_IE[] = {0x88, 0x8e};
 	UINT8			frame_len = LENGTH_802_3 + sizeof(RalinkIe);
-	UCHAR			FrameBuf[frame_len];
+	UCHAR                   FrameBuf[LENGTH_802_3 + sizeof(RalinkIe)];
 	UINT8			offset = 0;
-	
+
 	/* Init the frame buffer */
-	NdisZeroMemory(FrameBuf, frame_len);
+	NdisZeroMemory(FrameBuf, sizeof(FrameBuf));
 	
 	if (pEntry)
 	{
@@ -2659,16 +2659,16 @@ BOOLEAN DOT1X_EapTriggerAction(
     IN  PRTMP_ADAPTER	pAd,
     IN  MAC_TABLE_ENTRY *pEntry)
 {
-	INT				apidx = MAIN_MBSSID;
+	INT 			apidx = MAIN_MBSSID;
 	UCHAR 			eapol_start_1x_hdr[4] = {0x01, 0x01, 0x00, 0x00};
 	UINT8			frame_len = LENGTH_802_3 + sizeof(eapol_start_1x_hdr);
-	UCHAR			FrameBuf[frame_len + 32];
+	UCHAR			FrameBuf[LENGTH_802_3 + sizeof(eapol_start_1x_hdr) + 32];
 	UINT8			offset = 0;
 
     if((pEntry->AuthMode == Ndis802_11AuthModeWPA) || (pEntry->AuthMode == Ndis802_11AuthModeWPA2) || (pAd->ApCfg.MBSSID[apidx].wdev.IEEE8021X == TRUE))
 	{
 		/* Init the frame buffer */
-		NdisZeroMemory(FrameBuf, frame_len);
+		NdisZeroMemory(FrameBuf, sizeof(FrameBuf));
 
 		/* Assign apidx */
 		apidx = pEntry->apidx;

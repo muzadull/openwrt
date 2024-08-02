@@ -914,10 +914,12 @@ static inline void __RtmpOSFSInfoChange(OS_FS_INFO * pOSFSInfo, BOOLEAN bSet)
 		pOSFSInfo->fsuid = current_fsuid();
 		pOSFSInfo->fsgid = current_fsgid();
 #endif
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
 		pOSFSInfo->fs = get_fs();
 		set_fs(KERNEL_DS);
 	} else {
 		set_fs(pOSFSInfo->fs);
+#endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,29)
 		current->fsuid = pOSFSInfo->fsuid;
 		current->fsgid = pOSFSInfo->fsgid;
@@ -1928,17 +1930,19 @@ VOID RtmpDrvAllMacPrint(
 {
 	struct file *file_w;
 	PSTRING fileName = "MacDump.txt";
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 	mm_segment_t orig_fs;
+#endif	
 	STRING *msg;
 	UINT32 macAddr = 0, macValue = 0;
 
 	os_alloc_mem(NULL, (UCHAR **)&msg, 1024);
 	if (!msg)
 		return;
-	
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 	orig_fs = get_fs();
 	set_fs(KERNEL_DS);
-
+#endif
 	/* open file */
 	file_w = filp_open(fileName, O_WRONLY | O_CREAT, 0);
 	if (IS_ERR(file_w)) {
@@ -1965,7 +1969,9 @@ VOID RtmpDrvAllMacPrint(
 		}
 		filp_close(file_w, NULL);
 	}
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 	set_fs(orig_fs);
+#endif
 	os_free_mem(NULL, msg);
 }
 
@@ -1978,7 +1984,9 @@ VOID RtmpDrvAllE2PPrint(
 {
 	struct file *file_w;
 	PSTRING fileName = "EEPROMDump.txt";
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 	mm_segment_t orig_fs;
+#endif	
 	STRING *msg;
 	USHORT eepAddr = 0;
 	USHORT eepValue;
@@ -1986,10 +1994,10 @@ VOID RtmpDrvAllE2PPrint(
 	os_alloc_mem(NULL, (UCHAR **)&msg, 1024);
 	if (!msg)
 		return;
-	
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 	orig_fs = get_fs();
 	set_fs(KERNEL_DS);
-	
+#endif	
 	/* open file */
 	file_w = filp_open(fileName, O_WRONLY | O_CREAT, 0);
 	if (IS_ERR(file_w)) {
@@ -2017,7 +2025,9 @@ VOID RtmpDrvAllE2PPrint(
 		}
 		filp_close(file_w, NULL);
 	}
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 	set_fs(orig_fs);
+#endif	
 	os_free_mem(NULL, msg);
 }
 
@@ -2029,11 +2039,11 @@ VOID RtmpDrvAllRFPrint(
 {
 	struct file *file_w;
 	PSTRING fileName = "RFDump.txt";
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)		
 	mm_segment_t orig_fs;
-	
 	orig_fs = get_fs();
 	set_fs(KERNEL_DS);
-
+#endif
 	/* open file */
 	file_w = filp_open(fileName, O_WRONLY | O_CREAT, 0);
 	if (IS_ERR(file_w)) {
@@ -2048,7 +2058,9 @@ VOID RtmpDrvAllRFPrint(
 		}
 		filp_close(file_w, NULL);
 	}
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 	set_fs(orig_fs);
+#endif	
 }
 
 

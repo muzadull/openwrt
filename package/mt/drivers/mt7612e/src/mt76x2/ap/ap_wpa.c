@@ -558,7 +558,9 @@ VOID HandleCounterMeasure(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
     BOOLEAN     Cancelled;
 
     if (!pEntry)
+	{
         return;
+	}
 
 	/* Todo by AlbertY - Not support currently in ApClient-link */
 	if (IS_ENTRY_APCLI(pEntry))
