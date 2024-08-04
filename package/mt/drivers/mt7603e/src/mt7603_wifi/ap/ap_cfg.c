@@ -7074,7 +7074,7 @@ INT	Set_ACLAddEntry_Proc(
 		isDuplicate = FALSE;
 		for (j=0; j<pacl->Num; j++)
 		{
-			if (memcmp(pacl->Entry[j].Addr, &macAddr, 6) == 0)
+			if (memcmp(pacl->Entry[j].Addr, macAddr, 6) == 0)
 			{
 				isDuplicate = TRUE;
 				DBGPRINT(RT_DEBUG_WARN, ("You have added an entry before :\n"));
@@ -7614,7 +7614,7 @@ int froam_add_acl_entry(void *ad_obj, RTMP_IOCTL_INPUT_STRUCT *wrq)
 	/* Check if this entry is duplicate. */
 	isDuplicate = FALSE;
 	for (j = 0; j < pacl->Num; j++) {
-		if (memcmp(pacl->Entry[j].Addr, &macAddr, 6) == 0) {
+		if (memcmp(pacl->Entry[j].Addr, macAddr, 6) == 0) {
 			isDuplicate = TRUE;
 			DBGPRINT(RT_DEBUG_WARN, ("Duplicate entry for %02x:%02x:%02x:%02x:%02x:%02x\n",
 				macAddr[0], macAddr[1], macAddr[2], macAddr[3],
@@ -7689,7 +7689,7 @@ int froam_del_acl_entry(void *ad_obj, RTMP_IOCTL_INPUT_STRUCT *wrq)
 	/* Check if this entry existed. */
 	isFound = FALSE;
 	for (j = 0; j < pacl->Num; j++) {
-		if (memcmp(pacl->Entry[j].Addr, &macAddr, MAC_ADDR_LEN) == 0) {
+		if (memcmp(pacl->Entry[j].Addr, macAddr, MAC_ADDR_LEN) == 0) {
 			isFound = TRUE;
 			NdisZeroMemory(pacl->Entry[j].Addr, MAC_ADDR_LEN);
 			DBGPRINT(RT_DEBUG_ERROR,
@@ -16521,8 +16521,8 @@ int add_mntr_entry(void *ad_obj, RTMP_IOCTL_INPUT_STRUCT *wrq)
     }
     //band_idx = HcGetBandByWdev(wdev);
 
-	if (wrq->u.data.length != sizeof(mntr_entry_info)){
-		DBGPRINT(RT_DEBUG_OFF, ("add_mntr_entry: invalid payload size:%d\n",wrq->u.data.length ));
+	if (wrq->u.data.length != sizeof(mntr_entry_info)) {
+		DBGPRINT(RT_DEBUG_OFF, ("add_mntr_entry: invalid payload size:%d\n", wrq->u.data.length));
 		return -EINVAL;
 	}
 
@@ -16668,8 +16668,9 @@ int del_mntr_entry(void *ad_obj, RTMP_IOCTL_INPUT_STRUCT *wrq)
 	
 		memset(pAd->curMntAddr,0x0,MAC_ADDR_LEN);
 	
-		for (idx=0; idx<MAC_ADDR_LEN; idx++)
+		for (idx=0; idx<MAC_ADDR_LEN; idx++) {
 			DBGPRINT(RT_DEBUG_OFF, ("%02X ", pAd->curMntAddr[idx]));
+		}
 			DBGPRINT(RT_DEBUG_OFF, ("\n"));
 	
 		pAd->MntIdx = entry_info.index;
