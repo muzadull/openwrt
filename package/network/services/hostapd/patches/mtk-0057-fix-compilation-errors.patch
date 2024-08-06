@@ -1,0 +1,68 @@
+--- a/src/ap/ap_config.h
++++ b/src/ap/ap_config.h
+@@ -998,6 +998,9 @@ struct hostapd_config {
+ 	bool hw_mode_set;
+ 	int acs_exclude_6ghz_non_psc;
+ 	int enable_background_radar;
++	int mu_onoff;
++       struct he_operation he_op;
++
+ 	enum {
+ 		LONG_PREAMBLE = 0,
+ 		SHORT_PREAMBLE = 1
+--- a/hostapd/ctrl_iface.c
++++ b/hostapd/ctrl_iface.c
+@@ -1574,6 +1574,7 @@ static int hostapd_ctrl_iface_get(struct hostapd_data *hapd, char *cmd,
+ 	} else if (os_strcmp(cmd, "sae_group_capability") == 0) {
+ #ifdef CONFIG_SAE
+ 		/* see sae_set_group() */
++		const struct dh_group *dh_groups_get(int id);
+ 		res = os_snprintf(buf, buflen, "%s%s%s%s19 20 21",
+ 				  dh_groups_get(15) ? "15 ": "",
+ 				  dh_groups_get(16) ? "16 ": "",
+@@ -3752,7 +3754,9 @@ hostapd_ctrl_iface_get_aval_color_bmp(struct hostapd_data *hapd, char *buf,
+ 	u64 aval_color_bmp = 0;
+ 
+ 	hostapd_drv_get_aval_bss_color_bmp(hapd, &aval_color_bmp);
++#ifdef CONFIG_IEEE80211AX
+ 	hapd->color_collision_bitmap = ~aval_color_bmp;
++#endif
+ 
+ 	pos = buf;
+ 	end = buf + buflen;
+--- a/src/drivers/driver_nl80211.c
++++ b/src/drivers/driver_nl80211.c
+@@ -13670,8 +13670,10 @@ const struct wpa_driver_ops wpa_driver_nl80211_ops = {
+ 	.update_connect_params = nl80211_update_connection_params,
+ 	.send_external_auth_status = nl80211_send_external_auth_status,
+ 	.set_4addr_mode = nl80211_set_4addr_mode,
++#ifdef CONFIG_IEEE80211AX	
+ 	.mu_ctrl = nl80211_mu_ctrl,
+ 	.mu_dump = nl80211_mu_dump,
++#endif	
+ 	.beacon_ctrl = nl80211_beacon_ctrl,
+ #ifdef CONFIG_DPP
+ 	.dpp_listen = nl80211_dpp_listen,
+--- a/src/ap/ctrl_iface_ap.c
++++ a/src/ap/ctrl_iface_ap.c
+@@ -908,6 +908,7 @@ int hostapd_parse_csa_settings(const char *pos,
+ {
+ 	char *end;
+ 	int ret;
++	unsigned char channel;
+ 
+ 	os_memset(settings, 0, sizeof(*settings));
+ 	settings->cs_count = strtol(pos, &end, 10);
+@@ -917,8 +918,9 @@ int hostapd_parse_csa_settings(const char *pos,
+ 	}
+ 
+ 	settings->freq_params.freq = atoi(end);
+-	ret = ieee80211_freq_to_chan(settings->freq_params.freq,
+-				     &settings->freq_params.channel);
++	ret = ieee80211_freq_to_chan(settings->freq_params.freq, &channel);
++	settings->freq_params.channel = channel;
++
+ 	if (ret == NUM_HOSTAPD_MODES) {
+ 		wpa_printf(MSG_ERROR, "chanswitch: invalid freq provided");
+ 		return -1;
+

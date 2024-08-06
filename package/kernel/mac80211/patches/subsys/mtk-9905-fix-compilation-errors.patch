@@ -1,0 +1,51 @@
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -4534,8 +4534,8 @@ void ieee80211_color_aging_work(struct work_struct *work)
+ 	for (i = 0; i < IEEE80211_BSS_COLOR_MAX; i++) {
+ 		/* ageout if not seen for a period */
+ 		if ((bss_conf->used_color_bitmap & BIT_ULL(i)) &&
+-		    time_before(bss_conf->color_last_seen[i],
+-			jiffies - IEEE80211_BSS_COLOR_AGEOUT_TIME * HZ)) {
++		time_before((unsigned long)bss_conf->color_last_seen[i],
++		jiffies - IEEE80211_BSS_COLOR_AGEOUT_TIME * HZ)) {
+ 			bss_conf->used_color_bitmap &= ~BIT_ULL(i);
+ 		}
+ 	}
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -856,7 +856,7 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
+ 
+ 			if (skb) {
+ 				skb->dev = sdata->dev;
+-				dev_sw_netstats_rx_add(skb->dev, 1, skb->len);
++				dev_sw_netstats_rx_add(skb->dev, skb->len);
+ 				netif_receive_skb(skb);
+ 			}
+ 		}
+@@ -2643,7 +2643,7 @@ ieee80211_deliver_skb(struct ieee80211_rx_data *rx)
+ 
+ 	if (!wiphy_ext_feature_isset(sdata->local->hw.wiphy,
+ 	    NL80211_EXT_FEATURE_STAS_COUNT) || !rx->sta)
+-		dev_sw_netstats_rx_add(dev, 1, skb->len);
++		dev_sw_netstats_rx_add(dev, skb->len);
+ 
+ 	if (rx->sta) {
+ 		/* The seqno index has the same property as needed
+@@ -3918,7 +3918,7 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
+ 		}
+ 
+ 		prev_dev = sdata->dev;
+-		dev_sw_netstats_rx_add(sdata->dev, 1, skb->len);
++		dev_sw_netstats_rx_add(sdata->dev, skb->len);
+ 	}
+ 
+ 	if (prev_dev) {
+@@ -4550,7 +4550,7 @@ static void ieee80211_rx_8023(struct ieee80211_rx_data *rx,
+ 
+ 	if (!wiphy_ext_feature_isset(sta->local->hw.wiphy,
+ 	    NL80211_EXT_FEATURE_STAS_COUNT))
+-		dev_sw_netstats_rx_add(fast_rx->dev, 1, skb->len);
++		dev_sw_netstats_rx_add(fast_rx->dev, skb->len);
+ 
+ 	/* The seqno index has the same property as needed
+ 	 * for the rx_msdu field, i.e. it is IEEE80211_NUM_TIDS

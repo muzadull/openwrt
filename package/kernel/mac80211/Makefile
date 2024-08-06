@@ -362,6 +362,7 @@ endef
 
 define Build/Compile
 	$(SH_FUNC) var2file "$(call shvar,mac80211_config)" $(PKG_BUILD_DIR)/.config
+	sed -i '32d' $(PKG_BUILD_DIR)/include/linux/overflow.h
 	$(MAKE) $(MAKE_OPTS) allnoconfig
 	$(call Build/Compile/kmod)
 endef

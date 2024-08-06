@@ -1,0 +1,238 @@
+--- a/mt76x02.h
++++ b/mt76x02.h
+@@ -170,8 +170,7 @@ int mt76x02_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 		    struct ieee80211_vif *vif, struct ieee80211_sta *sta,
+ 		    struct ieee80211_key_conf *key);
+ int mt76x02_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+-		    unsigned int link_id, u16 queue,
+-		    const struct ieee80211_tx_queue_params *params);
++		    u16 queue, const struct ieee80211_tx_queue_params *params);
+ void mt76x02_sta_rate_tbl_update(struct ieee80211_hw *hw,
+ 				 struct ieee80211_vif *vif,
+ 				 struct ieee80211_sta *sta);
+@@ -202,7 +201,7 @@ void mt76x02_sw_scan_complete(struct ieee80211_hw *hw,
+ void mt76x02_sta_ps(struct mt76_dev *dev, struct ieee80211_sta *sta, bool ps);
+ void mt76x02_bss_info_changed(struct ieee80211_hw *hw,
+ 			      struct ieee80211_vif *vif,
+-			      struct ieee80211_bss_conf *info, u64 changed);
++			      struct ieee80211_bss_conf *info, u32 changed);
+ void mt76x02_reconfig_complete(struct ieee80211_hw *hw,
+ 			       enum ieee80211_reconfig_type reconfig_type);
+
+--- a/mt7603/main.c
++++ b/mt7603/main.c
+@@ -298,7 +298,7 @@ mt7603_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
+ 
+ static void
+ mt7603_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+-			struct ieee80211_bss_conf *info, u64 changed)
++			struct ieee80211_bss_conf *info, u32 changed)
+ {
+ 	struct mt7603_dev *dev = hw->priv;
+ 	struct mt7603_vif *mvif = (struct mt7603_vif *)vif->drv_priv;
+@@ -306,7 +306,7 @@ mt7603_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 	mutex_lock(&dev->mt76.mutex);
+ 
+ 	if (changed & (BSS_CHANGED_ASSOC | BSS_CHANGED_BSSID)) {
+-		if (vif->cfg.assoc || vif->cfg.ibss_joined) {
++		if (info->assoc || info->ibss_joined) {
+ 			mt76_wr(dev, MT_BSSID0(mvif->idx),
+ 				get_unaligned_le32(info->bssid));
+ 			mt76_wr(dev, MT_BSSID1(mvif->idx),
+@@ -530,8 +530,7 @@ mt7603_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ }
+ 
+ static int
+-mt7603_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+-	       unsigned int link_id, u16 queue,
++mt7603_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif, u16 queue,
+ 	       const struct ieee80211_tx_queue_params *params)
+ {
+ 	struct mt7603_dev *dev = hw->priv;
+@@ -661,7 +660,7 @@ mt7603_sta_rate_tbl_update(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 	mt7603_wtbl_set_rates(dev, msta, NULL, msta->rates);
+ 	msta->rate_probe = false;
+ 	mt7603_wtbl_set_smps(dev, msta,
+-			     sta->deflink.smps_mode == IEEE80211_SMPS_DYNAMIC);
++			     sta->smps_mode == IEEE80211_SMPS_DYNAMIC);
+ 	spin_unlock_bh(&dev->mt76.lock);
+ }
+
+--- a/dma.c
++++ b/dma.c
+@@ -1052,7 +1052,7 @@ mt76_dma_init(struct mt76_dev *dev,
+ 	init_completion(&dev->mmio.wed_reset_complete);
+ 
+ 	mt76_for_each_q_rx(dev, i) {
+-		netif_napi_add(&dev->napi_dev, &dev->napi[i], poll);
++		netif_napi_add(&dev->napi_dev, &dev->napi[i], poll, 64);
+ 		mt76_dma_rx_fill(dev, &dev->q_rx[i]);
+ 		napi_enable(&dev->napi[i]);
+ 	}
+
+--- a/mac80211.c
++++ b/mac80211.c
+@@ -1048,10 +1048,12 @@ mt76_rx_convert(struct mt76_dev *dev, struct sk_buff *skb,
+ 		struct ieee80211_hw **hw,
+ 		struct ieee80211_sta **sta)
+ {
+-	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
++ 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
++#if defined(CONFIG_MT7925E) || defined(CONFIG_MT7925U) || defined(CONFIG_MT7996E)
+ 	struct ieee80211_hdr *hdr = mt76_skb_get_hdr(skb);
+ 	struct mt76_phy *phy;
+-	struct mt76_rx_status mstat;
++#endif
++ 	struct mt76_rx_status mstat;
+ 
+ 	mstat = *((struct mt76_rx_status *)skb->cb);
+ 	memset(status, 0, sizeof(*status));
+@@ -1061,6 +1063,7 @@ mt76_rx_convert(struct mt76_dev *dev, struct sk_buff *skb,
+ 	status->enc_flags = mstat.enc_flags;
+ 	status->encoding = mstat.encoding;
+ 	status->bw = mstat.bw;
++#if defined(CONFIG_MT7925E) || defined(CONFIG_MT7925U) || defined(CONFIG_MT7996E)
+ 	if (status->encoding == RX_ENC_EHT) {
+ 		status->eht.ru = mstat.eht.ru;
+ 		status->eht.gi = mstat.eht.gi;
+@@ -1069,6 +1072,11 @@ mt76_rx_convert(struct mt76_dev *dev, struct sk_buff *skb,
+ 		status->he_gi = mstat.he_gi;
+ 		status->he_dcm = mstat.he_dcm;
+ 	}
++#else
++	status->he_ru = mstat.he_ru;
++	status->he_gi = mstat.he_gi;
++	status->he_dcm = mstat.he_dcm;
++#endif
+ 	status->rate_idx = mstat.rate_idx;
+ 	status->nss = mstat.nss;
+ 	status->band = mstat.band;
+@@ -1080,11 +1088,11 @@ mt76_rx_convert(struct mt76_dev *dev, struct sk_buff *skb,
+ 	status->signal = mt76_rx_signal(mstat.chains, mstat.chain_signal);
+ 	if (status->signal <= -128)
+ 		status->flag |= RX_FLAG_NO_SIGNAL_VAL;
+-
++#if defined(CONFIG_MT7925E) || defined(CONFIG_MT7925U) || defined(CONFIG_MT7996E)
+ 	if (ieee80211_is_beacon(hdr->frame_control) ||
+ 	    ieee80211_is_probe_resp(hdr->frame_control))
+ 		status->boottime_ns = ktime_get_boottime_ns();
+-
++#endif
+ 	BUILD_BUG_ON(sizeof(mstat) > sizeof(skb->cb));
+ 	BUILD_BUG_ON(sizeof(status->chain_signal) !=
+ 		     sizeof(mstat.chain_signal));
+@@ -1093,9 +1101,10 @@ mt76_rx_convert(struct mt76_dev *dev, struct sk_buff *skb,
+ 
+ 	*sta = wcid_to_sta(mstat.wcid);
+ 	*hw = mt76_phy_hw(dev, mstat.phy_idx);
+-
++#if defined(CONFIG_MT7925E) || defined(CONFIG_MT7925U) || defined(CONFIG_MT7996E)
+ 	phy = mt76_dev_phy(dev, mstat.phy_idx);
+ 	phy->rx_dbg_stats.rx_to_mac80211++;
++#endif
+ }
+ 
+ static void
+@@ -1591,7 +1600,7 @@ EXPORT_SYMBOL_GPL(mt76_get_sar_power);
+ static void
+ __mt76_csa_finish(void *priv, u8 *mac, struct ieee80211_vif *vif)
+ {
+-	if (vif->bss_conf.csa_active && ieee80211_beacon_cntdwn_is_complete(vif))
++	if (vif->csa_active && ieee80211_beacon_cntdwn_is_complete(vif))
+ 		ieee80211_csa_finish(vif);
+ }
+ 
+@@ -1613,7 +1622,7 @@ __mt76_csa_check(void *priv, u8 *mac, struct ieee80211_vif *vif)
+ {
+ 	struct mt76_dev *dev = priv;
+ 
+-	if (!vif->bss_conf.csa_active)
++	if (!vif->csa_active)
+ 		return;
+ 
+ 	dev->csa_complete |= ieee80211_beacon_cntdwn_is_complete(vif);
+
+--- a/mt7603/dma.c
++++ b/mt7603/dma.c
+@@ -33,6 +33,7 @@ mt7603_rx_loopback_skb(struct mt7603_dev *dev, struct sk_buff *skb)
+ 	void *priv;
+ 	int idx;
+ 	u32 val;
++	u8 qid;
+ 
+ 	if (skb->len < MT_TXD_SIZE + sizeof(struct ieee80211_hdr))
+ 		goto free;
+@@ -57,7 +58,7 @@ mt7603_rx_loopback_skb(struct mt7603_dev *dev, struct sk_buff *skb)
+ 	if (ieee80211_is_data_qos(hdr->frame_control)) {
+ 		tid = *ieee80211_get_qos_ctl(hdr) &
+ 			 IEEE80211_QOS_CTL_TAG1D_MASK;
+-		u8 qid = tid_to_ac[tid];
++		qid = tid_to_ac[tid];
+ 		hwq = wmm_queue_map[qid];
+ 		skb_set_queue_mapping(skb, qid);
+ 	} else if (ieee80211_is_data(hdr->frame_control)) {
+@@ -242,8 +243,8 @@ int mt7603_dma_init(struct mt7603_dev *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	netif_napi_add_tx(&dev->mt76.tx_napi_dev, &dev->mt76.tx_napi,
+-			  mt7603_poll_tx);
++	netif_tx_napi_add(&dev->mt76.tx_napi_dev, &dev->mt76.tx_napi,
++			  mt7603_poll_tx, NAPI_POLL_WEIGHT);
+ 	napi_enable(&dev->mt76.tx_napi);
+ 
+ 	return 0;
+
+--- a/mt7603/mac.c
++++ b/mt7603/mac.c
+@@ -337,21 +337,21 @@ void mt7603_wtbl_update_cap(struct mt7603_dev *dev, struct ieee80211_sta *sta)
+ 
+ 	addr = mt7603_wtbl1_addr(idx);
+ 
+-	ampdu_density = sta->deflink.ht_cap.ampdu_density;
++	ampdu_density = sta->ht_cap.ampdu_density;
+ 	if (ampdu_density < IEEE80211_HT_MPDU_DENSITY_4)
+ 		ampdu_density = IEEE80211_HT_MPDU_DENSITY_4;
+ 
+ 	val = mt76_rr(dev, addr + 2 * 4);
+ 	val &= MT_WTBL1_W2_KEY_TYPE | MT_WTBL1_W2_ADMISSION_CONTROL;
+ 	val |= FIELD_PREP(MT_WTBL1_W2_AMPDU_FACTOR,
+-			  sta->deflink.ht_cap.ampdu_factor) |
++			  sta->ht_cap.ampdu_factor) |
+ 	       FIELD_PREP(MT_WTBL1_W2_MPDU_DENSITY,
+-			  sta->deflink.ht_cap.ampdu_density) |
++			  sta->ht_cap.ampdu_density) |
+ 	       MT_WTBL1_W2_TXS_BAF_REPORT;
+ 
+-	if (sta->deflink.ht_cap.cap)
++	if (sta->ht_cap.cap)
+ 		val |= MT_WTBL1_W2_HT;
+-	if (sta->deflink.vht_cap.cap)
++	if (sta->vht_cap.cap)
+ 		val |= MT_WTBL1_W2_VHT;
+ 
+ 	mt76_wr(dev, addr + 2 * 4, val);
+@@ -360,9 +360,9 @@ void mt7603_wtbl_update_cap(struct mt7603_dev *dev, struct ieee80211_sta *sta)
+ 	val = mt76_rr(dev, addr + 9 * 4);
+ 	val &= ~(MT_WTBL2_W9_SHORT_GI_20 | MT_WTBL2_W9_SHORT_GI_40 |
+ 		 MT_WTBL2_W9_SHORT_GI_80);
+-	if (sta->deflink.ht_cap.cap & IEEE80211_HT_CAP_SGI_20)
++	if (sta->ht_cap.cap & IEEE80211_HT_CAP_SGI_20)
+ 		val |= MT_WTBL2_W9_SHORT_GI_20;
+-	if (sta->deflink.ht_cap.cap & IEEE80211_HT_CAP_SGI_40)
++	if (sta->ht_cap.cap & IEEE80211_HT_CAP_SGI_40)
+ 		val |= MT_WTBL2_W9_SHORT_GI_40;
+ 	mt76_wr(dev, addr + 9 * 4, val);
+ }
+
+--- a/mt7603/beacon.c
++++ b/mt7603/beacon.c
+@@ -39,7 +39,7 @@ mt7603_update_beacon_iter(void *priv, u8 *mac, struct ieee80211_vif *vif)
+ 	if (!(mdev->beacon_mask & BIT(mvif->idx)))
+ 		return;
+ 
+-	skb = ieee80211_beacon_get(mt76_hw(dev), vif, 0);
++	skb = ieee80211_beacon_get(mt76_hw(dev), vif);
+ 	if (!skb)
+ 		return;
+
