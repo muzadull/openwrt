@@ -550,6 +550,7 @@
 	mtketh-wan = "wan";
 	mtkdsa-wan-port = "4";
 	mtketh-lan = "lan";
+	mtketh-ppd = "lan";
 	ext-devices = "phy0-ap0","phy1-ap0";
 	mtketh-max-gmac = <2>;
 	status = "okay";
