@@ -152,6 +152,26 @@
  
  	dev->csa_complete |= ieee80211_beacon_cntdwn_is_complete(vif);
 
+--- a/eeprom.c
++++ b/eeprom.c
+@@ -190,15 +190,9 @@ void
+ mt76_eeprom_override(struct mt76_phy *phy)
+ {
+ 	struct mt76_dev *dev = phy->dev;
+-#ifdef CONFIG_OF
+ 	struct device_node *np = dev->dev->of_node;
+-	const u8 *mac = NULL;
+ 
+-	if (np)
+-		mac = of_get_mac_address(np);
+-	if (!IS_ERR_OR_NULL(mac))
+-		ether_addr_copy(phy->macaddr, mac);
+-#endif
++	of_get_mac_address(np, phy->macaddr);
+ 
+ 	if (!is_valid_ether_addr(phy->macaddr)) {
+ 		eth_random_addr(phy->macaddr);
+
 --- a/mt7603/dma.c
 +++ b/mt7603/dma.c
 @@ -33,6 +33,7 @@ mt7603_rx_loopback_skb(struct mt7603_dev *dev, struct sk_buff *skb)
