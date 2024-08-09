@@ -483,6 +483,7 @@
 			#size-cells = <0>;
 
 			switch0: switch@1f {
+				status = "okay";
 				compatible = "mediatek,mt7621";
 				reg = <0x1f>;
 				mediatek,mcm;
@@ -554,6 +555,48 @@
 	mtketh-max-gmac = <2>;
 	status = "okay";
 	};
+
+	gsw: gsw@1e110000 {
+	     status = "disabled";
+	     compatible = "mediatek,mt753x";
+	     reg = <0x1e110000 0x8000>;
+	     interrupt-parent = <&gic>;
+	     interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
+
+	     mediatek,mdio = <&mdio>;
+	     mediatek,portmap = "llllw";
+	     mt7530,direct-phy-access;
+	     resets = <&rstctrl 2>;
+	     reset-names = "mcm";
+	     mediatek,mcm;
+
+	     port5: port@5 {
+		    compatible = "mediatek,mt753x-port";
+		    reg = <5>;
+		    phy-mode = "rgmii";
+
+		    fixed-link {
+			speed = <1000>;
+			full-duplex;
+		    };
+	     };
+
+	     port6: port@6 {
+		    compatible = "mediatek,mt753x-port";
+		    reg = <6>;
+		    phy-mode = "rgmii";
+
+		    fixed-link {
+			speed = <1000>;
+			full-duplex;
+		    };
+	     };
+		
+	     mdio-bus {
+		    #address-cells = <1>;
+		    #size-cells = <0>;
+			};
+		 };
 
 	pcie: pcie@1e140000 {
 		compatible = "mediatek,mt7621-pci";
