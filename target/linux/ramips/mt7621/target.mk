@@ -11,7 +11,7 @@ KERNELNAME:=vmlinux vmlinuz
 IMAGES_DIR:=../../..
 
 DEFAULT_PACKAGES += wpad-basic-mbedtls uboot-envtools curl ethtool iptables-mod-conntrack-extra \
-                    irqbalance luci luci-app-adblock luci-app-https-dns-proxy luci-app-sqm luci-app-ttyd kmod-br-netfilter kmod-sched-connmark
+                    irqbalance luci luci-app-adblock luci-app-https-dns-proxy luci-app-sqm luci-app-ttyd kmod-br-netfilter kmod-sched-connmark swconfig
 
 define Target/Description
 	Build firmware images for Ralink MT7621 based boards.
