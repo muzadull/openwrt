@@ -106,40 +106,22 @@
 };
 
 &gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-};
+    status = "okay";
 
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
+    fixed-link {
+	speed = <1000>;
+	full-duplex;
+	pause;
+    };
 };
 
 &switch0 {
-	ports {
-		port@0 {
-			status = "okay";
-			label = "lan4";
-		};
+    status = "disabled";
+};	
 
-		port@1 {
-			status = "okay";
-			label = "lan3";
-		};
-
-		port@2 {
-			status = "okay";
-			label = "lan2";
-		};
-
-		port@3 {
-			status = "okay";
-			label = "lan1";
-		};
-	};
-};
+&gsw {
+    status = "okay";
+};	
 
 &state_default {
 	gpio {
