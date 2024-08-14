@@ -1143,7 +1143,12 @@ VOID WPAStart4WayHS(
 		pEapolFrame->KeyDesc.KeyData[4] = 0xAC;
 		pEapolFrame->KeyDesc.KeyData[5] = 0x04;
 
-		NdisMoveMemory(&pEapolFrame->KeyDesc.KeyData[6], &pMbss->PMKIDCache.BSSIDInfo[pEntry->PMKID_CacheIdx].PMKID, LEN_PMKID);
+		if (sizeof(pEapolFrame->KeyDesc.KeyData) >= (6 + LEN_PMKID)) {
+			NdisMoveMemory(&pEapolFrame->KeyDesc.KeyData[6], &pMbss->PMKIDCache.BSSIDInfo[pEntry->PMKID_CacheIdx].PMKID, LEN_PMKID);
+			} else {
+				DBGPRINT(RT_DEBUG_TRACE, (" WPAStart4WayHS : KeyData buffer overflow detected.\n"));
+				return;
+			}
 #if defined(DOT11_SAE_SUPPORT) || defined(CONFIG_OWE_SUPPORT)
 		pmk_len = LEN_PMK;
 #ifdef CONFIG_OWE_SUPPORT
@@ -1194,10 +1199,21 @@ VOID WPAStart4WayHS(
 #ifdef CONFIG_OWE_SUPPORT
 		if (pEntry->AuthMode == Ndis802_11AuthModeOWE) {
 			OWE_INFO *owe = &pEntry->owe;
-		NdisMoveMemory(&pKeyDesc->KeyData[6], owe->pmkid, LEN_PMKID);
+			
+		if (sizeof(pKeyDesc->KeyData) >= (6 + LEN_PMKID)) {
+			NdisMoveMemory(&pKeyDesc->KeyData[6], owe->pmkid, LEN_PMKID);
+			} else {
+				DBGPRINT(RT_DEBUG_TRACE, (" WPAStart4WayHS : KeyData buffer overflow detected.\n"));
+				return;
+			}
 		} else
 #endif /*CONFIG_OWE_SUPPORT*/
-                NdisMoveMemory(&pKeyDesc->KeyData[6], digest, LEN_PMKID);
+                if (sizeof(pKeyDesc->KeyData) >= (6 + LEN_PMKID)) {
+					NdisMoveMemory(&pKeyDesc->KeyData[6], digest, LEN_PMKID);
+					} else {
+						DBGPRINT(RT_DEBUG_TRACE, (" WPAStart4WayHS : KeyData buffer overflow detected.\n"));
+						return;
+					}
 
                 pKeyDesc->KeyData[1] = 0x14;// 4+LEN_PMKID
                 INC_UINT16_TO_ARRARY(pKeyDesc->KeyDataLen, 6 + LEN_PMKID);
@@ -1248,17 +1264,12 @@ VOID PeerPairMsg1Action(
     IN MAC_TABLE_ENTRY  *pEntry,
     IN MLME_QUEUE_ELEM  *Elem)
 {
-	UCHAR				PTK[80];
-	UCHAR               Header802_3[14];
-	PEAPOL_PACKET		pMsg1;
-	UINT            	MsgLen;
-	UCHAR   			*mpool;
-    PEAPOL_PACKET		pEapolFrame;
 	PUINT8				pCurrentAddr = NULL;
 	PUINT8				pmk_ptr = NULL;
 	UCHAR				group_cipher = Ndis802_11WEPDisabled;
 	PUINT8				rsnie_ptr = NULL;
 	UCHAR				rsnie_len = 0;
+	UINT				IfIndex = 0;              
 #ifdef MAC_REPEATER_SUPPORT
 	USHORT ifIndex = (USHORT)(Elem->Priv);
 	UCHAR CliIdx = 0xFF;
@@ -1291,8 +1302,6 @@ VOID PeerPairMsg1Action(
 #ifdef APCLI_SUPPORT
 		if (IS_ENTRY_APCLI(pEntry))
 		{
-			UINT IfIndex = 0;
-
 			IfIndex = pEntry->func_tb_idx;
 #ifdef MAC_REPEATER_SUPPORT
 			if (ifIndex >= 64)
@@ -1315,9 +1324,9 @@ VOID PeerPairMsg1Action(
 
 				if (pEntry->AuthMode == Ndis802_11AuthModeOWE
 					&& pEntry->key_deri_alg == SEC_KEY_DERI_SHA256) {
-					if (pEntry->owe.last_try_group == pEntry->owe.curr_group)
+					if (pEntry->owe.last_try_group == pEntry->owe.curr_group) {
 						NdisMoveMemory(pEntry->PMK, pEntry->pmk_cache, LEN_PMK);
-					else {
+					} else {
 						MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 							("===> %s:PMK Cache not valid as owe group changed from %d to %d\n",
 							__func__, pEntry->owe.last_try_group,
@@ -1326,9 +1335,15 @@ VOID PeerPairMsg1Action(
 					}
 				} else if (pEntry->AuthMode == Ndis802_11AuthModeOWE
 					&& pEntry->key_deri_alg == SEC_KEY_DERI_SHA384) {
-					if (pEntry->owe.last_try_group == pEntry->owe.curr_group)
-						NdisMoveMemory(pEntry->PMK, pEntry->pmk_cache, LEN_PMK_SHA384);
-					else {
+					if (pEntry->owe.last_try_group == pEntry->owe.curr_group) {
+						if (sizeof(pEntry->PMK) >= LEN_PMK_SHA384) {
+							NdisMoveMemory(pEntry->PMK, pEntry->pmk_cache, LEN_PMK_SHA384);
+							} else {
+								MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+								("===> %s: PMK buffer overflow risk detected. Size of PMK is insufficient.\n", __func__));
+								return;
+							}
+					} else {
 						MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 							("===> %s:PMK Cache not valid as owe group changed from %d to %d\n",
 							__func__, pEntry->owe.last_try_group,
@@ -1375,7 +1390,15 @@ VOID PeerPairMsg1Action(
 #endif /* CONFIG_AP_SUPPORT */
 
 	if (pCurrentAddr == NULL)
+	{
 		return;
+	}
+	
+	UCHAR		        *mpool;
+	PEAPOL_PACKET		pMsg1;
+	UCHAR		        PTK[80];
+	UINT		        MsgLen;
+	PEAPOL_PACKET		pEapolFrame;
 
 	/* Store the received frame*/
 	pMsg1 = (PEAPOL_PACKET)&Elem->Msg[hdr_len + LENGTH_802_1_H];
@@ -1491,6 +1514,8 @@ VOID PeerPairMsg1Action(
 					  pEapolFrame);
 
 	/* Make outgoing frame*/
+	UCHAR               Header802_3[14];
+	
 	MAKE_802_3_HEADER(Header802_3, pEntry->Addr, pCurrentAddr, EAPOL);
 
 	RTMPToWirelessSta(pAd, pEntry,
