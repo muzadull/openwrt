@@ -315,7 +315,9 @@ typedef struct _OS_FS_INFO_
 {
 	uid_t		fsuid;
 	gid_t		fsgid;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)		
 	mm_segment_t	fs;
+#endif	
 } OS_FS_INFO;
 
 #define IS_FILE_OPEN_ERR(_fd) 	((_fd == NULL) || IS_ERR((_fd)))
@@ -549,7 +551,7 @@ do { \
 
 #define ATE_KILL_THREAD_PID(PID)		KILL_THREAD_PID(PID, SIGTERM, 1)
 
-typedef int (*cast_fn)(void *);
+typedef INT (*cast_fn)(ULONG);
 typedef INT (*RTMP_OS_TASK_CALLBACK)(ULONG);
 
 #ifdef WORKQUEUE_BH
@@ -1007,7 +1009,7 @@ do{ \
 #endif
 
 #define RTMP_OS_NETDEV_GET_DEVNAME(_pNetDev)	((_pNetDev)->name)
-#define RTMP_OS_NETDEV_GET_PHYADDR(_pNetDev)	((_pNetDev)->dev_addr)
+#define RTMP_OS_NETDEV_GET_PHYADDR(_pNetDev)	((void *)(_pNetDev)->dev_addr)
 
 /* Get & Set NETDEV interface hardware type */
 #define RTMP_OS_NETDEV_GET_TYPE(_pNetDev)			((_pNetDev)->type)
