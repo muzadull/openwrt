@@ -26,7 +26,7 @@
  */
 
 #include "rt_config.h"
-#include <linux/stdarg.h>
+#include <stdarg.h>
 
 #ifdef BTCOEX_CONCURRENT
 extern void MT7662ReceCoexFromOtherCHip(

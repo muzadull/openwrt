@@ -162,13 +162,9 @@ NDIS_STATUS RT30xxWriteRFRegister(
 		while(IdRf != value)
 		{
 			if (beAdd)
-			{
 				IdRf++;
-			}
 			else
-			{
 				IdRf--;
-			}
 			
 				rfcsr.non_bank.RF_CSR_DATA = IdRf;
 				RTMP_IO_WRITE32(pAd, RF_CSR_CFG, rfcsr.word);

@@ -8,21 +8,12 @@ WIFI_DRV_PATH = drivers/net/wireless/mtk/mt7615e
 endif
 endif
 
-EXTRA_CFLAGS = -I$(WIFI_DRV_PATH)/mt_wifi/include \
+EXTRA_CFLAGS += -I$(WIFI_DRV_PATH)/mt_wifi/include \
 				-I$(WIFI_DRV_PATH)/mt_wifi/embedded/include \
 				-I$(WIFI_DRV_PATH)/mt_wifi/ate/include \
 				-I$(WIFI_DRV_PATH)/mt_wifi/include/mcu
 
 DRV_NAME = mt_wifi
-ifeq ($(CONFIG_SUPPORT_OPENWRT),y)
-ifeq ($(CONFIG_CHIP_MT7622),y)
-ifeq ($(CONFIG_MT76XX_COMBO_DUAL_DRIVER_SUPPORT),y)
-DRV_NAME = mt7622_mt_wifi
-EXTRA_CFLAGS += -Wframe-larger-than=4096
-endif
-endif
-endif
-
 SRC_DIR = ../mt_wifi
 SRC_EMBEDDED_DIR = ../mt_wifi/embedded
 ifeq ($(CONFIG_SUPPORT_OPENWRT),y)
@@ -115,6 +106,7 @@ ifeq ($(CONFIG_MTK_EMI_7622),y)
 EXTRA_CFLAGS += -DCONFIG_ARCH_MT7622
 endif
 
+
 EXTRA_CFLAGS += -DWIFI_SYS_FW_V1
 EXTRA_CFLAGS += -DWIFI_SYS_FW_V2
 ########################################################
@@ -200,17 +192,11 @@ cmm_objs := $(SRC_EMBEDDED_DIR)/common/action.o\
 		$(SRC_DIR)/protocol/protection.o\
 		$(SRC_EMBEDDED_DIR)/common/misc_app.o
 
-ifeq ($(CONFIG_MULTI_PROFILE_SUPPORT),y)
 EXTRA_CFLAGS += -DMULTI_PROFILE
 cmm_objs += $(SRC_EMBEDDED_DIR)/common/multi_profile.o
-endif
 
 ifeq ($(CONFIG_DEFAULT_5G_PROFILE),y)
 EXTRA_CFLAGS += -DDEFAULT_5G_PROFILE
-endif
-
-ifeq ($(CONFIG_MLME_MULTI_QUEUE_SUPPORT),y)
-EXTRA_CFLAGS += -DMLME_MULTI_QUEUE_SUPPORT
 endif
 
 ########################################################
@@ -303,13 +289,6 @@ ifeq ($(CONFIG_DOT11_VHT_AC),y)
 	endif
 endif
 
-# DPP
-ifeq ($(CONFIG_DPP_SUPPORT),y)
-EXTRA_CFLAGS += -DCHANNEL_SWITCH_MONITOR_CONFIG
-EXTRA_CFLAGS += -DDPP_SUPPORT
-endif
-
-
 # WAPI
 ifeq ($(CONFIG_WAPI_SUPPORT),y)
     EXTRA_CFLAGS += -DWAPI_SUPPORT
@@ -325,7 +304,7 @@ endif
 # WPA3
 ifeq ($(CONFIG_WPA3_SUPPORT),y)
     EXTRA_CFLAGS += -DDOT11_SAE_SUPPORT -DDOT11_SUITEB_SUPPORT -DDOT11W_PMF_SUPPORT
-    EXTRA_CFLAGS += -DDOT11_SAE_OPENSSL_BN -DDOT11_SAE_PWD_ID_SUPPORT
+    EXTRA_CFLAGS += -DDOT11_SAE_OPENSSL_BN
 
   spec_objs += $(SRC_EMBEDDED_DIR)/security/sae.o
   spec_objs += $(SRC_EMBEDDED_DIR)/security/crypt_bignum.o
@@ -339,9 +318,6 @@ ifeq ($(CONFIG_WPA3_SUPPORT),y)
   endif
 
 endif
-
-#To use mtk_dut daemon, so we need open DCONFIG_APSTA_MIXED_SUPPORT
-EXTRA_CFLAGS += -DCONFIG_APSTA_MIXED_SUPPORT
 
 # OWE
 ifeq ($(CONFIG_OWE_SUPPORT),y)
@@ -487,12 +463,6 @@ EXTRA_CFLAGS += -DFT_R1KH_KEEP
 endif
 endif
 
-
-#VLAN
-ifeq ($(CONFIG_VLAN_SUPPORT),y)
-	EXTRA_CFLAGS += -DVLAN_SUPPORT
-endif
-
 #SNIFFER
 ifeq ($(CONFIG_SNIFFER_SUPPORT),y)
     EXTRA_CFLAGS += -DSNIFFER_SUPPORT
@@ -501,44 +471,9 @@ ifeq ($(CONFIG_SNIFFER_SUPPORT),y)
                  $(SRC_EMBEDDED_DIR)/common/sniffer_prism.o
 endif
 
-#EAP-Antenna Control
-ifeq ($(CONFIG_ANTENNA_CONTROL_SUPPORT),y)
-EXTRA_CFLAGS += -DANTENNA_CONTROL_SUPPORT
-endif
-
-#EAP-Mgmt TxPower Control
-ifeq ($(CONFIG_MGMT_TXPWR_CTRL),y)
-EXTRA_CFLAGS += -DMGMT_TXPWR_CTRL
-endif
-
-#EAP-Channel Utilization Support
-ifeq ($(CONFIG_CHUTIL_SUPPORT),y)
-EXTRA_CFLAGS += -DCHUTIL_SUPPORT
-endif
-
-#EAP-Noise Floor Support
-ifeq ($(CONFIG_NF_SUPPORT),y)
-EXTRA_CFLAGS += -DNF_SUPPORT
-endif
-
 #EAP-TXRX Statsitics
 ifeq ($(CONFIG_TXRX_STAT_SUPPORT),y)
 EXTRA_CFLAGS += -DTXRX_STAT_SUPPORT
-endif
-
-#EAP-RA Phy rate support
-ifeq ($(CONFIG_RA_PHY_RATE_SUPPORT),y)
-EXTRA_CFLAGS += -DCONFIG_RA_PHY_RATE_SUPPORT
-endif
-
-#EAP-AMPDU Config retry & agglimitSupport
-ifeq ($(CONFIG_AMPDU_CONF_SUPPORT),y)
-EXTRA_CFLAGS += -DAMPDU_CONF_SUPPORT
-endif
-
-#EAP-ACK CTS Timeout cck & ofdm Support
-ifeq ($(CONFIG_ACK_CTS_TIMEOUT_SUPPORT),y)
-EXTRA_CFLAGS += -DACK_CTS_TIMEOUT_SUPPORT
 endif
 
 #VENDOR_FEATURE11
@@ -552,11 +487,13 @@ ifeq ($(CONFIG_HOSTAPD_MAP_SUPPORT),y)
 endif
 
 #ENTERPRISE_AP
-ifeq ($(CONFIG_ENTERPRISE_AP_SUPPORT),y)
+ifeq ($(CONFIG_CFG80211_SUPPORT),y)
+ifneq ($(CONFIG_HOSTAPD_MAP_SUPPORT),y)
 	EXTRA_CFLAGS += -DHOSTAPD_11R_SUPPORT
 	EXTRA_CFLAGS += -DMBSS_DTIM_SUPPORT
-	EXTRA_CFLAGS += -DEAP_STATS_SUPPORT
-	
+	ifeq ($(CONFIG_VLAN_SUPPORT),y)
+		EXTRA_CFLAGS += -DVLAN_SUPPORT
+	endif
 	ifeq ($(CONFIG_RADIUS_MAC_AUTH_SUPPORT),y)
 		EXTRA_CFLAGS += -DRADIUS_MAC_AUTH_SUPPORT
 	endif
@@ -564,6 +501,7 @@ ifeq ($(CONFIG_ENTERPRISE_AP_SUPPORT),y)
 		EXTRA_CFLAGS += -DDYNAMIC_VLAN_SUPPORT
 	endif
 
+endif
 endif
 
 #CFG
@@ -599,10 +537,7 @@ ifeq ($(CONFIG_CFG80211_SUPPORT),y)
 endif
 
 ifeq ($(CONFIG_MAP_SUPPORT),y)
-	EXTRA_CFLAGS += -DA4_CONN -DROUTING_TAB_SUPPORT -DWAPP_SUPPORT -DCONFIG_MAP_SUPPORT -DOFFCHANNEL_SCAN_FEATURE -DCONFIG_11KV_API_SUPPORT
-ifeq ($(CONFIG_MAP_R2_VER_SUPPORT),y)
-	EXTRA_CFLAGS += -DMAP_R2  -DMAP_TS_TRAFFIC_SUPPORT
-endif
+	EXTRA_CFLAGS += -DA4_CONN -DROUTING_TAB_SUPPORT -DWAPP_SUPPORT -DCONFIG_MAP_SUPPORT 
 	spec_objs += $(SRC_EMBEDDED_DIR)/common/map.o
 	spec_objs += $(SRC_EMBEDDED_DIR)/common/a4_conn.o
 	spec_objs += $(SRC_EMBEDDED_DIR)/common/routing_tab.o
@@ -870,7 +805,7 @@ ifeq ($(CONFIG_AIR_MONITOR),y)
 endif
 
 ifeq ($(CONFIG_EASY_SETUP_SUPPORT),y)
-$(DRV_NAME)-objs += $(SRC_EMBEDDED_DIR)/easy_setup/ez_cmm.o
+$(DRV_NAME)-y += $(SRC_EMBEDDED_DIR)/easy_setup/ez_cmm.o
 endif
 
 ifeq ($(CONFIG_MWDS),y)
@@ -903,8 +838,7 @@ endif
 os_objs := $(SRC_DIR)/os/linux/rt_proc.o\
             $(SRC_DIR)/os/linux/rt_linux.o\
             $(SRC_DIR)/os/linux/rt_profile.o\
-            $(SRC_DIR)/os/linux/rt_main_dev.o\
-            $(SRC_DIR)/os/linux/mt_wifi_mtd.o
+            $(SRC_DIR)/os/linux/rt_main_dev.o
 
 ifeq ($(CONFIG_WLAN_HOOK),y)
 	EXTRA_CFLAGS +=-DRTMP_WLAN_HOOK_SUPPORT
@@ -1013,17 +947,9 @@ ifeq ($(CONFIG_DBDC_MODE),y)
 EXTRA_CFLAGS += -DDBDC_MODE
 endif
 
-ifeq ($(CONFIG_G_BAND_256QAM_SUPPORT),y)
-EXTRA_CFLAGS += -DG_BAND_256QAM
-ifeq ($(CONFIG_BRCM_256QAM_SUPPORT),y)
-EXTRA_CFLAGS += -DBRCM_256QAM
-endif
-endif
-
 ifeq ($(CONFIG_CHIP_MT7615E),y)
 EXTRA_CFLAGS += -DMT7615 -DMT_BBP -DMT_RF -DRTMP_RF_RW_SUPPORT -DMT_MAC -DRTMP_MAC_PCI -DRTMP_PCI_SUPPORT
 EXTRA_CFLAGS += -DMCS_LUT_SUPPORT -DA_BAND_SUPPORT
-#EXTRA_CFLAGS += -DNEIGHBORING_AP_STAT
 EXTRA_CFLAGS += -DRTMP_EFUSE_SUPPORT
 EXTRA_CFLAGS += -DCAL_FREE_IC_SUPPORT
 EXTRA_CFLAGS += -DBCN_OFFLOAD_SUPPORT
@@ -1067,15 +993,12 @@ endif
 ifeq ($(CONFIG_CUSTOMER_VENDOR_IE_SUPPORT),y)
     EXTRA_CFLAGS += -DCUSTOMER_VENDOR_IE_SUPPORT
 endif
-
-CONFIG_OCE_SUPPORT=y
-# OCE
-ifeq ($(CONFIG_OCE_SUPPORT),y)
-EXTRA_CFLAGS += -DOCE_SUPPORT -DOCE_FILS_SUPPORT
-func_objs += $(SRC_EMBEDDED_DIR)/common/oce_fils.o
-func_objs += $(SRC_EMBEDDED_DIR)/common/oce.o
+ifeq ($(CONFIG_G_BAND_256QAM_SUPPORT),y)
+EXTRA_CFLAGS += -DG_BAND_256QAM
+ifeq ($(CONFIG_BRCM_256QAM_SUPPORT),y)
+EXTRA_CFLAGS += -DBRCM_256QAM
 endif
-
+endif
 EXTRA_CFLAGS += -Wframe-larger-than=4096
 ifeq ($(CONFIG_HDR_TRANS_TX_SUPPORT),y)
 	EXTRA_CFLAGS += -DHDR_TRANS_TX_SUPPORT -DCUT_THROUGH_FULL_OFFLOAD
@@ -1169,6 +1092,12 @@ EXTRA_CFLAGS += -DPKT_BUDGET_CTRL_SUPPORT
 EXTRA_CFLAGS += -DHW_TX_AMSDU_SUPPORT
 #WFLAGS += -DCONFIG_CSO_SUPPORT
 #WFLAGS += -DMSP_UTILITY
+ifeq ($(CONFIG_G_BAND_256QAM_SUPPORT),y)
+EXTRA_CFLAGS += -DG_BAND_256QAM
+ifeq ($(CONFIG_BRCM_256QAM_SUPPORT),y)
+EXTRA_CFLAGS += -DBRCM_256QAM
+endif
+endif
 
 #EXTRA_CFLAGS += -Wframe-larger-than=4096
 WFLAGS += -Werror
@@ -1244,7 +1173,6 @@ EXTRA_CFLAGS += -DMT_DMAC
 EXTRA_CFLAGS += -DMCS_LUT_SUPPORT
 EXTRA_CFLAGS += -DRTMP_EFUSE_SUPPORT
 EXTRA_CFLAGS += -DBCN_OFFLOAD_SUPPORT
-EXTRA_CFLAGS += -DERR_RECOVERY
 EXTRA_CFLAGS += -DCAL_FREE_IC_SUPPORT
 #EXTRA_CFLAGS += -DNEW_SET_RX_STREAM
 EXTRA_CFLAGS += -DCONFIG_ANDES_SUPPORT -DCUT_THROUGH
@@ -1271,13 +1199,7 @@ EXTRA_CFLAGS += -DCONFIG_TX_DELAY
 EXTRA_CFLAGS += -DDBG_AMSDU
 EXTRA_CFLAGS += -DPRE_CAL_MT7622_SUPPORT
 EXTRA_CFLAGS += -DTXSTAT_2040BW_24G_SUPPORT
-EXTRA_CFLAGS += -DTX_POWER_CONTROL_SUPPORT
-EXTRA_CFLAGS += -DRELEASE_EXCLUDE
 CONFIG_PROPRIETARY_DRIVER=y
-
-ifeq ($(CONFIG_SINGLE_SKU),y)
-EXTRA_CFLAGS += -DSINGLE_SKU_V2
-endif
 
 ifeq ($(CONFIG_PROPRIETARY_DRIVER),y)
 EXTRA_CFLAGS += -DCONFIG_PROPRIETARY_DRIVER
@@ -1313,10 +1235,6 @@ ifeq ($(CONFIG_VOW_SUPPORT),y)
 ifeq ($(CONFIG_RED_SUPPORT),y)
 EXTRA_CFLAGS += -DFQ_SCH_SUPPORT
 endif
-endif
-
-ifeq ($(CONFIG_MT76XX_COMBO_DUAL_DRIVER_SUPPORT),y)
-    EXTRA_CFLAGS += -DMT76XX_COMBO_DUAL_DRIVER_SUPPORT
 endif
 
 chip_objs += $(SRC_DIR)/chips/mt7622.o\
@@ -1381,23 +1299,23 @@ endif
 # Root
 #
 
-$(DRV_NAME)-objs += $(ap_objs) $(cmm_objs) $(asic_objs) $(chip_objs) $(rate_objs)\
+$(DRV_NAME)-y += $(ap_objs) $(cmm_objs) $(asic_objs) $(chip_objs) $(rate_objs)\
                     $(spec_objs) $(func_objs) $(os_objs) $(dot11_ft_objs)
 
-$(DRV_NAME)-objs += $(SRC_EMBEDDED_DIR)/common/eeprom.o\
+$(DRV_NAME)-y += $(SRC_EMBEDDED_DIR)/common/eeprom.o\
 					$(SRC_EMBEDDED_DIR)/common/ee_flash.o\
 					$(SRC_EMBEDDED_DIR)/common/ee_efuse.o
 
-$(DRV_NAME)-objs += $(SRC_EMBEDDED_DIR)/common/cmm_mac_pci.o
-$(DRV_NAME)-objs += $(SRC_EMBEDDED_DIR)/common/hif_pci.o
+$(DRV_NAME)-y += $(SRC_EMBEDDED_DIR)/common/cmm_mac_pci.o
+$(DRV_NAME)-y += $(SRC_EMBEDDED_DIR)/common/hif_pci.o
 
-$(DRV_NAME)-objs += $(SRC_DIR)/os/linux/rt_pci_rbus.o\
+$(DRV_NAME)-y += $(SRC_DIR)/os/linux/rt_pci_rbus.o\
                     $(SRC_DIR)/os/linux/rt_rbus_pci_drv.o\
                     $(SRC_DIR)/os/linux/rt_rbus_pci_util.o\
                     #$(SRC_DIR)/os/linux/rbus_main_dev.o
 
 ifeq ($(CONFIG_ATE_SUPPORT),y)
-$(DRV_NAME)-objs += $(SRC_DIR)/ate/ate_agent.o\
+$(DRV_NAME)-y += $(SRC_DIR)/ate/ate_agent.o\
                     $(SRC_DIR)/ate/testmode_ioctl.o\
 		    $(SRC_DIR)/ate/mt_mac/mt_testmode.o\
  		    $(SRC_DIR)/ate/LoopBack.o
@@ -1405,7 +1323,7 @@ endif
 
 
 ifeq ($(CONFIG_TCP_RACK_SUPPORT),y)
-$(DRV_NAME)-objs += $(SRC_EMBEDDED_DIR)/common/cmm_tcprack.o
+$(DRV_NAME)-y += $(SRC_EMBEDDED_DIR)/common/cmm_tcprack.o
 endif
 
 ifeq ($(CONFIG_LED_CONTROL_SUPPORT),y)
@@ -1461,10 +1379,10 @@ endif
 ifeq ($(CONFIG_FAST_NAT_SUPPORT),y)
 ifeq ($(CONFIG_WLAN_HOOK),y)
 ifeq ($(CONFIG_WHNAT_SUPPORT),y)
-EXTRA_CFLAGS += -DWHNAT_SUPPORT -DCONFIG_ARCH_MT7622_WIFI_HW_NAT
+EXTRA_CFLAGS += -DWHNAT_SUPPORT
 else
 ifeq ($(CONFIG_WHNAT_SUPPORT),m)
-EXTRA_CFLAGS += -DWHNAT_SUPPORT -DCONFIG_ARCH_MT7622_WIFI_HW_NAT
+EXTRA_CFLAGS += -DWHNAT_SUPPORT
 endif
 endif
 endif
@@ -1490,10 +1408,12 @@ EXTRA_CFLAGS += -DWH_EVENT_NOTIFIER
 endif
 
 #ifeq ($(CONFIG_WIFI_FWD_SUPPORT),y)
-#EXTRA_CFLAGS += -DCONFIG_WIFI_PKT_FWD
+EXTRA_CFLAGS += -DCONFIG_WIFI_PKT_FWD
 #endif
 
+#ifeq ($(CONFIG_MTFWD_SUPPORT),y)
 EXTRA_CFLAGS += -DMTFWD
+#endif
 
 ifeq ($(CONFIG_ROAMING_ENHANCE_SUPPORT),y)
 EXTRA_CFLAGS += -DROAMING_ENHANCE_SUPPORT
@@ -1515,4 +1435,6 @@ endif
 
 MODULE_FLAGS=$(EXTRA_CFLAGS)
 export MODULE_FLAGS
+ifeq ($(CONFIG_WHNAT_SUPPORT),y)
 obj-m+=$(SRC_EMBEDDED_DIR)/plug_in/
+endif

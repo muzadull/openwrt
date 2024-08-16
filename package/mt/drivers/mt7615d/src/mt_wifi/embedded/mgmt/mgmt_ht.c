@@ -24,13 +24,13 @@
 	--------	----------		----------------------------------------------
 */
 
+
 #include "rt_config.h"
+
 
 #ifdef DOT11_N_SUPPORT
 
-INT ht_support_bw_by_channel_boundary(RTMP_ADAPTER *pAd,
-				      MAC_TABLE_ENTRY *pEntry,
-				      IE_LISTS *peer_ie_list)
+INT ht_support_bw_by_channel_boundary(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, IE_LISTS *peer_ie_list)
 {
 	struct wifi_dev *wdev = pEntry->wdev;
 	UCHAR supported_bw;
@@ -44,11 +44,11 @@ INT ht_support_bw_by_channel_boundary(RTMP_ADAPTER *pAd,
 	if (!peer_ie_list)
 		return supported_bw;
 
-	MTWF_LOG(
-		DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-		("%s(), Channel = %d, supported_bw = %d, extcha = %d, PeerSupChlLen = %d\n",
-		 __func__, wdev->channel, supported_bw, ext_cha,
-		 peer_ie_list->SupportedChlLen));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(), Channel = %d, supported_bw = %d, extcha = %d, PeerSupChlLen = %d\n", __func__,
+			 wdev->channel,
+			 supported_bw,
+			 ext_cha,
+			 peer_ie_list->SupportedChlLen));
 
 	/* So far, only check 2.4G band */
 	if ((wdev->channel <= 14) && (peer_ie_list->SupportedChlLen >= 2)) {
@@ -59,26 +59,17 @@ INT ht_support_bw_by_channel_boundary(RTMP_ADAPTER *pAd,
 		/* Get Min/Max 2.4G supported channels */
 		for (i = 0; i < peer_ie_list->SupportedChlLen; i += 2) {
 			if (peer_ie_list->SupportedChl[i] <= 14) {
-				peer_sup_chl_min_2g =
-					peer_ie_list->SupportedChl[i];
-				peer_sup_chl_max_2g =
-					peer_ie_list->SupportedChl[i] +
-					peer_ie_list->SupportedChl[i + 1] - 1;
-				MTWF_LOG(
-					DBG_CAT_AP, DBG_SUBCAT_ALL,
-					DBG_LVL_INFO,
-					("  peer_sup_chl_min_2g = %d, peer_sup_chl_max_2g = %d\n",
-					 peer_sup_chl_min_2g,
-					 peer_sup_chl_max_2g));
+				peer_sup_chl_min_2g = peer_ie_list->SupportedChl[i];
+				peer_sup_chl_max_2g = peer_ie_list->SupportedChl[i] + peer_ie_list->SupportedChl[i + 1] - 1;
+				MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("  peer_sup_chl_min_2g = %d, peer_sup_chl_max_2g = %d\n",
+						 peer_sup_chl_min_2g, peer_sup_chl_max_2g));
 			}
 		}
 
 		/* Check Min/Max 2.4G channel boundary in BW40 case */
 		if ((supported_bw == BW_40) && (ext_cha != EXTCHA_NONE)) {
-			if (((ext_cha == EXTCHA_ABOVE) &&
-			     ((wdev->channel + 4) > peer_sup_chl_max_2g)) ||
-			    ((ext_cha == EXTCHA_BELOW) &&
-			     ((wdev->channel - 4) < peer_sup_chl_min_2g)))
+			if (((ext_cha == EXTCHA_ABOVE) && ((wdev->channel + 4) > peer_sup_chl_max_2g)) ||
+				((ext_cha == EXTCHA_BELOW) && ((wdev->channel - 4) < peer_sup_chl_min_2g)))
 				supported_bw = BW_20;
 		}
 	}
@@ -86,8 +77,7 @@ INT ht_support_bw_by_channel_boundary(RTMP_ADAPTER *pAd,
 	return supported_bw;
 }
 
-INT ht_mode_adjust(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry,
-		   HT_CAPABILITY_IE *peer_ht_cap)
+INT ht_mode_adjust(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, HT_CAPABILITY_IE *peer_ht_cap)
 {
 	struct wifi_dev *wdev = pEntry->wdev;
 	ADD_HT_INFO_IE *addht;
@@ -106,32 +96,27 @@ INT ht_mode_adjust(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry,
 		pAd->MacTab.fAnyStationNonGF = TRUE;
 	}
 
-	pEntry->MaxHTPhyMode.field.BW = (peer_ht_cap->HtCapInfo.ChannelWidth &
-					 wlan_operate_get_ht_bw(wdev));
+	pEntry->MaxHTPhyMode.field.BW = (peer_ht_cap->HtCapInfo.ChannelWidth & wlan_operate_get_ht_bw(wdev));
 	if (pEntry->MaxHTPhyMode.field.BW == HT_BW_40) {
 		pEntry->MaxHTPhyMode.field.ShortGI =
-			((ht_cap->HtCapInfo.ShortGIfor40) &
-			 (peer_ht_cap->HtCapInfo.ShortGIfor40));
+			((ht_cap->HtCapInfo.ShortGIfor40) & (peer_ht_cap->HtCapInfo.ShortGIfor40));
 	} else {
 		pEntry->MaxHTPhyMode.field.ShortGI =
-			((ht_cap->HtCapInfo.ShortGIfor20) &
-			 (peer_ht_cap->HtCapInfo.ShortGIfor20));
+			((ht_cap->HtCapInfo.ShortGIfor20) & (peer_ht_cap->HtCapInfo.ShortGIfor20));
 		pAd->MacTab.fAnyStation20Only = TRUE;
 	}
-	pEntry->MaxHTPhyMode.field.STBC =
-		(peer_ht_cap->HtCapInfo.RxSTBC & ht_cap->HtCapInfo.TxSTBC);
+	pEntry->MaxHTPhyMode.field.STBC = (peer_ht_cap->HtCapInfo.RxSTBC & ht_cap->HtCapInfo.TxSTBC);
 
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-		 ("%s(), MODE = %d, BW = %d, SGI = %d, STBC = %d\n", __func__,
-		  pEntry->MaxHTPhyMode.field.MODE,
-		  pEntry->MaxHTPhyMode.field.BW,
-		  pEntry->MaxHTPhyMode.field.ShortGI,
-		  pEntry->MaxHTPhyMode.field.STBC));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(), MODE = %d, BW = %d, SGI = %d, STBC = %d\n", __func__,
+			 pEntry->MaxHTPhyMode.field.MODE,
+			 pEntry->MaxHTPhyMode.field.BW,
+			 pEntry->MaxHTPhyMode.field.ShortGI,
+			 pEntry->MaxHTPhyMode.field.STBC));
 	return TRUE;
 }
 
-INT set_ht_fixed_mcs(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry,
-		     UCHAR fixed_mcs, UCHAR mcs_bound)
+
+INT set_ht_fixed_mcs(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UCHAR fixed_mcs, UCHAR mcs_bound)
 {
 	if (fixed_mcs == 32) {
 		/* Fix MCS as HT Duplicated Mode */
@@ -188,8 +173,8 @@ INT get_ht_max_mcs(RTMP_ADAPTER *pAd, UCHAR *desire_mcs, UCHAR *cap_mcs)
 	return i;
 }
 
-INT get_ht_cent_ch(RTMP_ADAPTER *pAd, UINT8 *rf_bw, UINT8 *ext_ch,
-		   UCHAR Channel)
+
+INT get_ht_cent_ch(RTMP_ADAPTER *pAd, UINT8 *rf_bw, UINT8 *ext_ch, UCHAR Channel)
 {
 	UCHAR op_ht_bw = HT_BW_20;
 	UCHAR op_ext_cha = EXTCHA_NONE;
@@ -203,8 +188,7 @@ INT get_ht_cent_ch(RTMP_ADAPTER *pAd, UINT8 *rf_bw, UINT8 *ext_ch,
 			continue;
 
 		/*check in the same band*/
-		if (Channel == wdev->channel &&
-		    wlan_operate_get_state(wdev) == WLAN_OPER_STATE_INVALID) {
+		if (Channel == wdev->channel && wlan_operate_get_state(wdev) == WLAN_OPER_STATE_INVALID) {
 			op_ht_bw = wlan_operate_get_ht_bw(wdev);
 			op_ext_cha = wlan_operate_get_ext_cha(wdev);
 
@@ -213,11 +197,14 @@ INT get_ht_cent_ch(RTMP_ADAPTER *pAd, UINT8 *rf_bw, UINT8 *ext_ch,
 		}
 	}
 
-	if ((op_ht_bw == BW_40) && (op_ext_cha == EXTCHA_ABOVE)) {
+	if ((op_ht_bw  == BW_40) &&
+		(op_ext_cha == EXTCHA_ABOVE)
+	   ) {
 		*rf_bw = BW_40;
 		*ext_ch = EXTCHA_ABOVE;
-	} else if ((Channel > 2) && (op_ht_bw == BW_40) &&
-		   (op_ext_cha == EXTCHA_BELOW)) {
+	} else if ((Channel > 2) &&
+			   (op_ht_bw == BW_40) &&
+			   (op_ext_cha == EXTCHA_BELOW)) {
 		*rf_bw = BW_40;
 		*ext_ch = EXTCHA_BELOW;
 
@@ -231,10 +218,13 @@ UCHAR cal_ht_cent_ch(UCHAR prim_ch, UCHAR phy_bw, UCHAR ext_cha, UCHAR *cen_ch)
 {
 	*cen_ch = prim_ch;
 
-	if ((phy_bw == BW_40) && (ext_cha == EXTCHA_ABOVE))
+	if ((phy_bw  == BW_40) &&
+		(ext_cha == EXTCHA_ABOVE)
+	   )
 		*cen_ch = prim_ch + 2;
-	else if ((prim_ch > 2) && (phy_bw == BW_40) &&
-		 (ext_cha == EXTCHA_BELOW)) {
+	else if ((prim_ch > 2) &&
+			 (phy_bw == BW_40) &&
+			 (ext_cha == EXTCHA_BELOW)) {
 		if (prim_ch == 14)
 			*cen_ch = prim_ch - 1;
 		else
@@ -245,17 +235,21 @@ UCHAR cal_ht_cent_ch(UCHAR prim_ch, UCHAR phy_bw, UCHAR ext_cha, UCHAR *cen_ch)
 	return TRUE;
 }
 
-UCHAR get_cent_ch_by_htinfo(RTMP_ADAPTER *pAd, ADD_HT_INFO_IE *ht_op,
-			    HT_CAPABILITY_IE *ht_cap)
+
+
+UCHAR get_cent_ch_by_htinfo(
+	RTMP_ADAPTER *pAd,
+	ADD_HT_INFO_IE *ht_op,
+	HT_CAPABILITY_IE *ht_cap)
 {
 	UCHAR cent_ch;
 
 	if ((ht_op->ControlChan > 2) &&
-	    (ht_op->AddHtInfo.ExtChanOffset == EXTCHA_BELOW) &&
-	    (ht_cap->HtCapInfo.ChannelWidth == BW_40))
+		(ht_op->AddHtInfo.ExtChanOffset == EXTCHA_BELOW) &&
+		(ht_cap->HtCapInfo.ChannelWidth == BW_40))
 		cent_ch = ht_op->ControlChan - 2;
 	else if ((ht_op->AddHtInfo.ExtChanOffset == EXTCHA_ABOVE) &&
-		 (ht_cap->HtCapInfo.ChannelWidth == BW_40))
+			 (ht_cap->HtCapInfo.ChannelWidth == BW_40))
 		cent_ch = ht_op->ControlChan + 2;
 	else
 		cent_ch = ht_op->ControlChan;
@@ -263,10 +257,10 @@ UCHAR get_cent_ch_by_htinfo(RTMP_ADAPTER *pAd, ADD_HT_INFO_IE *ht_op,
 	return cent_ch;
 }
 
-UINT16 ht_max_mpdu_size[2] = { 3839u, 7935u };
 
-VOID set_sta_ht_cap(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *entry,
-		    HT_CAPABILITY_IE *ht_ie)
+UINT16 ht_max_mpdu_size[2] = {3839u, 7935u};
+
+VOID set_sta_ht_cap(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *entry, HT_CAPABILITY_IE *ht_ie)
 {
 	UCHAR ht_gi = GI_400;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -277,12 +271,10 @@ VOID set_sta_ht_cap(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *entry,
 	ht_gi = wlan_config_get_ht_gi(entry->wdev);
 	if (ht_gi == GI_400) {
 		if (ht_ie->HtCapInfo.ShortGIfor20)
-			CLIENT_STATUS_SET_FLAG(entry,
-					       fCLIENT_STATUS_SGI20_CAPABLE);
+			CLIENT_STATUS_SET_FLAG(entry, fCLIENT_STATUS_SGI20_CAPABLE);
 
 		if (ht_ie->HtCapInfo.ShortGIfor40)
-			CLIENT_STATUS_SET_FLAG(entry,
-					       fCLIENT_STATUS_SGI40_CAPABLE);
+			CLIENT_STATUS_SET_FLAG(entry, fCLIENT_STATUS_SGI40_CAPABLE);
 	}
 
 	if (ht_ie->HtCapInfo.TxSTBC)
@@ -300,18 +292,14 @@ VOID set_sta_ht_cap(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *entry,
 		CLIENT_STATUS_SET_FLAG(entry, fCLIENT_STATUS_RDG_CAPABLE);
 
 	if (ht_ie->ExtHtCapInfo.MCSFeedback == 0x03)
-		CLIENT_STATUS_SET_FLAG(entry,
-				       fCLIENT_STATUS_MCSFEEDBACK_CAPABLE);
+		CLIENT_STATUS_SET_FLAG(entry, fCLIENT_STATUS_MCSFEEDBACK_CAPABLE);
 
-	if (wlan_config_get_ht_ldpc(entry->wdev) &&
-	    (cap->phy_caps & fPHY_CAP_LDPC)) {
+	if (wlan_config_get_ht_ldpc(entry->wdev) && (cap->phy_caps & fPHY_CAP_LDPC)) {
 		if (ht_ie->HtCapInfo.ht_rx_ldpc)
-			CLIENT_STATUS_SET_FLAG(
-				entry, fCLIENT_STATUS_HT_RX_LDPC_CAPABLE);
+			CLIENT_STATUS_SET_FLAG(entry, fCLIENT_STATUS_HT_RX_LDPC_CAPABLE);
 	}
 
-	if (wlan_config_get_amsdu_en(entry->wdev) &&
-	    (pAd->CommonCfg.REGBACapability.field.AutoBA == FALSE))
+	if (wlan_config_get_amsdu_en(entry->wdev) && (pAd->CommonCfg.REGBACapability.field.AutoBA == FALSE))
 		CLIENT_STATUS_SET_FLAG(entry, fCLIENT_STATUS_AMSDU_INUSED);
 
 	entry->MpduDensity = ht_ie->HtCapParm.MpduDensity;
@@ -326,6 +314,7 @@ VOID set_sta_ht_cap(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *entry,
 	entry->amsdu_limit_len_adjust = entry->amsdu_limit_len;
 }
 
+
 /*
 	========================================================================
 	Routine Description:
@@ -338,8 +327,10 @@ VOID set_sta_ht_cap(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *entry,
 
 	========================================================================
 */
-VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
-	       IN struct wifi_dev *wdev)
+VOID RTMPSetHT(
+	IN RTMP_ADAPTER *pAd,
+	IN OID_SET_HT_PHYMODE * pHTPhyMode,
+	IN struct wifi_dev *wdev)
 {
 	INT idx;
 #ifdef CONFIG_MULTI_CHANNEL
@@ -347,8 +338,7 @@ VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
 	BSS_STRUCT *pMbss = &pAd->ApCfg.MBSSID[CFG_GO_BSSID_IDX];
 #endif /* defined(RT_CFG80211_SUPPORT) && defined(CONFIG_AP_SUPPORT) */
 #endif /* CONFIG_MULTI_CHANNEL */
-	HT_CAPABILITY_IE *ht_cap =
-		(HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
+	HT_CAPABILITY_IE *ht_cap = (HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
 	struct _RTMP_CHIP_CAP *cap;
 
 	cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -356,72 +346,41 @@ VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
 
 	/* sanity check for extention channel */
 	if (CHAN_PropertyCheck(pAd, pHTPhyMode->Channel,
-			       CHANNEL_NO_FAT_BELOW | CHANNEL_NO_FAT_ABOVE) ==
-	    TRUE) {
+						   CHANNEL_NO_FAT_BELOW | CHANNEL_NO_FAT_ABOVE) == TRUE) {
 		/* only 20MHz is allowed */
 		pHTPhyMode->BW = 0;
 	} else if (pHTPhyMode->ExtOffset == EXTCHA_BELOW) {
 		/* extension channel below this channel is not allowed */
 		if (CHAN_PropertyCheck(pAd, pHTPhyMode->Channel,
-				       CHANNEL_NO_FAT_BELOW) == TRUE)
+							   CHANNEL_NO_FAT_BELOW) == TRUE)
 			pHTPhyMode->ExtOffset = EXTCHA_ABOVE;
 	} else if (pHTPhyMode->ExtOffset == EXTCHA_ABOVE) {
 		/* extension channel above this channel is not allowed */
 		if (CHAN_PropertyCheck(pAd, pHTPhyMode->Channel,
-				       CHANNEL_NO_FAT_ABOVE) == TRUE)
+							   CHANNEL_NO_FAT_ABOVE) == TRUE)
 			pHTPhyMode->ExtOffset = EXTCHA_BELOW;
 	}
 #endif /* CONFIG_AP_SUPPORT */
-	MTWF_LOG(
-		DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("RTMPSetHT : HT_mode(%d), ExtOffset(%d), MCS(%d), BW(%d), STBC(%d), SHORTGI(%d)\n",
-		 pHTPhyMode->HtMode, pHTPhyMode->ExtOffset, pHTPhyMode->MCS,
-		 pHTPhyMode->BW, pHTPhyMode->STBC, pHTPhyMode->SHORTGI));
-	RTMPZeroMemory(&pAd->CommonCfg.NewExtChanOffset,
-		       sizeof(pAd->CommonCfg.NewExtChanOffset));
+	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("RTMPSetHT : HT_mode(%d), ExtOffset(%d), MCS(%d), BW(%d), STBC(%d), SHORTGI(%d)\n",
+			 pHTPhyMode->HtMode, pHTPhyMode->ExtOffset,
+			 pHTPhyMode->MCS, pHTPhyMode->BW,
+			 pHTPhyMode->STBC, pHTPhyMode->SHORTGI));
+	RTMPZeroMemory(&pAd->CommonCfg.NewExtChanOffset, sizeof(pAd->CommonCfg.NewExtChanOffset));
 
 	/* Decide Rx MCSSet*/
-	ht_cap->MCSSet[3] = 0x00;
-	ht_cap->MCSSet[2] = 0x00;
-	ht_cap->MCSSet[1] = 0x00;
-	ht_cap->MCSSet[0] = 0x00;
 	switch (wlan_config_get_rx_stream(wdev)) {
 	case 4:
-#ifdef CONFIG_RA_PHY_RATE_SUPPORT
-		if (wdev->rate.Eap_HtSupRate_En == TRUE)
-			ht_cap->MCSSet[3] = wdev->rate.EapMCSSet[3];
-		else
-#endif /* CONFIG_RA_PHY_RATE_SUPPORT */
-			ht_cap->MCSSet[3] = 0xff;
-		/* FALLTHRU */
+		ht_cap->MCSSet[3] =  0xff;
 
 	case 3:
-#ifdef CONFIG_RA_PHY_RATE_SUPPORT
-		if (wdev->rate.Eap_HtSupRate_En == TRUE)
-			ht_cap->MCSSet[2] = wdev->rate.EapMCSSet[2];
-		else
-#endif /* CONFIG_RA_PHY_RATE_SUPPORT */
-			ht_cap->MCSSet[2] = 0xff;
-		/* FALLTHRU */
+		ht_cap->MCSSet[2] =  0xff;
 
 	case 2:
-#ifdef CONFIG_RA_PHY_RATE_SUPPORT
-		if (wdev->rate.Eap_HtSupRate_En == TRUE)
-			ht_cap->MCSSet[1] = wdev->rate.EapMCSSet[1];
-		else
-#endif /* CONFIG_RA_PHY_RATE_SUPPORT */
-			ht_cap->MCSSet[1] = 0xff;
-		/* FALLTHRU */
+		ht_cap->MCSSet[1] =  0xff;
 
 	case 1:
 	default:
-#ifdef CONFIG_RA_PHY_RATE_SUPPORT
-		if (wdev->rate.Eap_HtSupRate_En == TRUE)
-			ht_cap->MCSSet[0] = wdev->rate.EapMCSSet[0];
-		else
-#endif /* CONFIG_RA_PHY_RATE_SUPPORT */
-			ht_cap->MCSSet[0] = 0xff;
-
+		ht_cap->MCSSet[0] =  0xff;
 		break;
 	}
 
@@ -432,9 +391,7 @@ VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
 
 	/* TODO: shiang-6590, how about the "bw" when channel 14 for JP region??? */
 	if (pHTPhyMode->BW == BW_40) {
-		UCHAR ext_cha = (pHTPhyMode->ExtOffset == EXTCHA_BELOW) ?
-					(EXTCHA_BELOW) :
-					      EXTCHA_ABOVE;
+		UCHAR ext_cha = (pHTPhyMode->ExtOffset == EXTCHA_BELOW) ? (EXTCHA_BELOW) : EXTCHA_ABOVE;
 
 		ht_cap->MCSSet[4] = 0x1; /* MCS 32*/
 		wlan_config_set_ht_bw(wdev, HT_BW_40);
@@ -475,29 +432,26 @@ VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
 		/* Set ETxBF */
 		setETxBFCap(pAd, &ht_cap->TxBFCap);
 		/* Check ITxBF */
-		pAd->CommonCfg.RegTransmitSetting.field.ITxBfEn &=
-			rtmp_chk_itxbf_calibration(pAd);
+		pAd->CommonCfg.RegTransmitSetting.field.ITxBfEn &= rtmp_chk_itxbf_calibration(pAd);
 #endif /* MT_MAC */
 		/* Apply to ASIC */
 	}
 
 #endif /* TXBF_SUPPORT */
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
-	{
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
 		for (idx = 0; idx < pAd->ApCfg.BssidNum; idx++)
 			RTMPSetIndividualHT(pAd, idx);
 
 #ifdef APCLI_SUPPORT
 
 		for (idx = 0; idx < MAX_APCLI_NUM; idx++)
-			RTMPSetIndividualHT(pAd,
-					    idx + MIN_NET_DEVICE_FOR_APCLI);
+			RTMPSetIndividualHT(pAd, idx + MIN_NET_DEVICE_FOR_APCLI);
 
 #endif /* APCLI_SUPPORT */
 	}
 #endif /* CONFIG_AP_SUPPORT */
-	/*	dump_ht_cap(wdev); for Debug purpose */
+/*	dump_ht_cap(wdev); for Debug purpose */
 }
 
 /*
@@ -521,92 +475,66 @@ VOID RTMPSetIndividualHT(RTMP_ADAPTER *pAd, UCHAR apidx)
 	struct wifi_dev *wdev = NULL;
 	UCHAR cfg_ht_bw;
 
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-		 ("%s(): apidx=%d\n", __func__, apidx));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): apidx=%d\n", __func__, apidx));
 
 	do {
 #ifdef CONFIG_AP_SUPPORT
 #ifdef APCLI_SUPPORT
 
 		if (apidx >= MIN_NET_DEVICE_FOR_APCLI) {
-			UCHAR idx = apidx - MIN_NET_DEVICE_FOR_APCLI;
+			UCHAR	idx = apidx - MIN_NET_DEVICE_FOR_APCLI;
 
 			if (idx < MAX_APCLI_NUM) {
 				wdev = &pAd->ApCfg.ApCliTab[idx].wdev;
 				if (!wdev)
 					return;
 				pDesired_ht_phy = &wdev->DesiredHtPhyInfo;
-				DesiredMcs =
-					wdev->DesiredTransmitSetting.field.MCS;
+				DesiredMcs = wdev->DesiredTransmitSetting.field.MCS;
 				encrypt_mode = wdev->SecConfig.PairwiseCipher;
-				wdev->bAutoTxRateSwitch =
-					(DesiredMcs == MCS_AUTO) ? TRUE : FALSE;
+				wdev->bAutoTxRateSwitch = (DesiredMcs == MCS_AUTO) ? TRUE : FALSE;
 				break;
 			} else {
-				MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL,
-					 DBG_LVL_ERROR,
-					 ("%s: invalid idx(%d)\n", __func__,
-					  idx));
+				MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: invalid idx(%d)\n", __func__, idx));
 				return;
 			}
 		}
 
 #endif /* APCLI_SUPPORT */
-		IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
-		{
+		IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
 #ifdef WDS_SUPPORT
 
 			if (apidx >= MIN_NET_DEVICE_FOR_WDS) {
-				UCHAR idx = apidx - MIN_NET_DEVICE_FOR_WDS;
+				UCHAR	idx = apidx - MIN_NET_DEVICE_FOR_WDS;
 
 				if (idx < MAX_WDS_ENTRY) {
 					wdev = &pAd->WdsTab.WdsEntry[idx].wdev;
 					if (!wdev)
 						return;
-					pDesired_ht_phy =
-						&wdev->DesiredHtPhyInfo;
-					DesiredMcs =
-						wdev->DesiredTransmitSetting
-							.field.MCS;
+					pDesired_ht_phy = &wdev->DesiredHtPhyInfo;
+					DesiredMcs = wdev->DesiredTransmitSetting.field.MCS;
 					/*encrypt_mode = pAd->WdsTab.WdsEntry[idx].WepStatus;*/
-					wdev->bAutoTxRateSwitch =
-						(DesiredMcs == MCS_AUTO) ?
-							TRUE :
-							      FALSE;
+					wdev->bAutoTxRateSwitch = (DesiredMcs == MCS_AUTO) ? TRUE : FALSE;
 					break;
 				} else {
-					MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL,
-						 DBG_LVL_ERROR,
-						 ("%s: invalid apidx(%d)\n",
-						  __func__, apidx));
+					MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: invalid apidx(%d)\n", __func__, apidx));
 					return;
 				}
 			}
 
 #endif /* WDS_SUPPORT */
 
-			if ((apidx < pAd->ApCfg.BssidNum) &&
-			    (apidx < MAX_MBSSID_NUM(pAd)) &&
-			    (apidx < HW_BEACON_MAX_NUM)) {
+			if ((apidx < pAd->ApCfg.BssidNum) && (apidx < MAX_MBSSID_NUM(pAd)) && (apidx < HW_BEACON_MAX_NUM)) {
 				wdev = &pAd->ApCfg.MBSSID[apidx].wdev;
 				if (!wdev)
 					return;
 				pDesired_ht_phy = &wdev->DesiredHtPhyInfo;
-				DesiredMcs =
-					wdev->DesiredTransmitSetting.field.MCS;
+				DesiredMcs = wdev->DesiredTransmitSetting.field.MCS;
 #ifdef WFA_VHT_PF
 
 				/* TODO: Sigma, this code segment used to work around for Sigma Automation! */
-				if (WMODE_CAP_AC(wdev->PhyMode) &&
-				    (DesiredMcs != MCS_AUTO)) {
-					DesiredMcs +=
-						((wlan_operate_get_tx_stream(
-							  wdev) -
-						  1)
-						 << 4);
-					pAd->ApCfg.MBSSID[apidx]
-						.DesiredTransmitSetting.field
-						.FixedTxMode = FIXED_TXMODE_VHT;
+				if (WMODE_CAP_AC(wdev->PhyMode) && (DesiredMcs != MCS_AUTO)) {
+					DesiredMcs += ((wlan_operate_get_tx_stream(wdev) - 1) << 4);
+					pAd->ApCfg.MBSSID[apidx].DesiredTransmitSetting.field.FixedTxMode = FIXED_TXMODE_VHT;
 					RT_CfgSetAutoFallBack(pAd, "0");
 				} else
 					RT_CfgSetAutoFallBack(pAd, "1");
@@ -614,65 +542,53 @@ VOID RTMPSetIndividualHT(RTMP_ADAPTER *pAd, UCHAR apidx)
 #endif /* WFA_VHT_PF */
 				encrypt_mode = wdev->SecConfig.PairwiseCipher;
 				wdev->bWmmCapable = TRUE;
-				wdev->bAutoTxRateSwitch =
-					(DesiredMcs == MCS_AUTO) ? TRUE : FALSE;
+				wdev->bAutoTxRateSwitch = (DesiredMcs == MCS_AUTO) ? TRUE : FALSE;
 				break;
 			}
 
-			MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: invalid apidx(%d)\n", __func__, apidx));
+			MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: invalid apidx(%d)\n", __func__, apidx));
 			return;
 		}
 #endif /* CONFIG_AP_SUPPORT */
 	} while (FALSE);
 
+
 	if (pDesired_ht_phy == NULL) {
-		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s: invalid apidx(%d)\n", __func__, apidx));
+		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: invalid apidx(%d)\n", __func__, apidx));
 		return;
 	}
 
 	TxStream = wlan_operate_get_tx_stream(wdev);
 
 	RTMPZeroMemory(pDesired_ht_phy, sizeof(RT_PHY_INFO));
-	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		 ("RTMPSetIndividualHT : Desired MCS = %d\n", DesiredMcs));
+	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("RTMPSetIndividualHT : Desired MCS = %d\n", DesiredMcs));
 
 	/* Check the validity of MCS */
-	if ((TxStream == 1) &&
-	    ((DesiredMcs >= MCS_8) && (DesiredMcs <= MCS_15))) {
-		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-			 ("%s: MCS(%d) is invalid in 1S, reset it as MCS_7\n",
-			  __func__, DesiredMcs));
+	if ((TxStream == 1) && ((DesiredMcs >= MCS_8) && (DesiredMcs <= MCS_15))) {
+		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("%s: MCS(%d) is invalid in 1S, reset it as MCS_7\n", __func__, DesiredMcs));
 		DesiredMcs = MCS_7;
 	}
 
 	cfg_ht_bw = wlan_config_get_ht_bw(wdev);
 
 	if ((cfg_ht_bw == HT_BW_20) && (DesiredMcs == MCS_32)) {
-		MTWF_LOG(
-			DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-			("%s: MCS_32 is only supported in 40-MHz, reset it as MCS_0\n",
-			 __func__));
+		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("%s: MCS_32 is only supported in 40-MHz, reset it as MCS_0\n", __func__));
 		DesiredMcs = MCS_0;
 	}
 
-	/*
+
+		/*
 			WFA recommend to restrict the encryption type in 11n-HT mode.
 			So, the WEP and TKIP are not allowed in HT rate.
 		*/
-	if (pAd->CommonCfg.HT_DisallowTKIP &&
-	    IS_INVALID_HT_SECURITY(encrypt_mode)) {
-		MTWF_LOG(
-			DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-			("%s : Use legacy rate in WEP/TKIP encryption mode (apidx=%d)\n",
-			 __func__, apidx));
-		return;
-	}
+		if (pAd->CommonCfg.HT_DisallowTKIP && IS_INVALID_HT_SECURITY(encrypt_mode)) {
+			MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("%s : Use legacy rate in WEP/TKIP encryption mode (apidx=%d)\n",
+					 __func__, apidx));
+			return;
+		}
 
 	if (pAd->CommonCfg.HT_Disable) {
-		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s : HT is disabled\n", __func__));
+		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s : HT is disabled\n", __func__));
 		return;
 	}
 
@@ -698,8 +614,7 @@ VOID RTMPSetIndividualHT(RTMP_ADAPTER *pAd, UCHAR apidx)
 			mode = DesiredMcs / 8;
 
 			if (mode < 2)
-				pDesired_ht_phy->MCSSet[mode] =
-					(1 << (DesiredMcs - mode * 8));
+				pDesired_ht_phy->MCSSet[mode] = (1 << (DesiredMcs - mode * 8));
 		}
 
 		break;
@@ -716,8 +631,7 @@ VOID RTMPSetIndividualHT(RTMP_ADAPTER *pAd, UCHAR apidx)
 			mode = DesiredMcs / 8;
 
 			if (mode < 3)
-				pDesired_ht_phy->MCSSet[mode] =
-					(1 << (DesiredMcs - mode * 8));
+				pDesired_ht_phy->MCSSet[mode] = (1 << (DesiredMcs - mode * 8));
 		}
 
 		break;
@@ -735,8 +649,7 @@ VOID RTMPSetIndividualHT(RTMP_ADAPTER *pAd, UCHAR apidx)
 			mode = DesiredMcs / 8;
 
 			if (mode < 4)
-				pDesired_ht_phy->MCSSet[mode] =
-					(1 << (DesiredMcs - mode * 8));
+				pDesired_ht_phy->MCSSet[mode] = (1 << (DesiredMcs - mode * 8));
 		}
 
 		break;
@@ -749,7 +662,7 @@ VOID RTMPSetIndividualHT(RTMP_ADAPTER *pAd, UCHAR apidx)
 
 	/* update HT Rate setting */
 	if (pAd->OpMode == OPMODE_STA) {
-		MlmeUpdateHtTxRates(pAd, BSS0);
+			MlmeUpdateHtTxRates(pAd, BSS0);
 	} else
 		MlmeUpdateHtTxRates(pAd, apidx);
 
@@ -774,10 +687,11 @@ VOID RTMPSetIndividualHT(RTMP_ADAPTER *pAd, UCHAR apidx)
 */
 VOID RTMPDisableDesiredHtInfo(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 {
-	RTMPZeroMemory(&wdev->DesiredHtPhyInfo, sizeof(RT_PHY_INFO));
+		RTMPZeroMemory(&wdev->DesiredHtPhyInfo, sizeof(RT_PHY_INFO));
 }
 
-INT SetCommonHT(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
+
+INT	SetCommonHT(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 {
 	OID_SET_HT_PHYMODE SetHT;
 	UCHAR op_ht_bw = wlan_operate_get_ht_bw(wdev);
@@ -803,8 +717,8 @@ INT SetCommonHT(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 		SetHT.ExtOffset = (SetHT.BW == BW_20) ? (0) : (ext_cha);
 	} else {
 #endif
-		SetHT.BW = (UCHAR)op_ht_bw;
-		SetHT.ExtOffset = ext_cha;
+	SetHT.BW = (UCHAR)op_ht_bw;
+	SetHT.ExtOffset = ext_cha;
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 	}
 #endif
@@ -812,8 +726,7 @@ INT SetCommonHT(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 	RTMPSetHT(pAd, &SetHT, wdev);
 #ifdef DOT11N_DRAFT3
 
-	if (pAd->CommonCfg.bBssCoexEnable &&
-	    pAd->CommonCfg.Bss2040NeedFallBack) {
+	if (pAd->CommonCfg.bBssCoexEnable && pAd->CommonCfg.Bss2040NeedFallBack) {
 		wlan_operate_set_ht_bw(wdev, HT_BW_20, EXTCHA_NONE);
 		pAd->CommonCfg.LastBSSCoexist2040.field.BSS20WidthReq = 1;
 		pAd->CommonCfg.Bss2040CoexistFlag |= BSS_2040_COEXIST_INFO_SYNC;
@@ -835,14 +748,15 @@ INT SetCommonHT(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	========================================================================
 */
-VOID RTMPUpdateHTIE(IN UCHAR *pMcsSet, IN struct wifi_dev *wdev,
-		    OUT HT_CAPABILITY_IE *pHtCapability,
-		    OUT ADD_HT_INFO_IE *pAddHtInfo)
+VOID RTMPUpdateHTIE(
+	IN UCHAR *pMcsSet,
+	IN struct wifi_dev *wdev,
+	OUT HT_CAPABILITY_IE *pHtCapability,
+	OUT ADD_HT_INFO_IE *pAddHtInfo)
 {
-	UCHAR cfg_ht_bw = wlan_config_get_ht_bw(wdev);
+	UCHAR cfg_ht_bw  = wlan_config_get_ht_bw(wdev);
 	UCHAR op_ht_bw = wlan_config_get_ht_bw(wdev);
-	HT_CAPABILITY_IE *ht_cap =
-		(HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
+	HT_CAPABILITY_IE *ht_cap = (HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
 	struct _ADD_HT_INFO_IE *add_ht = wlan_operate_get_addht(wdev);
 
 	RTMPZeroMemory(pHtCapability, sizeof(HT_CAPABILITY_IE));
@@ -855,24 +769,18 @@ VOID RTMPUpdateHTIE(IN UCHAR *pMcsSet, IN struct wifi_dev *wdev,
 	pHtCapability->HtCapInfo.TxSTBC = ht_cap->HtCapInfo.TxSTBC;
 	pHtCapability->HtCapInfo.RxSTBC = ht_cap->HtCapInfo.RxSTBC;
 	pHtCapability->HtCapInfo.AMsduSize = ht_cap->HtCapInfo.AMsduSize;
-	pHtCapability->HtCapParm.MaxRAmpduFactor =
-		ht_cap->HtCapParm.MaxRAmpduFactor;
+	pHtCapability->HtCapParm.MaxRAmpduFactor = ht_cap->HtCapParm.MaxRAmpduFactor;
 	pHtCapability->HtCapParm.MpduDensity = ht_cap->HtCapParm.MpduDensity;
 	pAddHtInfo->AddHtInfo.ExtChanOffset = add_ht->AddHtInfo.ExtChanOffset;
 	pAddHtInfo->AddHtInfo.RecomWidth = op_ht_bw;
 	pAddHtInfo->AddHtInfo2.OperaionMode = add_ht->AddHtInfo2.OperaionMode;
 	pAddHtInfo->AddHtInfo2.NonGfPresent = add_ht->AddHtInfo2.NonGfPresent;
-	RTMPMoveMemory(
-		pAddHtInfo->MCSSet, pMcsSet,
-		4); /* rt2860 only support MCS max=32, no need to copy all 16 uchar.*/
-	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		 ("RTMPUpdateHTIE <==\n"));
+	RTMPMoveMemory(pAddHtInfo->MCSSet, pMcsSet, 4); /* rt2860 only support MCS max=32, no need to copy all 16 uchar.*/
+	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("RTMPUpdateHTIE <==\n"));
 }
 
 /*sta rec ht features decision*/
-UINT32 starec_ht_feature_decision(struct wifi_dev *wdev,
-				  struct _MAC_TABLE_ENTRY *entry,
-				  UINT32 *feature)
+UINT32 starec_ht_feature_decision(struct wifi_dev *wdev, struct _MAC_TABLE_ENTRY *entry, UINT32 *feature)
 {
 	struct _RTMP_ADAPTER *ad = (struct _RTMP_ADAPTER *)wdev->sys_handle;
 	UINT32 features = 0;
@@ -898,15 +806,13 @@ UINT32 starec_ht_feature_decision(struct wifi_dev *wdev,
 	return TRUE;
 }
 
-static INT build_bcm_ht_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
-			       UCHAR *buf)
+static INT build_bcm_ht_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
 {
-	const UCHAR BROADCOM[4] = { 0x0, 0x90, 0x4c, 0x33 };
+	const UCHAR BROADCOM[4] = {0x0, 0x90, 0x4c, 0x33};
 	UCHAR HtLen;
 	INT len = 0;
 	HT_CAPABILITY_IE HtCapabilityTmp;
-	HT_CAPABILITY_IE *curr_ht_cap =
-		(HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
+	HT_CAPABILITY_IE *curr_ht_cap = (HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
 	UCHAR cfg_ht_bw = wlan_config_get_ht_bw(wdev);
 
 	HtLen = SIZE_HT_CAP_IE + 4; /* including BCM IE */
@@ -923,24 +829,17 @@ static INT build_bcm_ht_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
 	}
 
 #ifdef RT_BIG_ENDIAN
-	*(USHORT *)(&HtCapabilityTmp.HtCapInfo) =
-		SWAP16(*(USHORT *)(&HtCapabilityTmp.HtCapInfo));
+	*(USHORT *)(&HtCapabilityTmp.HtCapInfo) = SWAP16(*(USHORT *)(&HtCapabilityTmp.HtCapInfo));
 #ifdef UNALIGNMENT_SUPPORT
 	{
 		EXT_HT_CAP_INFO extHtCapInfo;
 
-		NdisMoveMemory((PUCHAR)(&extHtCapInfo),
-			       (PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo),
-			       sizeof(EXT_HT_CAP_INFO));
-		*(USHORT *)(&extHtCapInfo) =
-			cpu2le16(*(USHORT *)(&extHtCapInfo));
-		NdisMoveMemory((PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo),
-			       (PUCHAR)(&extHtCapInfo),
-			       sizeof(EXT_HT_CAP_INFO));
+		NdisMoveMemory((PUCHAR)(&extHtCapInfo), (PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo), sizeof(EXT_HT_CAP_INFO));
+		*(USHORT *)(&extHtCapInfo) = cpu2le16(*(USHORT *)(&extHtCapInfo));
+		NdisMoveMemory((PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo), (PUCHAR)(&extHtCapInfo), sizeof(EXT_HT_CAP_INFO));
 	}
 #else
-	*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo) =
-		cpu2le16(*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo));
+	*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo) = cpu2le16(*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo));
 #endif /* UNALIGNMENT_SUPPORT */
 #endif /* RT_BIG_ENDIAN */
 
@@ -952,16 +851,15 @@ static INT build_bcm_ht_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
 	return len;
 }
 
-static INT build_bcm_ht_op_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
-			      UCHAR *buf)
+static INT build_bcm_ht_op_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
 {
 	INT len = 0;
 
-	const UCHAR BROADCOM_AHTINFO[4] = { 0x0, 0x90, 0x4c, 0x34 };
+	const UCHAR BROADCOM_AHTINFO[4] = {0x0, 0x90, 0x4c, 0x34};
 	UCHAR AddHtLen = 0;
 	ADD_HT_INFO_IE *addht;
 #ifdef RT_BIG_ENDIAN
-	ADD_HT_INFO_IE addHTInfoTmp;
+	ADD_HT_INFO_IE	addHTInfoTmp;
 #endif /* RT_BIG_ENDIAN */
 	UCHAR epigram_ie_len = 0;
 
@@ -972,10 +870,8 @@ static INT build_bcm_ht_op_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
 	/*New extension channel offset IE is included in Beacon, Probe Rsp or channel Switch Announcement Frame */
 #ifdef RT_BIG_ENDIAN
 	NdisMoveMemory(&addHTInfoTmp, addht, AddHtLen);
-	*(USHORT *)(&addHTInfoTmp.AddHtInfo2) =
-		SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo2));
-	*(USHORT *)(&addHTInfoTmp.AddHtInfo3) =
-		SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo3));
+	*(USHORT *)(&addHTInfoTmp.AddHtInfo2) = SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo2));
+	*(USHORT *)(&addHTInfoTmp.AddHtInfo3) = SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo3));
 
 	MAKE_IE_TO_BUF(buf, &WpaIe, 1, len);
 	MAKE_IE_TO_BUF(buf, &epigram_ie_len, 1, len);
@@ -997,8 +893,7 @@ static INT build_ht_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
 	UCHAR HtLen = 0;
 	INT len = 0;
 	HT_CAPABILITY_IE HtCapabilityTmp;
-	HT_CAPABILITY_IE *curr_ht_cap =
-		(HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
+	HT_CAPABILITY_IE *curr_ht_cap = (HT_CAPABILITY_IE *)wlan_operate_get_ht_cap(wdev);
 	UCHAR cfg_ht_bw = wlan_config_get_ht_bw(wdev);
 
 	HtLen = sizeof(HT_CAPABILITY_IE);
@@ -1017,24 +912,17 @@ static INT build_ht_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
 #endif /* TXBF_SUPPORT */
 
 #ifdef RT_BIG_ENDIAN
-	*(USHORT *)(&HtCapabilityTmp.HtCapInfo) =
-		SWAP16(*(USHORT *)(&HtCapabilityTmp.HtCapInfo));
+	*(USHORT *)(&HtCapabilityTmp.HtCapInfo) = SWAP16(*(USHORT *)(&HtCapabilityTmp.HtCapInfo));
 #ifdef UNALIGNMENT_SUPPORT
 	{
 		EXT_HT_CAP_INFO extHtCapInfo;
 
-		NdisMoveMemory((PUCHAR)(&extHtCapInfo),
-			       (PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo),
-			       sizeof(EXT_HT_CAP_INFO));
-		*(USHORT *)(&extHtCapInfo) =
-			cpu2le16(*(USHORT *)(&extHtCapInfo));
-		NdisMoveMemory((PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo),
-			       (PUCHAR)(&extHtCapInfo),
-			       sizeof(EXT_HT_CAP_INFO));
+		NdisMoveMemory((PUCHAR)(&extHtCapInfo), (PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo), sizeof(EXT_HT_CAP_INFO));
+		*(USHORT *)(&extHtCapInfo) = cpu2le16(*(USHORT *)(&extHtCapInfo));
+		NdisMoveMemory((PUCHAR)(&HtCapabilityTmp.ExtHtCapInfo), (PUCHAR)(&extHtCapInfo), sizeof(EXT_HT_CAP_INFO));
 	}
 #else
-	*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo) =
-		cpu2le16(*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo));
+	*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo) = cpu2le16(*(USHORT *)(&HtCapabilityTmp.ExtHtCapInfo));
 #endif /* UNALIGNMENT_SUPPORT */
 #endif /* RT_BIG_ENDIAN */
 
@@ -1051,7 +939,7 @@ static INT build_ht_op_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
 	UCHAR AddHtLen = 0;
 	ADD_HT_INFO_IE *addht;
 #ifdef RT_BIG_ENDIAN
-	ADD_HT_INFO_IE addHTInfoTmp;
+	ADD_HT_INFO_IE	addHTInfoTmp;
 #endif /* RT_BIG_ENDIAN */
 
 	addht = wlan_operate_get_addht(wdev);
@@ -1060,10 +948,8 @@ static INT build_ht_op_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
 	/*New extension channel offset IE is included in Beacon, Probe Rsp or channel Switch Announcement Frame */
 #ifdef RT_BIG_ENDIAN
 	NdisMoveMemory(&addHTInfoTmp, addht, AddHtLen);
-	*(USHORT *)(&addHTInfoTmp.AddHtInfo2) =
-		SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo2));
-	*(USHORT *)(&addHTInfoTmp.AddHtInfo3) =
-		SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo3));
+	*(USHORT *)(&addHTInfoTmp.AddHtInfo2) = SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo2));
+	*(USHORT *)(&addHTInfoTmp.AddHtInfo3) = SWAP16(*(USHORT *)(&addHTInfoTmp.AddHtInfo3));
 
 	MAKE_IE_TO_BUF(buf, &AddHtInfoIe, 1, len);
 	MAKE_IE_TO_BUF(buf, &AddHtLen, 1, len);
@@ -1078,8 +964,7 @@ static INT build_ht_op_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
 	return len;
 }
 
-static INT build_overlapping_bss_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
-				    UCHAR Channel, UCHAR *buf)
+static INT build_overlapping_bss_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR Channel, UCHAR *buf)
 {
 	INT len = 0;
 	UCHAR cfg_ht_bw = HT_BW_20;
@@ -1088,26 +973,19 @@ static INT build_overlapping_bss_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
 	cfg_ht_bw = wlan_config_get_ht_bw(wdev);
 
 	/* P802.11n_D3.03, 7.3.2.60 Overlapping BSS Scan Parameters IE */
-	if ((Channel <= 14) && (cfg_ht_bw == HT_BW_40)) {
-		OVERLAP_BSS_SCAN_IE OverlapScanParam;
+	if ((Channel <= 14) && (cfg_ht_bw == HT_BW_40))	{
+		OVERLAP_BSS_SCAN_IE  OverlapScanParam;
 		UCHAR OverlapScanIE, ScanIELen;
 
 		OverlapScanIE = IE_OVERLAPBSS_SCAN_PARM;
 		ScanIELen = 14;
-		OverlapScanParam.ScanPassiveDwell =
-			cpu2le16(pAd->CommonCfg.Dot11OBssScanPassiveDwell);
-		OverlapScanParam.ScanActiveDwell =
-			cpu2le16(pAd->CommonCfg.Dot11OBssScanActiveDwell);
-		OverlapScanParam.TriggerScanInt =
-			cpu2le16(pAd->CommonCfg.Dot11BssWidthTriggerScanInt);
-		OverlapScanParam.PassiveTalPerChannel = cpu2le16(
-			pAd->CommonCfg.Dot11OBssScanPassiveTotalPerChannel);
-		OverlapScanParam.ActiveTalPerChannel = cpu2le16(
-			pAd->CommonCfg.Dot11OBssScanActiveTotalPerChannel);
-		OverlapScanParam.DelayFactor = cpu2le16(
-			pAd->CommonCfg.Dot11BssWidthChanTranDelayFactor);
-		OverlapScanParam.ScanActThre =
-			cpu2le16(pAd->CommonCfg.Dot11OBssScanActivityThre);
+		OverlapScanParam.ScanPassiveDwell = cpu2le16(pAd->CommonCfg.Dot11OBssScanPassiveDwell);
+		OverlapScanParam.ScanActiveDwell = cpu2le16(pAd->CommonCfg.Dot11OBssScanActiveDwell);
+		OverlapScanParam.TriggerScanInt = cpu2le16(pAd->CommonCfg.Dot11BssWidthTriggerScanInt);
+		OverlapScanParam.PassiveTalPerChannel = cpu2le16(pAd->CommonCfg.Dot11OBssScanPassiveTotalPerChannel);
+		OverlapScanParam.ActiveTalPerChannel = cpu2le16(pAd->CommonCfg.Dot11OBssScanActiveTotalPerChannel);
+		OverlapScanParam.DelayFactor = cpu2le16(pAd->CommonCfg.Dot11BssWidthChanTranDelayFactor);
+		OverlapScanParam.ScanActThre = cpu2le16(pAd->CommonCfg.Dot11OBssScanActivityThre);
 
 		MAKE_IE_TO_BUF(buf, &OverlapScanIE, 1, len);
 		MAKE_IE_TO_BUF(buf, &ScanIELen, 1, len);
@@ -1123,35 +1001,29 @@ INT build_ht_ies(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 	INT len = 0;
 
 	if (info->is_draft_n_type == TRUE)
-		len += build_bcm_ht_cap_ie(pAd, info->wdev,
-					   (UCHAR *)(info->frame_buf + len));
+		len += build_bcm_ht_cap_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
 	else
-		len += build_ht_cap_ie(pAd, info->wdev,
-				       (UCHAR *)(info->frame_buf + len));
+		len += build_ht_cap_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
 
 	if ((info->frame_subtype == SUBTYPE_BEACON) ||
-	    (info->frame_subtype == SUBTYPE_PROBE_RSP) ||
-	    (info->frame_subtype == SUBTYPE_ASSOC_RSP) ||
-	    (info->frame_subtype == SUBTYPE_REASSOC_RSP)) {
+		(info->frame_subtype == SUBTYPE_PROBE_RSP) ||
+		(info->frame_subtype == SUBTYPE_ASSOC_RSP) ||
+		(info->frame_subtype == SUBTYPE_REASSOC_RSP)) {
 		if (info->is_draft_n_type == TRUE)
-			len += build_bcm_ht_op_ie(
-				pAd, info->wdev,
-				(UCHAR *)(info->frame_buf + len));
+			len += build_bcm_ht_op_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
 		else
-			len += build_ht_op_ie(pAd, info->wdev,
-					      (UCHAR *)(info->frame_buf + len));
+			len += build_ht_op_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
 	}
 
 	if ((info->frame_subtype == SUBTYPE_BEACON) ||
-	    (info->frame_subtype == SUBTYPE_PROBE_RSP) ||
-	    (info->frame_subtype == SUBTYPE_ASSOC_RSP) ||
-	    (info->frame_subtype == SUBTYPE_REASSOC_RSP)) {
-		len += build_overlapping_bss_ie(
-			pAd, info->wdev, info->channel,
-			(UCHAR *)(info->frame_buf + len));
+		(info->frame_subtype == SUBTYPE_PROBE_RSP) ||
+		(info->frame_subtype == SUBTYPE_ASSOC_RSP) ||
+		(info->frame_subtype == SUBTYPE_REASSOC_RSP)) {
+		len += build_overlapping_bss_ie(pAd, info->wdev, info->channel, (UCHAR *)(info->frame_buf + len));
 	}
 
 	return len;
 }
 
 #endif /* DOT11_N_SUPPORT */
+

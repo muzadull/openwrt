@@ -22,3 +22,4 @@ INT32 MTShowPartialBBP(struct _RTMP_ADAPTER *pAd, UINT32 Start, UINT32 End);
 INT mt_phy_probe(struct _RTMP_ADAPTER *pAd);
 
 #endif /* __MT_BBP_H__ */
+

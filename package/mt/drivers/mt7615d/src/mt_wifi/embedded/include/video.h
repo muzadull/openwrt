@@ -9,3 +9,4 @@ UINT32 GetAsicVideoRetry(IN PRTMP_ADAPTER pAd);
 UCHAR GetAsicVideoTxBA(IN PRTMP_ADAPTER pAd);
 VOID VideoConfigInit(IN PRTMP_ADAPTER pAd);
 #endif /* VIDEO_TURBINE_SUPPORT */
+

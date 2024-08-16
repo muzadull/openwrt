@@ -22,9 +22,15 @@
 
 #ifdef DOT11R_FT_SUPPORT
 
+
 #include "rt_config.h"
 
+
 #define TYPE_FUNC
+
+
+
+
 
 /*
 ========================================================================
@@ -40,11 +46,12 @@ Return Value:
 Note:
 ========================================================================
 */
-VOID TYPE_FUNC FT_RIC_Init(IN PRTMP_ADAPTER pAd)
+VOID TYPE_FUNC FT_RIC_Init(
+	IN	PRTMP_ADAPTER		pAd)
 {
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE,
-		 ("ap_ftrc> Initialize FT RIC Module...\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE, ("ap_ftrc> Initialize FT RIC Module...\n"));
 } /* End of FT_RIC_Init */
+
 
 /*
 ========================================================================
@@ -60,11 +67,14 @@ Return Value:
 Note:
 ========================================================================
 */
-VOID TYPE_FUNC FT_RIC_Release(IN PRTMP_ADAPTER pAd)
+VOID TYPE_FUNC FT_RIC_Release(
+	IN	PRTMP_ADAPTER		pAd)
 {
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE,
-		 ("ap_ftrc> Release FT RIC Module...\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE, ("ap_ftrc> Release FT RIC Module...\n"));
 } /* End of FT_KDP_Release */
+
+
+
 
 #ifdef CONFIG_AP_SUPPORT
 /*
@@ -91,8 +101,12 @@ Note:
 ========================================================================
 */
 UINT32 TYPE_FUNC FT_RIC_ResourceRequestHandle(
-	IN PRTMP_ADAPTER pAd, IN MAC_TABLE_ENTRY *pCdb, IN UCHAR *pBufReq,
-	IN UINT32 ReqLen, OUT UCHAR *pBufRsp, OUT UINT32 *pRspLen)
+	IN	PRTMP_ADAPTER			pAd,
+	IN	MAC_TABLE_ENTRY * pCdb,
+	IN	UCHAR					*pBufReq,
+	IN	UINT32					ReqLen,
+	OUT	UCHAR					*pBufRsp,
+	OUT	UINT32					*pRspLen)
 {
 	FT_ELM_RIC_DATA_INFO *pElmDataInfoReq, *pElmDataInfoRsp;
 	UCHAR *pBufReqElm, *pElmReqDescp;
@@ -103,11 +117,12 @@ UINT32 TYPE_FUNC FT_RIC_ResourceRequestHandle(
 	BOOLEAN FlgIsTspecAccepted;
 
 	/* sanity check */
-	if ((pCdb == NULL) || (pBufReq == NULL) || (pBufRsp == NULL) ||
-	    (pRspLen == NULL)) {
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_ERROR,
-			("ft_ric> (ResourceRequestHandle) Error! NULL pointer!\n"));
+	if ((pCdb == NULL) ||
+		(pBufReq == NULL) ||
+		(pBufRsp == NULL) ||
+		(pRspLen == NULL)) {
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_ERROR,
+				 ("ft_ric> (ResourceRequestHandle) Error! NULL pointer!\n"));
 		return 0;
 	} /* End of if */
 
@@ -143,8 +158,7 @@ UINT32 TYPE_FUNC FT_RIC_ResourceRequestHandle(
 			chosen by the non-AP STA that uniquely identifies the RDIE
 			within the RIC.
 		*/
-		pElmDataInfoRsp->RDIE_Identifier =
-			pElmDataInfoReq->RDIE_Identifier;
+		pElmDataInfoRsp->RDIE_Identifier = pElmDataInfoReq->RDIE_Identifier;
 		pBufRspElm += sizeof(FT_ELM_RIC_DATA_INFO);
 		*pRspLen += sizeof(FT_ELM_RIC_DATA_INFO);
 		/* parsing the RIC descriptors */
@@ -169,19 +183,15 @@ UINT32 TYPE_FUNC FT_RIC_ResourceRequestHandle(
 				case IE_FT_RIC_DESCRIPTOR:
 					/* BLOCK ACK */
 					/* reject the resource */
-					MTWF_LOG(
-						DBG_CAT_PROTO, CATPROTO_FT,
-						DBG_LVL_TRACE,
-						("ft_ric> Handle a resource request BLOCK ACK...\n"));
+					MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE,
+							 ("ft_ric> Handle a resource request BLOCK ACK...\n"));
 
-					if (BA_ResourceAllocate(
-						    pAd, pCdb, pElmReqDescp,
-						    pBufRspElm, &RspLen) == 0) {
-						MTWF_LOG(
-							DBG_CAT_PROTO,
-							CATPROTO_FT,
-							DBG_LVL_TRACE,
-							("ft_ric> Accept BA.\n"));
+					if (BA_ResourceAllocate(pAd,
+											pCdb,
+											pElmReqDescp,
+											pBufRspElm,
+											&RspLen) == 0) {
+						MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE, ("ft_ric> Accept BA.\n"));
 						FlgIsTspecAccepted = TRUE;
 					}
 
@@ -209,10 +219,8 @@ UINT32 TYPE_FUNC FT_RIC_ResourceRequestHandle(
 			pElmDataInfoRsp->StatusCode = 0;
 			pBufRspElm += RspLen;
 			*pRspLen += RspLen;
-			MTWF_LOG(
-				DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE,
-				("ft_ric> Accept a resource request (RspLen: %d).\n",
-				 *pRspLen));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE,
+					 ("ft_ric> Accept a resource request (RspLen: %d).\n", *pRspLen));
 		} else {
 			/*
 				Status Code non-zero indicates that the resources could not
@@ -229,11 +237,9 @@ UINT32 TYPE_FUNC FT_RIC_ResourceRequestHandle(
 				Status Code in the auth/assoc frame containing the RIC.
 			*/
 			/* we do NOT support suggested Resource Descriptor */
-			pElmDataInfoRsp->RD_Count =
-				0; /* 0 or 1, we only support 0 */
+			pElmDataInfoRsp->RD_Count = 0; /* 0 or 1, we only support 0 */
 			pElmDataInfoRsp->StatusCode = FT_STATUS_CODE_RESERVED;
-			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE,
-				 ("ft_ric> Resource request fails!\n"));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_TRACE, ("ft_ric> Resource request fails!\n"));
 		} /* End of if */
 
 		/* check next RDIE */
@@ -242,6 +248,7 @@ UINT32 TYPE_FUNC FT_RIC_ResourceRequestHandle(
 
 	return HandledSize;
 } /* End of FT_RIC_ResourceRequestHandle */
+
 
 /*
 ========================================================================
@@ -266,9 +273,12 @@ Note:
 	3. Suppose RDIEs are continual.
 ========================================================================
 */
-UINT32 BA_ResourceAllocate(IN PRTMP_ADAPTER pAd, IN MAC_TABLE_ENTRY *pMacEntry,
-			   IN UCHAR *pBufRscReq, OUT UCHAR *pBufRscRsp,
-			   OUT ULONG *pBufRspLen)
+UINT32 BA_ResourceAllocate(
+	IN PRTMP_ADAPTER pAd,
+	IN MAC_TABLE_ENTRY * pMacEntry,
+	IN UCHAR *pBufRscReq,
+	OUT UCHAR *pBufRscRsp,
+	OUT ULONG *pBufRspLen)
 {
 	UINT8 IEId = IE_FT_RIC_DESCRIPTOR;
 	UINT8 RicType = FT_RIC_TYPE_BA;
@@ -285,12 +295,10 @@ UINT32 BA_ResourceAllocate(IN PRTMP_ADAPTER pAd, IN MAC_TABLE_ENTRY *pMacEntry,
 		pRicDesInfo = (FT_ELM_RIC_DESCP_INFO *)pBufRscReq;
 		pRicBaInfo = (FT_RIC_DESCP_BLOCK_ACK *)pRicDesInfo->Container;
 		Value = le2cpu16(*(UINT16 *)(&pRicBaInfo->BaParm));
-		NdisMoveMemory((PUCHAR)&AddreqFrame.BaParm, &Value,
-			       sizeof(UINT16));
+		NdisMoveMemory((PUCHAR)&AddreqFrame.BaParm, &Value, sizeof(UINT16));
 		AddreqFrame.TimeOutValue = le2cpu16(pRicBaInfo->TimeOutValue);
 		AddreqFrame.BaStartSeq.word = le2cpu16(pRicBaInfo->BaStartSeq);
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_OFF,
-			 ("Rcv Wcid(%d) AddBAReq\n", pMacEntry->Aid));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FT, DBG_LVL_OFF, ("Rcv Wcid(%d) AddBAReq\n", pMacEntry->Aid));
 
 		if (ba_rec_session_add(pAd, pMacEntry, &AddreqFrame))
 			Status = 0;
@@ -306,9 +314,7 @@ UINT32 BA_ResourceAllocate(IN PRTMP_ADAPTER pAd, IN MAC_TABLE_ENTRY *pMacEntry,
 	BaParm.BAPolicy = IMMED_BA;
 	BaParm.AMSDUSupported = 0;
 	BaParm.TID = AddreqFrame.BaParm.TID;
-	BaParm.BufSize =
-		min(((UCHAR)AddreqFrame.BaParm.BufSize),
-		    (UCHAR)pAd->CommonCfg.BACapability.field.RxBAWinLimit);
+	BaParm.BufSize = min(((UCHAR)AddreqFrame.BaParm.BufSize), (UCHAR)pAd->CommonCfg.BACapability.field.RxBAWinLimit);
 
 	if (BaParm.BufSize == 0)
 		BaParm.BufSize = 64;
@@ -317,9 +323,14 @@ UINT32 BA_ResourceAllocate(IN PRTMP_ADAPTER pAd, IN MAC_TABLE_ENTRY *pMacEntry,
 	*(UINT16 *)(&BaParm) = cpu2le16(*(USHORT *)(&BaParm));
 	Status = cpu2le16(Status);
 	TimeOutValue = cpu2le16(TimeOutValue);
-	MakeOutgoingFrame(pBufRscRsp, pBufRspLen, 1, &IEId, 1, &Len, 1,
-			  &RicType, 2, &Status, 2, (UCHAR *)&BaParm, 2,
-			  &TimeOutValue, END_OF_ARGS);
+	MakeOutgoingFrame(pBufRscRsp,	pBufRspLen,
+						1,			&IEId,
+						1,			&Len,
+						1,			&RicType,
+						2,			&Status,
+						2,			(UCHAR *)&BaParm,
+						2,		&TimeOutValue,
+						END_OF_ARGS);
 	return Status;
 }
 

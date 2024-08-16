@@ -290,9 +290,7 @@ INT MBSS_Close(PNET_DEV pDev)
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 	BssId = RT28xx_MBSS_IdxGet(pAd, pDev);
     if (BssId < 0)
-	{
         return -1;
-	}
 
 	RTMP_OS_NETDEV_STOP_QUEUE(pDev);
 

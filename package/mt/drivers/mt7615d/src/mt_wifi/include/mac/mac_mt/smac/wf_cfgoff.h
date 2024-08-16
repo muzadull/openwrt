@@ -26,9 +26,12 @@
 	--------	----------	  ----------------------------------------------
 */
 
+
 #ifndef __WF_CFG_OFF_H__
 #define __WF_CFG_OFF_H__
 
-#define WF_CFG_OFF_BASE 0x21E00
+#define WF_CFG_OFF_BASE		0x21E00
+
 
 #endif /* __WF_CFG_OFF_H__ */
+

@@ -26,20 +26,21 @@
 
 #include <linux/ieee80211.h>
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
-#define IEEE80211_NUM_BANDS NUM_NL80211_BANDS
-#define IEEE80211_BAND_2GHZ NL80211_BAND_2GHZ
-#define IEEE80211_BAND_5GHZ NL80211_BAND_5GHZ
-#endif
-
 typedef enum _NDIS_HOSTAPD_STATUS {
 	Hostapd_Disable = 0,
 	Hostapd_EXT,
 	Hostapd_CFG
-} NDIS_HOSTAPD_STATUS,
-	*PNDIS_HOSTAPD_STATUS;
+} NDIS_HOSTAPD_STATUS, *PNDIS_HOSTAPD_STATUS;
+
 
 typedef struct __CFG80211_CB {
+
+    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0))
+    #define ieee80211_band nl80211_band
+    #define IEEE80211_BAND_2GHZ NL80211_BAND_2GHZ
+    #define IEEE80211_BAND_5GHZ NL80211_BAND_5GHZ
+    #define IEEE80211_NUM_BANDS NUM_NL80211_BANDS
+    #endif
 	/* we can change channel/rate information on the fly so we backup them */
 	struct ieee80211_supported_band Cfg80211_bands[IEEE80211_NUM_BANDS];
 	struct ieee80211_channel *pCfg80211_Channels;
@@ -55,12 +56,15 @@ typedef struct __CFG80211_CB {
 	UINT32 MonFilterFlag;
 
 	/* channel information */
-	struct ieee80211_channel ChanInfo[MAX_NUM_OF_CHS];
+	struct ieee80211_channel ChanInfo[MAX_NUM_OF_CHANNELS];
 
 	/* to protect scan status */
 	spinlock_t scan_notify_lock;
 
 } CFG80211_CB;
+
+
+
 
 /*
 ========================================================================
@@ -82,8 +86,10 @@ Note:
 	Can not use pNetDev to replace pDev; Or kernel panic.
 ========================================================================
 */
-BOOLEAN CFG80211_Register(VOID *pAd, struct device *pDev,
-			  struct net_device *pNetDev);
+BOOLEAN CFG80211_Register(
+	VOID * pAd,
+	struct device				*pDev,
+	struct net_device			*pNetDev);
 
 #endif /* RT_CFG80211_SUPPORT */
 

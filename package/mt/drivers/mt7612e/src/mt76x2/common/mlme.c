@@ -26,7 +26,7 @@
 */
 
 #include "rt_config.h"
-#include <linux/stdarg.h>
+#include <stdarg.h>
 #ifdef DOT11R_FT_SUPPORT
 #include "ft.h"
 #endif /* DOT11R_FT_SUPPORT */
@@ -383,7 +383,7 @@ VOID MlmeHandler(RTMP_ADAPTER *pAd)
 					Queue->Entry[Tail].MsgLen = Elem->MsgLen;	
 					Queue->Entry[Tail].Priv = Elem->Priv;
 					NdisZeroMemory(Queue->Entry[Tail].Msg, MGMT_DMA_BUFFER_SIZE);
-					if (Elem->Msg > 0)
+					if (Elem->Msg != NULL)
 					{
 						NdisMoveMemory(Queue->Entry[Tail].Msg, Elem->Msg, Elem->MsgLen);
 					}

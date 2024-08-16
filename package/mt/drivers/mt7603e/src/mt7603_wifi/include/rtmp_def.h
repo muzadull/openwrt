@@ -2350,9 +2350,7 @@ enum {
 };
 #endif /* SMART_CARRIER_SENSE_SUPPORT */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
 #define ABS(_x, _y) ((_x) > (_y)) ? ((_x) -(_y)) : ((_y) -(_x))
-#endif
 
 #define A2Dec(_X, _p) 				\
 {									\

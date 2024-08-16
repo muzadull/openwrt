@@ -2031,7 +2031,7 @@ VOID RTMPDeQueuePacket(
 				break;
 
 			DEQUEUE_LOCK(&pAd->irq_lock, bIntContext, IrqFlags);
-			if (&pAd->TxSwQueue[QueIdx] < 0)
+			if (&pAd->TxSwQueue[QueIdx] == NULL)
 			{
 #ifdef DBG_DIAGNOSE
 #ifdef DBG_TXQ_DEPTH

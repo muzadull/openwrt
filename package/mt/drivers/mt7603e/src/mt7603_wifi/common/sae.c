@@ -1172,11 +1172,10 @@ UCHAR sae_get_pmk_cache(
 		SAE_BN_FREE(&tmp);
 	}
 
-	if (pSaeIns->pmk[0] != 0) {
+	if (pmk && pSaeIns->pmk)
 		NdisMoveMemory(pmk, pSaeIns->pmk, LEN_PMK);
-	} else {
+	else if (!pSaeIns->pmk)
 		return FALSE;
-	}
 
 	return TRUE;
 }

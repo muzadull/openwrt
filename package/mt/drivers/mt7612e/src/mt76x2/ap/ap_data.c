@@ -795,12 +795,8 @@ static inline VOID APBuildCache802_11Header(
 #endif /* CLIENT_WDS */
 		)
 	{	/* The addr3 of WDS packet is Destination Mac address and Addr4 is the Source Mac address. */
-	if (sizeof(pHeader) >= sizeof(HEADER_802_11) + 2 * MAC_ADDR_LEN) {
 		COPY_MAC_ADDR(pHeader80211->Addr3, pTxBlk->pSrcBufHeader);
 		COPY_MAC_ADDR(pHeader80211->Octet, pTxBlk->pSrcBufHeader + MAC_ADDR_LEN);
-		} else {
-			DBGPRINT(RT_DEBUG_TRACE, ("%s: Buffer size is insufficient for MAC address copy!\n", __FUNCTION__));
-		}
 		pTxBlk->MpduHeaderLen += MAC_ADDR_LEN; 
 	}
 	else
@@ -1050,11 +1046,7 @@ static inline VOID APBuildCommon802_11Header(RTMP_ADAPTER *pAd, TX_BLK *pTxBlk)
 
 		COPY_MAC_ADDR(wifi_hdr->Addr2, pAd->CurrentAddress);						/* from AP1 */
 		COPY_MAC_ADDR(wifi_hdr->Addr3, pTxBlk->pSrcBufHeader);					/* DA */
-		if ((TXINFO_SIZE + TXWISize + TSO_SIZE + sizeof(HEADER_802_11) + MAC_ADDR_LEN) <= sizeof(pTxBlk->HeaderBuf)) {
-			COPY_MAC_ADDR(&wifi_hdr->Octet[0], pTxBlk->pSrcBufHeader + MAC_ADDR_LEN);/* ADDR4 = SA */
-			} else {
-				DBGPRINT(RT_DEBUG_TRACE, ("%s: HeaderBuf size is insufficient!\n", __FUNCTION__));
-			}
+		COPY_MAC_ADDR(&wifi_hdr->Octet[0], pTxBlk->pSrcBufHeader + MAC_ADDR_LEN);/* ADDR4 = SA */
 		pTxBlk->MpduHeaderLen += MAC_ADDR_LEN; 
 	}
 	else

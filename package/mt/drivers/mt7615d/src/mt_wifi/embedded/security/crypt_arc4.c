@@ -12,6 +12,7 @@
  * written consent of Ralink Technology, Inc. is obtained.
  ***************************************************************************/
 
+
 /****************************************************************************
     Module Name:
     RC4
@@ -39,7 +40,10 @@ Arguments:
 
 ========================================================================
 */
-VOID ARC4_INIT(IN ARC4_CTX_STRUC *pARC4_CTX, IN PUCHAR pKey, IN UINT KeyLength)
+VOID ARC4_INIT(
+	IN ARC4_CTX_STRUC * pARC4_CTX,
+	IN PUCHAR pKey,
+	IN UINT KeyLength)
 {
 	UINT BlockIndex = 0, SWAPIndex = 0, KeyIndex = 0;
 	UINT8 TempValue = 0;
@@ -48,18 +52,18 @@ VOID ARC4_INIT(IN ARC4_CTX_STRUC *pARC4_CTX, IN PUCHAR pKey, IN UINT KeyLength)
 	pARC4_CTX->BlockIndex2 = 0;
 
 	for (BlockIndex = 0; BlockIndex < ARC4_KEY_BLOCK_SIZE; BlockIndex++)
-		pARC4_CTX->KeyBlock[BlockIndex] = (UINT8)BlockIndex;
+		pARC4_CTX->KeyBlock[BlockIndex] = (UINT8) BlockIndex;
 
 	/*Key schedule*/
 	for (BlockIndex = 0; BlockIndex < ARC4_KEY_BLOCK_SIZE; BlockIndex++) {
 		TempValue = pARC4_CTX->KeyBlock[BlockIndex];
 		KeyIndex = BlockIndex % KeyLength;
 		SWAPIndex = (SWAPIndex + TempValue + pKey[KeyIndex]) & 0xff;
-		pARC4_CTX->KeyBlock[BlockIndex] =
-			pARC4_CTX->KeyBlock[SWAPIndex];
+		pARC4_CTX->KeyBlock[BlockIndex] = pARC4_CTX->KeyBlock[SWAPIndex];
 		pARC4_CTX->KeyBlock[SWAPIndex] = TempValue;
 	} /* End of for */
 } /* End of ARC4_INIT */
+
 
 /*
 ========================================================================
@@ -75,8 +79,11 @@ Return Value:
     OutputBlock       Return output text
  ========================================================================
 */
-VOID ARC4_Compute(IN ARC4_CTX_STRUC *pARC4_CTX, IN UINT8 InputBlock[],
-		  IN UINT InputBlockSize, OUT UINT8 OutputBlock[])
+VOID ARC4_Compute(
+	IN ARC4_CTX_STRUC * pARC4_CTX,
+	IN UINT8 InputBlock[],
+	IN UINT InputBlockSize,
+	OUT UINT8 OutputBlock[])
 {
 	UINT InputIndex = 0;
 	UINT8 TempValue = 0;
@@ -84,18 +91,14 @@ VOID ARC4_Compute(IN ARC4_CTX_STRUC *pARC4_CTX, IN UINT8 InputBlock[],
 	for (InputIndex = 0; InputIndex < InputBlockSize; InputIndex++) {
 		pARC4_CTX->BlockIndex1 = (pARC4_CTX->BlockIndex1 + 1) & 0xff;
 		TempValue = pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1];
-		pARC4_CTX->BlockIndex2 =
-			(pARC4_CTX->BlockIndex2 + TempValue) & 0xff;
-		pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1] =
-			pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex2];
+		pARC4_CTX->BlockIndex2 = (pARC4_CTX->BlockIndex2 + TempValue) & 0xff;
+		pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1] = pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex2];
 		pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex2] = TempValue;
-		TempValue = (TempValue +
-			     pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1]) &
-			    0xff;
-		OutputBlock[InputIndex] =
-			InputBlock[InputIndex] ^ pARC4_CTX->KeyBlock[TempValue];
+		TempValue = (TempValue + pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1]) & 0xff;
+		OutputBlock[InputIndex] = InputBlock[InputIndex]^pARC4_CTX->KeyBlock[TempValue];
 	} /* End of for */
 } /* End of ARC4_Compute */
+
 
 /*
 ========================================================================
@@ -108,7 +111,9 @@ Arguments:
 
 ========================================================================
 */
-VOID ARC4_Discard_KeyLength(IN ARC4_CTX_STRUC *pARC4_CTX, IN UINT Length)
+VOID ARC4_Discard_KeyLength(
+	IN ARC4_CTX_STRUC * pARC4_CTX,
+	IN UINT Length)
 {
 	UINT Index = 0;
 	UINT8 TempValue = 0;
@@ -116,10 +121,10 @@ VOID ARC4_Discard_KeyLength(IN ARC4_CTX_STRUC *pARC4_CTX, IN UINT Length)
 	for (Index = 0; Index < Length; Index++) {
 		pARC4_CTX->BlockIndex1 = (pARC4_CTX->BlockIndex1 + 1) & 0xff;
 		TempValue = pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1];
-		pARC4_CTX->BlockIndex2 =
-			(pARC4_CTX->BlockIndex2 + TempValue) & 0xff;
-		pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1] =
-			pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex2];
+		pARC4_CTX->BlockIndex2 = (pARC4_CTX->BlockIndex2 + TempValue) & 0xff;
+		pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex1] = pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex2];
 		pARC4_CTX->KeyBlock[pARC4_CTX->BlockIndex2] = TempValue;
 	} /* End of for */
 } /* End of ARC4_Discard_KeyLength */
+
+

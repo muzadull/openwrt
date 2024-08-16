@@ -13,13 +13,15 @@
 	Module Name:
 	mt_io.c
 */
-#include "rt_config.h"
+#include	"rt_config.h"
+
+
 
 #ifdef MT7615
 UINT32 mt7615_mac_cr_range[] = {
-	0x82060000, 0x8000,  0x450, /* WF_PLE */
-	0x82068000, 0xc000,  0x450, /* WF_PSE */
-	0x8206c000, 0xe000,  0x300, /* PP */
+	0x82060000, 0x8000, 0x450, /* WF_PLE */
+	0x82068000, 0xc000, 0x450, /* WF_PSE */
+	0x8206c000, 0xe000, 0x300, /* PP */
 	0x820d0000, 0x20000, 0x200, /* WF_AON */
 	0x820f0000, 0x20200, 0x400, /* WF_CFG */
 	0x820f0800, 0x20600, 0x200, /* WF_CFGOFF */
@@ -50,15 +52,16 @@ UINT32 mt7615_mac_cr_range[] = {
 	0xA0000000, 0x08000, 0x8000, /* PSE_CFG */
 	0x82070000, 0x10000, 0x10000, /* WF_PHY */
 
-	0x0,	    0x0,     0x0,
+	0x0, 0x0, 0x0,
 };
 #endif /* MT7615 */
 
+
 #ifdef MT7622
 UINT32 mt7622_mac_cr_range[] = {
-	0x82060000, 0x8000,  0x450, /* WF_PLE */
-	0x82068000, 0xc000,  0x450, /* WF_PSE */
-	0x8206c000, 0xe000,  0x300, /* PP */
+	0x82060000, 0x8000, 0x450, /* WF_PLE */
+	0x82068000, 0xc000, 0x450, /* WF_PSE */
+	0x8206c000, 0xe000, 0x300, /* PP */
 	0x820d0000, 0x20000, 0x200, /* WF_AON */
 	0x820f0000, 0x20200, 0x400, /* WF_CFG */
 	0x820f0800, 0x20600, 0x200, /* WF_CFGOFF */
@@ -89,9 +92,11 @@ UINT32 mt7622_mac_cr_range[] = {
 	0xA0000000, 0x08000, 0x8000, /* PSE_CFG */
 	0x82070000, 0x10000, 0x10000, /* WF_PHY */
 
-	0x0,	    0x0,     0x0,
+	0x0, 0x0, 0x0,
 };
 #endif /* MT7622 */
+
+
 
 BOOLEAN mt_mac_cr_range_mapping(RTMP_ADAPTER *pAd, UINT32 *mac_addr)
 {
@@ -112,17 +117,14 @@ BOOLEAN mt_mac_cr_range_mapping(RTMP_ADAPTER *pAd, UINT32 *mac_addr)
 
 #endif /* MT7622 */
 	if (!mac_cr_range) {
-		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s(): NotSupported Chip for this function!\n",
-			  __func__));
+		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s(): NotSupported Chip for this function!\n", __func__));
 		return IsFound;
 	}
 
 	if (mac_addr_hif >= 0x40000) {
 		do {
 			if (mac_addr_hif >= mac_cr_range[idx] &&
-			    mac_addr_hif < (mac_cr_range[idx] +
-					    mac_cr_range[idx + 2])) {
+				mac_addr_hif < (mac_cr_range[idx] + mac_cr_range[idx + 2])) {
 				mac_addr_hif -= mac_cr_range[idx];
 				mac_addr_hif += mac_cr_range[idx + 1];
 				IsFound = 1;
@@ -137,6 +139,7 @@ BOOLEAN mt_mac_cr_range_mapping(RTMP_ADAPTER *pAd, UINT32 *mac_addr)
 	*mac_addr = mac_addr_hif;
 	return IsFound;
 }
+
 
 UINT32 mt_physical_addr_map(RTMP_ADAPTER *pAd, UINT32 addr)
 {
@@ -170,19 +173,13 @@ UINT32 mt_physical_addr_map(RTMP_ADAPTER *pAd, UINT32 addr)
 #endif /* MT7622 */
 
 		if (!mac_cr_range) {
-			MTWF_LOG(
-				DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				("%s(): NotSupported Chip for this function!\n",
-				 __func__));
+			MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s(): NotSupported Chip for this function!\n", __func__));
 			return global_addr;
 		}
 
 		do {
-			if ((addr >= mac_cr_range[idx]) &&
-			    (addr <
-			     (mac_cr_range[idx] + mac_cr_range[idx + 1]))) {
-				global_addr = mac_cr_range[idx - 1] +
-					      (addr - mac_cr_range[idx]);
+			if ((addr >= mac_cr_range[idx]) && (addr < (mac_cr_range[idx] + mac_cr_range[idx + 1]))) {
+				global_addr = mac_cr_range[idx - 1] + (addr - mac_cr_range[idx]);
 				break;
 			}
 
@@ -190,21 +187,19 @@ UINT32 mt_physical_addr_map(RTMP_ADAPTER *pAd, UINT32 addr)
 		} while (mac_cr_range[idx] != 0);
 
 		if (mac_cr_range[idx] == 0)
-			MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("unknow addr range = %x\n", addr));
+			MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("unknow addr range = %x\n", addr));
 	} else if ((addr >= 0x40000) && (addr < 0x80000)) { /* WTBL Address */
 		global_addr = wtbl_2_base + addr - 0x40000;
-		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("==>global_addr1=0x%x\n", global_addr));
+		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("==>global_addr1=0x%x\n", global_addr));
 	} else if ((addr >= 0xc0000) && (addr < 0xc0100)) { /* PSE Client */
 		global_addr = 0x800c0000 + addr - 0xc0000;
-		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("==>global_addr2=0x%x\n", global_addr));
+		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("==>global_addr2=0x%x\n", global_addr));
 	} else {
 		global_addr = addr;
-		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("==>global_addr3=0x%x\n", global_addr));
+		MTWF_LOG(DBG_CAT_HIF, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("==>global_addr3=0x%x\n", global_addr));
 	}
 
 	return global_addr;
 }
+
+

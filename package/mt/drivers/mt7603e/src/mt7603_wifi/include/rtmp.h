@@ -10388,11 +10388,11 @@ BOOLEAN RTMPRepeaterVaildMacEntry(
 
 INVAILD_TRIGGER_MAC_ENTRY *RepeaterInvaildMacLookup(
 	IN RTMP_ADAPTER *pAd,
-	IN const UCHAR *pAddr);
+	IN UCHAR *pAddr);
 
 VOID RTMPRepeaterInsertInvaildMacEntry(
 	IN RTMP_ADAPTER *pAd,
-	IN const UCHAR *pAddr);
+	IN UCHAR *pAddr);
 
 BOOLEAN RTMPRepeaterRemoveInvaildMacEntry(
 	IN RTMP_ADAPTER *pAd,

@@ -45,6 +45,7 @@ extern MEM_INFO_LIST MemInfoList;
 extern MEM_INFO_LIST PktInfoList;
 #endif /*MEM_ALLOC_INFO_SUPPORT*/
 
+
 int __init wbsys_module_init(void)
 {
 	struct net_device *net_dev;
@@ -56,8 +57,7 @@ int __init wbsys_module_init(void)
 	RTMP_OS_NETDEV_OP_HOOK netDevHook;
 	UINT32 Value;
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
-		 ("===> rt2880_probe\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("===> rt2880_probe\n"));
 #ifdef MEM_ALLOC_INFO_SUPPORT
 	MemInfoListInital();
 #endif /* MEM_ALLOC_INFO_SUPPORT */
@@ -70,8 +70,7 @@ int __init wbsys_module_init(void)
 	os_alloc_mem(NULL, (UCHAR **)&handle, sizeof(struct os_cookie));
 
 	if (!handle) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-			 ("Allocate memory for os_cookie failed!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Allocate memory for os_cookie failed!\n"));
 		goto err_out;
 	}
 
@@ -83,8 +82,7 @@ int __init wbsys_module_init(void)
 	rv = RTMPAllocAdapterBlock(handle, (VOID **)&pAd);
 
 	if (rv != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-			 (" RTMPAllocAdapterBlock !=  NDIS_STATUS_SUCCESS\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, (" RTMPAllocAdapterBlock !=  NDIS_STATUS_SUCCESS\n"));
 		os_free_mem(handle);
 		goto err_out;
 	}
@@ -102,9 +100,8 @@ int __init wbsys_module_init(void)
 		goto err_out_free_radev;
 
 	/* Here are the net_device structure with pci-bus specific parameters. */
-	net_dev->irq = dev_irq; /* Interrupt IRQ number */
-	net_dev->base_addr =
-		csr_addr; /* Save CSR virtual address and irq to device structure */
+	net_dev->irq = dev_irq;			/* Interrupt IRQ number */
+	net_dev->base_addr = csr_addr;		/* Save CSR virtual address and irq to device structure */
 	/*is not a regular method*/
 	((POS_COOKIE)handle)->pci_dev = (VOID *)wbsys_pdev;
 	((POS_COOKIE)handle)->pDev = &net_dev->dev;
@@ -114,19 +111,15 @@ int __init wbsys_module_init(void)
 	rv = RtmpOSNetDevAttach(pAd->OpMode, net_dev, &netDevHook);
 
 	if (rv) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-			 ("failed to call RtmpOSNetDevAttach(), rv=%d!\n", rv));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("failed to call RtmpOSNetDevAttach(), rv=%d!\n", rv));
 		goto err_out_free_netdev;
 	}
 
 	/* due to we didn't have any hook point when do module remove, we use this static as our hook point. */
 	rt2880_dev = net_dev;
 	wl_proc_init();
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
-		 ("%s: at CSR addr 0x%lx, IRQ %ld.\n", net_dev->name,
-		  (ULONG)csr_addr, (long int)net_dev->irq));
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
-		 ("<=== rt2880_probe\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("%s: at CSR addr 0x%lx, IRQ %ld.\n", net_dev->name, (ULONG)csr_addr, (long int)net_dev->irq));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<=== rt2880_probe\n"));
 #if defined(CONFIG_RA_CLASSIFIER) && (!defined(CONFIG_RA_CLASSIFIER_MODULE))
 	proc_ptr = proc_ralink_wl_video;
 
@@ -146,7 +139,7 @@ err_out_free_netdev:
 
 		if ((memalctotal != 0) || (pktalctotal != 0)) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Error: Memory leak!!\n"));
+					 ("Error: Memory leak!!\n"));
 			ASSERT(0);
 		}
 
@@ -197,7 +190,7 @@ VOID __exit wbsys_module_exit(void)
 
 		if ((memalctotal != 0) || (pktalctotal != 0)) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Error: Memory leak!!\n"));
+					 ("Error: Memory leak!!\n"));
 			ASSERT(0);
 		}
 
@@ -216,3 +209,4 @@ module_exit(wbsys_module_exit);
 #endif /* MULTI_INF_SUPPORT */
 
 #endif /* RTMP_RBUS_SUPPORT */
+

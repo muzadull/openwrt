@@ -19,8 +19,13 @@
  https://github.com/Azexios/openwrt-r3p-mtk
 ]]
 
+local ioctl_help = require "ioctl_helper"
 local mtkwifi = {}
 local _, nixio = pcall(require, "nixio")
+
+function mtkwifi.get_temp(str)
+    return c_getTempature(str)['tempature']
+end
 
 function mtkwifi.debug(...)
 	local ff = io.open("/tmp/mtkwifi.dbg.log", "a")

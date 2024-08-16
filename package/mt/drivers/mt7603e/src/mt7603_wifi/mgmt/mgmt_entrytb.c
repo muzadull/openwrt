@@ -1280,7 +1280,10 @@ VOID MacTableReset(RTMP_ADAPTER *pAd, INT startWcid)
 		DBGPRINT(RT_DEBUG_TRACE, ("2McastPsQueue.Number %u...\n", pAd->MacTab.McastPsQueue.Number));
 
 		/* ENTRY PREEMPTION: Zero Mac Table but entry's content */
-		NdisZeroMemory(&pAd->MacTab, sizeof(MAC_TABLE));
+/*		NdisZeroMemory(&pAd->MacTab, sizeof(MAC_TABLE));*/
+		NdisZeroMemory(&pAd->MacTab.Size,
+							sizeof(MAC_TABLE)-
+							Offsetof(MAC_TABLE, Size));
 
 		InitializeQueueHeader(&pAd->MacTab.McastPsQueue);
 		/*NdisReleaseSpinLock(&pAd->MacTabLock);*/

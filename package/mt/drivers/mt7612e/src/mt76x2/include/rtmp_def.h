@@ -1692,7 +1692,6 @@ enum WIFI_MODE{
 #define REGION_20_A_BAND                  20
 #define REGION_21_A_BAND                  21
 #define REGION_22_A_BAND                  22
-#define REGION_35_A_BAND                  35	/* 36, 40, 44, 48, 52, 56, 60, 64, 132, 136, 140, 144, 149, 153, 157, 161, 165 */
 #define REGION_MAXIMUM_A_BAND             37
 
 /* The security mode definition in MAC register */
@@ -2118,9 +2117,8 @@ enum {
 #define EDCA_TIMEOUT	400
 #endif /* defined(CONFIG_MULTI_CHANNEL) || defined(DOT11Z_TDLS_SUPPORT) */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)	
+
 #define ABS(_x, _y) ((_x) > (_y)) ? ((_x) -(_y)) : ((_y) -(_x))
-#endif
 #define ABS_One(_x) ((_x) < 0x0) ? (0x0 - (_x)) : (_x)
 
 #define A2Dec(_X, _p) 				\

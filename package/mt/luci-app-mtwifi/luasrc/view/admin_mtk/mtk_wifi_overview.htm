@@ -17,6 +17,8 @@
 local mtkwifi = require("mtkwifi")
 local mtkwifis = require("mtkwifis")
 local devs = mtkwifi.get_all_devs()
+local temp2 = mtkwifi.get_temp("ra0")
+local temp5 = mtkwifi.get_temp("rai0")
 %>
 
 <style type="text/css">
@@ -78,7 +80,8 @@ table {
 
 <div id="container">
 	<h2><a>Wireless Overview</a></h2>
-	
+	<span style="color:red;"> <%:Temperature ra0%>: <%=temp2%>&#176;C <br/> </span>
+	<span style="color:red;"> <%:Temperature rai0%>: <%=temp5%>&#176;C <br/> </span>
 	<div id="loading" style="margin-top: 1em; display: none;">
 	<img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" />
 		&nbsp;&nbsp;&nbsp; Please waiting......
@@ -349,7 +352,7 @@ table {
 </div>
 
 
-<script src="/luci-static/resources/jquery/jquery-3.7.1.min.js"></script>
+<script src="/luci-static/resources/jquery/jquery-1.4.js"></script>
 <script type="text/javascript">
 function wifi_reload(url) {
 	Stop();

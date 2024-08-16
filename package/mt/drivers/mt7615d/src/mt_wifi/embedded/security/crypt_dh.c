@@ -25,9 +25,11 @@
     Eddy        2009/01/21      Create Diffie-Hellman
 ***************************************************************************/
 
+
 #include "security/crypt_dh.h"
 #include "security/crypt_biginteger.h"
 #include "rt_config.h"
+
 
 /*
 ========================================================================
@@ -51,10 +53,15 @@ Note:
     PublicKey = G^PrivateKey (mod P)
 ========================================================================
 */
-void DH_PublicKey_Generate(IN UINT8 GValue[], IN UINT GValueLength,
-			   IN UINT8 PValue[], IN UINT PValueLength,
-			   IN UINT8 PrivateKey[], IN UINT PrivateKeyLength,
-			   OUT UINT8 PublicKey[], INOUT UINT *PublicKeyLength)
+void DH_PublicKey_Generate(
+	IN UINT8 GValue[],
+	IN UINT GValueLength,
+	IN UINT8 PValue[],
+	IN UINT PValueLength,
+	IN UINT8 PrivateKey[],
+	IN UINT PrivateKeyLength,
+	OUT UINT8 PublicKey[],
+	INOUT UINT * PublicKeyLength)
 {
 	PBIG_INTEGER pBI_G = NULL;
 	PBIG_INTEGER pBI_P = NULL;
@@ -71,37 +78,28 @@ void DH_PublicKey_Generate(IN UINT8 GValue[], IN UINT GValueLength,
 	 *    - GValue must be greater than 0 but less than the PValue (no implement)
 	 */
 	if (GValueLength == 0) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_PublicKey_Generate: G length is (%d)\n",
-			  GValueLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_PublicKey_Generate: G length is (%d)\n", GValueLength));
 		return;
 	} /* End of if */
 
 	if (PValueLength == 0) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_PublicKey_Generate: P length is (%d)\n",
-			  PValueLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_PublicKey_Generate: P length is (%d)\n", PValueLength));
 		return;
 	} /* End of if */
 
 	if (PrivateKeyLength == 0) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_PublicKey_Generate: private key length is (%d)\n",
-			  PrivateKeyLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_PublicKey_Generate: private key length is (%d)\n", PrivateKeyLength));
 		return;
 	} /* End of if */
 
 	if (*PublicKeyLength < PValueLength) {
-		MTWF_LOG(
-			DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("DH_PublicKey_Generate: public key length(%d) must be large or equal than P length(%d)\n",
-			 *PublicKeyLength, PValueLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_PublicKey_Generate: public key length(%d) must be large or equal than P length(%d)\n",
+				 *PublicKeyLength, PValueLength));
 		return;
 	} /* End of if */
 
 	if (!(PValue[PValueLength - 1] & 0x1)) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_PublicKey_Generate: P value must be odd\n"));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_PublicKey_Generate: P value must be odd\n"));
 		return;
 	} /* End of if */
 
@@ -120,8 +118,7 @@ void DH_PublicKey_Generate(IN UINT8 GValue[], IN UINT GValueLength,
 	 *    - BigInteger Operation
 	 *    - Montgomery reduction
 	 */
-	BigInteger_Montgomery_ExpMod(pBI_G, pBI_PrivateKey, pBI_P,
-				     &pBI_PublicKey);
+	BigInteger_Montgomery_ExpMod(pBI_G, pBI_PrivateKey, pBI_P, &pBI_PublicKey);
 	/*
 	 * 4. Transfer BigInteger structure to char array
 	 */
@@ -131,6 +128,7 @@ void DH_PublicKey_Generate(IN UINT8 GValue[], IN UINT GValueLength,
 	BigInteger_Free(&pBI_PrivateKey);
 	BigInteger_Free(&pBI_PublicKey);
 } /* End of DH_PublicKey_Generate */
+
 
 /*
 ========================================================================
@@ -154,10 +152,15 @@ Note:
     SecretKey = PublicKey^PrivateKey (mod P)
 ========================================================================
 */
-void DH_SecretKey_Generate(IN UINT8 PublicKey[], IN UINT PublicKeyLength,
-			   IN UINT8 PValue[], IN UINT PValueLength,
-			   IN UINT8 PrivateKey[], IN UINT PrivateKeyLength,
-			   OUT UINT8 SecretKey[], INOUT UINT *SecretKeyLength)
+void DH_SecretKey_Generate(
+	IN UINT8 PublicKey[],
+	IN UINT PublicKeyLength,
+	IN UINT8 PValue[],
+	IN UINT PValueLength,
+	IN UINT8 PrivateKey[],
+	IN UINT PrivateKeyLength,
+	OUT UINT8 SecretKey[],
+	INOUT UINT * SecretKeyLength)
 {
 	PBIG_INTEGER pBI_P = NULL;
 	PBIG_INTEGER pBI_SecretKey = NULL;
@@ -173,37 +176,28 @@ void DH_SecretKey_Generate(IN UINT8 PublicKey[], IN UINT PublicKeyLength,
 	 *    - PValue must be prime number (no implement)
 	 */
 	if (PublicKeyLength == 0) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_SecretKey_Generate: public key length is (%d)\n",
-			  PublicKeyLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_SecretKey_Generate: public key length is (%d)\n", PublicKeyLength));
 		return;
 	} /* End of if */
 
 	if (PValueLength == 0) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_SecretKey_Generate: P length is (%d)\n",
-			  PValueLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_SecretKey_Generate: P length is (%d)\n", PValueLength));
 		return;
 	} /* End of if */
 
 	if (PrivateKeyLength == 0) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_SecretKey_Generate: private key length is (%d)\n",
-			  PrivateKeyLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_SecretKey_Generate: private key length is (%d)\n", PrivateKeyLength));
 		return;
 	} /* End of if */
 
 	if (*SecretKeyLength < PValueLength) {
-		MTWF_LOG(
-			DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("DH_SecretKey_Generate: secret key length(%d) must be large or equal than P length(%d)\n",
-			 *SecretKeyLength, PValueLength));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_SecretKey_Generate: secret key length(%d) must be large or equal than P length(%d)\n",
+				 *SecretKeyLength, PValueLength));
 		return;
 	} /* End of if */
 
 	if (!(PValue[PValueLength - 1] & 0x1)) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("DH_SecretKey_Generate: P value must be odd\n"));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("DH_SecretKey_Generate: P value must be odd\n"));
 		return;
 	} /* End of if */
 
@@ -222,8 +216,7 @@ void DH_SecretKey_Generate(IN UINT8 PublicKey[], IN UINT PublicKeyLength,
 	 *    - BigInteger Operation
 	 *    - Montgomery reduction
 	 */
-	BigInteger_Montgomery_ExpMod(pBI_PublicKey, pBI_PrivateKey, pBI_P,
-				     &pBI_SecretKey);
+	BigInteger_Montgomery_ExpMod(pBI_PublicKey, pBI_PrivateKey, pBI_P, &pBI_SecretKey);
 	/*
 	 * 4. Transfer BigInteger structure to char array
 	 */
@@ -233,3 +226,4 @@ void DH_SecretKey_Generate(IN UINT8 PublicKey[], IN UINT PublicKeyLength,
 	BigInteger_Free(&pBI_PublicKey);
 	BigInteger_Free(&pBI_SecretKey);
 } /* End of DH_SecretKey_Generate */
+

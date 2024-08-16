@@ -1538,10 +1538,8 @@ void mt76x2_tssi_compensation(RTMP_ADAPTER *ad, u8 channel)
 				|| ((ad->chipCap.PAType == INT_PA_5G) && ( channel > 14 ) )
 				|| ((ad->chipCap.PAType == INT_PA_2G) && ( channel <= 14 ) )
 			)
-			{
 				CHIP_CALIBRATION(ad, DPD_CALIBRATION_7662, channel);
 				ad->MCUCtrl.dpd_on = TRUE;
-			}
 		}
 	}
 	

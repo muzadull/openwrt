@@ -40,10 +40,9 @@ VOID phy_oper_init(struct wifi_dev *wdev, struct phy_op *obj)
 			ucTxPath = ad->dbdc_band1_tx_path;
 			ucRxPath = ad->dbdc_band1_rx_path;
 		}
-		MTWF_LOG(
-			DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			("%s(): Swap TX/RX Stream number to (%d,%d) since DBDC_MODE EN\n",
-			 __func__, ucTxPath, ucRxPath));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): Swap TX/RX Stream number to (%d,%d) since DBDC_MODE EN\n",
+				 __func__, ucTxPath, ucRxPath));
+
 	}
 #endif
 
@@ -57,9 +56,9 @@ VOID phy_oper_init(struct wifi_dev *wdev, struct phy_op *obj)
 	if ((obj->rx_stream == 0) || (obj->rx_stream > ucRxPath))
 		obj->rx_stream = ucRxPath;
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		 ("%s(): operate TxStream = %d, RxStream = %d\n", __func__,
-		  obj->tx_stream, obj->rx_stream));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): operate TxStream = %d, RxStream = %d\n",
+			 __func__, obj->tx_stream, obj->rx_stream));
+
 }
 
 VOID phy_oper_exit(struct phy_op *obj)
@@ -111,8 +110,7 @@ static VOID phy_ht_vht_bw_adjust(UCHAR bw, UCHAR *ht_bw, UCHAR *vht_bw)
 	return;
 }
 
-static BOOLEAN phy_freq_adjust(struct wifi_dev *wdev, struct freq_cfg *cfg,
-			       struct freq_oper *op)
+static BOOLEAN phy_freq_adjust(struct wifi_dev *wdev, struct freq_cfg *cfg, struct freq_oper *op)
 {
 	UCHAR reg_cap_bw;
 	UCHAR sec_ch_2_80_capable = 0;
@@ -122,7 +120,7 @@ static BOOLEAN phy_freq_adjust(struct wifi_dev *wdev, struct freq_cfg *cfg,
 	/*initial to legacy setting*/
 	if (cfg->prim_ch == 0) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s : no prim_ch value for adjust!\n", __func__));
+				("%s : no prim_ch value for adjust!\n", __func__));
 		return FALSE;
 	}
 
@@ -139,15 +137,13 @@ static BOOLEAN phy_freq_adjust(struct wifi_dev *wdev, struct freq_cfg *cfg,
 	if (WMODE_CAP_N(wdev->PhyMode)) {
 		op->ht_bw = cfg->ht_bw;
 		op->ext_cha = cfg->ext_cha;
-		ht_ext_cha_adjust(wdev->sys_handle, op->prim_ch, &op->ht_bw,
-				  &op->ext_cha, wdev);
+		ht_ext_cha_adjust(wdev->sys_handle, op->prim_ch, &op->ht_bw, &op->ext_cha, wdev);
 	}
 
 #ifdef DOT11_VHT_AC
 
 	if (WMODE_CAP_AC(wdev->PhyMode))
-		op->vht_bw =
-			(op->ht_bw >= HT_BW_40) ? cfg->vht_bw : VHT_BW_2040;
+		op->vht_bw = (op->ht_bw >= HT_BW_40) ? cfg->vht_bw : VHT_BW_2040;
 
 #endif /*DOT11_VHT_AC*/
 	op->bw = phy_bw_adjust(op->ht_bw, op->vht_bw);
@@ -163,10 +159,9 @@ static BOOLEAN phy_freq_adjust(struct wifi_dev *wdev, struct freq_cfg *cfg,
 
 	/*central ch*/
 	if (op->bw == BW_40) {
-		if (cal_ht_cent_ch(op->prim_ch, op->bw, op->ext_cha,
-				   &op->cen_ch_1) != TRUE) {
+		if (cal_ht_cent_ch(op->prim_ch, op->bw, op->ext_cha, &op->cen_ch_1) != TRUE) {
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s : buggy here.\n", __func__));
+					 ("%s : buggy here.\n", __func__));
 			return FALSE;
 		}
 	}
@@ -182,6 +177,7 @@ static BOOLEAN phy_freq_adjust(struct wifi_dev *wdev, struct freq_cfg *cfg,
 #endif /*DOT11_N_SUPPORT*/
 	return TRUE;
 }
+
 
 static VOID phy_freq_update(struct wifi_dev *wdev, struct freq_oper *oper)
 {
@@ -199,21 +195,17 @@ static VOID phy_freq_update(struct wifi_dev *wdev, struct freq_oper *oper)
 	op->phy_oper.wdev_bw = oper->bw;
 	op->ht_oper.ht_bw = oper->ht_bw;
 #ifdef RT_CFG80211_SUPPORT
-	if ((ad->CommonCfg.LastBSSCoexist2040.field.BSS20WidthReq == 1) &&
-	    (ad->MacTab.fAnyStaFortyIntolerant != TRUE) &&
-	    ((ad->CommonCfg.BssCoexApCnt > 0))) {
-	} else
+	if ((ad->CommonCfg.LastBSSCoexist2040.field.BSS20WidthReq == 1) && (ad->MacTab.fAnyStaFortyIntolerant != TRUE) && ((ad->CommonCfg.BssCoexApCnt > 0))) {
+		} else
 #endif
-		operate_loader_ht_bw(op);
+	operate_loader_ht_bw(op);
 
 	op->ht_oper.ext_cha = oper->ext_cha;
 #ifdef RT_CFG80211_SUPPORT
-	if ((ad->CommonCfg.LastBSSCoexist2040.field.BSS20WidthReq == 1) &&
-	    (ad->MacTab.fAnyStaFortyIntolerant != TRUE) &&
-	    ((ad->CommonCfg.BssCoexApCnt > 0))) {
-	} else
+    if ((ad->CommonCfg.LastBSSCoexist2040.field.BSS20WidthReq == 1) && (ad->MacTab.fAnyStaFortyIntolerant != TRUE) && ((ad->CommonCfg.BssCoexApCnt > 0))) {
+		} else
 #endif
-		operate_loader_ext_cha(op);
+	operate_loader_ext_cha(op);
 #ifdef DOT11_VHT_AC
 	op->vht_oper.vht_bw = oper->vht_bw;
 	operate_loader_vht_bw(op);
@@ -236,8 +228,7 @@ static VOID phy_freq_get_max(struct wifi_dev *wdev, struct freq_oper *result)
 	}
 }
 
-static VOID phy_freq_decision(struct wifi_dev *wdev, struct freq_oper *want,
-			      struct freq_oper *result)
+static VOID phy_freq_decision(struct wifi_dev *wdev, struct freq_oper *want, struct freq_oper *result)
 {
 	struct _RTMP_ADAPTER *ad = (struct _RTMP_ADAPTER *)wdev->sys_handle;
 	struct wifi_dev *cur_wdev;
@@ -249,8 +240,9 @@ static VOID phy_freq_decision(struct wifi_dev *wdev, struct freq_oper *want,
 	for (i = 0; i < WDEV_NUM_MAX; i++) {
 		cur_wdev = ad->wdev_list[i];
 
-		if (cur_wdev && wlan_operate_get_state(cur_wdev) &&
-		    wmode_band_equal(wdev->PhyMode, cur_wdev->PhyMode))
+		if (cur_wdev &&
+			wlan_operate_get_state(cur_wdev) &&
+			wmode_band_equal(wdev->PhyMode, cur_wdev->PhyMode))
 			phy_freq_get_max(cur_wdev, result);
 	}
 }
@@ -275,9 +267,9 @@ VOID phy_freq_get_cfg(struct wifi_dev *wdev, struct freq_cfg *fcfg)
 		fcfg->vht_bw = wlan_operate_get_vht_bw(wdev);
 	} else {
 #endif
-		fcfg->ht_bw = cfg->ht_conf.ht_bw;
-		fcfg->ext_cha = cfg->ht_conf.ext_cha;
-		fcfg->vht_bw = cfg->vht_conf.vht_bw;
+	fcfg->ht_bw = cfg->ht_conf.ht_bw;
+	fcfg->ext_cha = cfg->ht_conf.ext_cha;
+	fcfg->vht_bw = cfg->vht_conf.vht_bw;
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 	}
 #endif
@@ -305,41 +297,43 @@ VOID operate_loader_phy(struct wifi_dev *wdev, struct freq_cfg *cfg)
 	struct freq_oper oper_dev;
 	struct freq_oper oper_radio;
 	struct radio_res res;
-	struct wifi_dev *tdev = NULL;
-	UCHAR i = 0;
-	UCHAR band_idx = 0;
+#ifdef CONFIG_AP_SUPPORT
+#ifdef MT_DFS_SUPPORT
 	struct _RTMP_ADAPTER *ad = NULL;
 	if (wdev == NULL)
 		return;
 	ad = (struct _RTMP_ADAPTER *)wdev->sys_handle;
+#endif
+#endif
 
-	MTWF_LOG(
-		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("%s(): oper_cfg: prim_ch(%d), ht_bw(%d), extcha(%d), vht_bw(%d), cen_ch_2(%d), PhyMode=%d!\n",
-		 __func__, cfg->prim_ch, cfg->ht_bw, cfg->ext_cha, cfg->vht_bw,
-		 cfg->cen_ch_2, wdev->PhyMode));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s(): oper_cfg: prim_ch(%d), ht_bw(%d), extcha(%d), vht_bw(%d), cen_ch_2(%d), PhyMode=%d!\n", __func__,
+			  cfg->prim_ch,
+			  cfg->ht_bw,
+			  cfg->ext_cha,
+			  cfg->vht_bw,
+			  cfg->cen_ch_2,
+			  wdev->PhyMode));
 	os_zero_mem(&oper_dev, sizeof(oper_dev));
 	if (!phy_freq_adjust(wdev, cfg, &oper_dev))
 		goto end;
-	MTWF_LOG(
-		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("%s(): oper_dev after adjust: bw(%d), prim_ch(%d), cen_ch_1(%d), cen_ch_2(%d),ext_cha(%d)!\n",
-		 __func__, oper_dev.bw, oper_dev.prim_ch, oper_dev.cen_ch_1,
-		 oper_dev.cen_ch_2, oper_dev.ext_cha));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s(): oper_dev after adjust: bw(%d), prim_ch(%d), cen_ch_1(%d), cen_ch_2(%d),ext_cha(%d)!\n", __func__,
+			  oper_dev.bw,
+			  oper_dev.prim_ch,
+			  oper_dev.cen_ch_1,
+			  oper_dev.cen_ch_2,
+			  oper_dev.ext_cha));
 	/*get last radio result for hdev check and update*/
 	phy_freq_decision(wdev, &oper_dev, &oper_radio);
-	MTWF_LOG(
-		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("%s(): oper_radio after decision: bw(%d), prim_ch(%d), cen_ch_1(%d), cen_ch_2(%d)!\n",
-		 __func__, oper_radio.bw, oper_radio.prim_ch,
-		 oper_radio.cen_ch_1, oper_radio.cen_ch_2));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s(): oper_radio after decision: bw(%d), prim_ch(%d), cen_ch_1(%d), cen_ch_2(%d)!\n", __func__,
+			  oper_radio.bw,
+			  oper_radio.prim_ch,
+			  oper_radio.cen_ch_1,
+			  oper_radio.cen_ch_2));
 	/*acquire radio resouce*/
 	res.reason = REASON_NORMAL_SW;
-#ifdef OFFCHANNEL_SCAN_FEATURE
-	if (ad->ScanCtrl.state == OFFCHANNEL_SCAN_START) {
-		res.reason = REASON_NORMAL_SCAN;
-	}
-#endif
 	res.oper = &oper_radio;
 
 #ifdef CONFIG_AP_SUPPORT
@@ -352,11 +346,12 @@ VOID operate_loader_phy(struct wifi_dev *wdev, struct freq_cfg *cfg)
 
 	if (hc_radio_res_request(wdev, &res) != TRUE) {
 		/*can't get radio resource, update operating to radio setting*/
-		MTWF_LOG(
-			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			("%s(): oper_dev request radio fail! bw(%d), prim_ch(%d), cen_ch_1(%d), cen_ch_2(%d)!\n",
-			 __func__, oper_dev.bw, oper_dev.prim_ch,
-			 oper_dev.cen_ch_1, oper_dev.cen_ch_2));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("%s(): oper_dev request radio fail! bw(%d), prim_ch(%d), cen_ch_1(%d), cen_ch_2(%d)!\n", __func__,
+				  oper_dev.bw,
+				  oper_dev.prim_ch,
+				  oper_dev.cen_ch_1,
+				  oper_dev.cen_ch_2));
 		return;
 	}
 
@@ -371,15 +366,9 @@ VOID operate_loader_phy(struct wifi_dev *wdev, struct freq_cfg *cfg)
 #endif
 
 end:
-	wdev_sync_prim_ch(ad, wdev);
-	band_idx = HcGetBandByWdev(wdev);
-	for (i = 0; i < WDEV_NUM_MAX; i++) {
-		tdev = ad->wdev_list[i];
-		if (tdev && HcIsRadioAcq(tdev) &&
-		    (band_idx == HcGetBandByWdev(tdev)))
-			phy_freq_update(tdev, &oper_dev);
-	}
+	phy_freq_update(wdev, &oper_dev);
 }
+
 
 /*
 * export function
@@ -390,14 +379,14 @@ end:
 */
 UCHAR wlan_operate_get_bw(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	return op->phy_oper.wdev_bw;
 }
 
 UCHAR wlan_operate_get_prim_ch(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	return op->phy_oper.prim_ch;
 }
@@ -418,32 +407,35 @@ INT32 wlan_operate_set_phy(struct wifi_dev *wdev, struct freq_cfg *cfg)
 	return WLAN_OPER_OK;
 }
 
+
 INT32 wlan_operate_set_tx_stream(struct wifi_dev *wdev, UINT8 tx_stream)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	op->phy_oper.tx_stream = tx_stream;
 	return WLAN_OPER_OK;
 }
 
+
 INT32 wlan_operate_set_rx_stream(struct wifi_dev *wdev, UINT8 rx_stream)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	op->phy_oper.rx_stream = rx_stream;
 	return WLAN_OPER_OK;
 }
 
+
 UCHAR wlan_operate_get_cen_ch_2(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	return op->phy_oper.cen_ch_2;
 }
 
 INT32 wlan_operate_set_cen_ch_2(struct wifi_dev *wdev, UCHAR cen_ch_2)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 	struct freq_cfg cfg;
 
 	if (op->phy_oper.cen_ch_2 == cen_ch_2)
@@ -457,24 +449,27 @@ INT32 wlan_operate_set_cen_ch_2(struct wifi_dev *wdev, UCHAR cen_ch_2)
 
 UCHAR wlan_operate_get_cen_ch_1(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	return op->phy_oper.cen_ch_1;
 }
 
+
 UINT8 wlan_operate_get_tx_stream(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	return op->phy_oper.tx_stream;
 }
 
+
 UINT8 wlan_operate_get_rx_stream(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	return op->phy_oper.rx_stream;
 }
+
 
 BOOLEAN wlan_operate_scan(struct wifi_dev *wdev, UCHAR prim_ch)
 {
@@ -482,7 +477,6 @@ BOOLEAN wlan_operate_scan(struct wifi_dev *wdev, UCHAR prim_ch)
 	struct freq_oper oper;
 	BOOLEAN ret;
 
-	os_zero_mem(&oper, sizeof(oper));
 	res->oper = &oper;
 	oper.bw = BW_20;
 	oper.cen_ch_1 = prim_ch;

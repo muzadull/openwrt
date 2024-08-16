@@ -1128,10 +1128,12 @@ static INT32 HQA_ReadBulkEEPROM(
 				RTMP_IOCTL_INPUT_STRUCT *WRQ,
 				HQA_CMD_FRAME *HqaCmdFrame)
 {
+	//ATE_CTRL *ATECtrl = &(pAd->ATECtrl);
 	INT32 Ret = 0;
 	UINT16 Offset;
 	UINT16 Len;
-	UINT16 Buffer[EEPROM_SIZE >> 1];
+	UINT32 u4MaxBufSize = EEPROM_SIZE >> 1;
+	UINT16 Buffer[u4MaxBufSize];
 
 	memcpy(&Offset, HqaCmdFrame->Data, 2);
 	Offset = OS_NTOHS(Offset);
@@ -1180,10 +1182,12 @@ static INT32 HQA_WriteBulkEEPROM(
 				RTMP_IOCTL_INPUT_STRUCT *WRQ,
 				HQA_CMD_FRAME *HqaCmdFrame)
 {
+	//ATE_CTRL *ATECtrl = &(pAd->ATECtrl);
 	INT32 Ret = 0;
 	USHORT Offset;
 	USHORT Len;
-	USHORT Buffer[EEPROM_SIZE >> 1];
+	UINT32 u4MaxBufSize = EEPROM_SIZE >> 1;
+	USHORT Buffer[u4MaxBufSize];
 
 
 	DBGPRINT(RT_DEBUG_OFF, ("%s\n", __FUNCTION__));

@@ -26,15 +26,19 @@
 	--------    ----------    ----------------------------------------------
 */
 
-#include "rt_config.h"
+
+#include	"rt_config.h"
+
+
 
 /* IRQL = PASSIVE_LEVEL*/
 static inline VOID RaiseClock(RTMP_ADAPTER *pAd, UINT32 *x)
 {
 	*x = *x | EESK;
 	RTMP_IO_WRITE32(pAd, E2PROM_CSR, *x);
-	RtmpusecDelay(1); /* Max frequency = 1MHz in Spec. definition */
+	RtmpusecDelay(1);				/* Max frequency = 1MHz in Spec. definition */
 }
+
 
 /* IRQL = PASSIVE_LEVEL*/
 static inline VOID LowerClock(RTMP_ADAPTER *pAd, UINT32 *x)
@@ -43,6 +47,7 @@ static inline VOID LowerClock(RTMP_ADAPTER *pAd, UINT32 *x)
 	RTMP_IO_WRITE32(pAd, E2PROM_CSR, *x);
 	RtmpusecDelay(1);
 }
+
 
 /* IRQL = PASSIVE_LEVEL*/
 static inline USHORT ShiftInBits(RTMP_ADAPTER *pAd)
@@ -65,6 +70,7 @@ static inline USHORT ShiftInBits(RTMP_ADAPTER *pAd)
 
 	return data;
 }
+
 
 /* IRQL = PASSIVE_LEVEL*/
 static inline VOID ShiftOutBits(RTMP_ADAPTER *pAd, USHORT data, USHORT count)
@@ -90,6 +96,7 @@ static inline VOID ShiftOutBits(RTMP_ADAPTER *pAd, USHORT data, USHORT count)
 	RTMP_IO_WRITE32(pAd, E2PROM_CSR, x);
 }
 
+
 /* IRQL = PASSIVE_LEVEL*/
 static inline VOID EEpromCleanup(RTMP_ADAPTER *pAd)
 {
@@ -101,9 +108,10 @@ static inline VOID EEpromCleanup(RTMP_ADAPTER *pAd)
 	LowerClock(pAd, &x);
 }
 
+
 static inline VOID EWEN(RTMP_ADAPTER *pAd)
 {
-	UINT32 x;
+	UINT32	x;
 	/* reset bits and set EECS*/
 	RTMP_IO_READ32(pAd, E2PROM_CSR, &x);
 	x &= ~(EEDI | EEDO | EESK);
@@ -118,9 +126,10 @@ static inline VOID EWEN(RTMP_ADAPTER *pAd)
 	EEpromCleanup(pAd);
 }
 
+
 static inline VOID EWDS(RTMP_ADAPTER *pAd)
 {
-	UINT32 x;
+	UINT32	x;
 	/* reset bits and set EECS*/
 	RTMP_IO_READ32(pAd, E2PROM_CSR, &x);
 	x &= ~(EEDI | EEDO | EESK);
@@ -134,6 +143,7 @@ static inline VOID EWDS(RTMP_ADAPTER *pAd)
 	ShiftOutBits(pAd, 0, 6);
 	EEpromCleanup(pAd);
 }
+
 
 /* IRQL = PASSIVE_LEVEL*/
 BOOLEAN rtmp_ee_prom_read16(RTMP_ADAPTER *pAd, UINT16 Offset, UINT16 *pValue)
@@ -161,6 +171,7 @@ BOOLEAN rtmp_ee_prom_read16(RTMP_ADAPTER *pAd, UINT16 Offset, UINT16 *pValue)
 	return IsEmpty;
 }
 
+
 int rtmp_ee_prom_write16(RTMP_ADAPTER *pAd, USHORT Offset, UINT16 Data)
 {
 	UINT32 x;
@@ -174,15 +185,16 @@ int rtmp_ee_prom_write16(RTMP_ADAPTER *pAd, USHORT Offset, UINT16 Data)
 	/* output the read_opcode ,register number and data in that order */
 	ShiftOutBits(pAd, EEPROM_WRITE_OPCODE, 3);
 	ShiftOutBits(pAd, Offset, pAd->EEPROMAddressNum);
-	ShiftOutBits(pAd, Data, 16); /* 16-bit access*/
+	ShiftOutBits(pAd, Data, 16);		/* 16-bit access*/
 	/* read DO status*/
 	RTMP_IO_READ32(pAd, E2PROM_CSR, &x);
 	EEpromCleanup(pAd);
-	RtmpusecDelay(10000); /*delay for twp(MAX)=10ms*/
+	RtmpusecDelay(10000);	/*delay for twp(MAX)=10ms*/
 	EWDS(pAd);
 	EEpromCleanup(pAd);
 	return NDIS_STATUS_SUCCESS;
 }
+
 
 INT rtmp_ee_write_to_prom(RTMP_ADAPTER *pAd)
 {
@@ -197,3 +209,4 @@ INT rtmp_ee_write_to_prom(RTMP_ADAPTER *pAd)
 
 	return TRUE;
 }
+

@@ -1143,12 +1143,7 @@ VOID WPAStart4WayHS(
 		pEapolFrame->KeyDesc.KeyData[4] = 0xAC;
 		pEapolFrame->KeyDesc.KeyData[5] = 0x04;
 
-		if (sizeof(pEapolFrame->KeyDesc.KeyData) >= (6 + LEN_PMKID)) {
-			NdisMoveMemory(&pEapolFrame->KeyDesc.KeyData[6], &pMbss->PMKIDCache.BSSIDInfo[pEntry->PMKID_CacheIdx].PMKID, LEN_PMKID);
-			} else {
-				DBGPRINT(RT_DEBUG_TRACE, (" WPAStart4WayHS : KeyData buffer overflow detected.\n"));
-				return;
-			}
+		NdisMoveMemory(&pEapolFrame->KeyDesc.KeyData[6], &pMbss->PMKIDCache.BSSIDInfo[pEntry->PMKID_CacheIdx].PMKID, LEN_PMKID);
 #if defined(DOT11_SAE_SUPPORT) || defined(CONFIG_OWE_SUPPORT)
 		pmk_len = LEN_PMK;
 #ifdef CONFIG_OWE_SUPPORT
@@ -1199,21 +1194,10 @@ VOID WPAStart4WayHS(
 #ifdef CONFIG_OWE_SUPPORT
 		if (pEntry->AuthMode == Ndis802_11AuthModeOWE) {
 			OWE_INFO *owe = &pEntry->owe;
-			
-		if (sizeof(pKeyDesc->KeyData) >= (6 + LEN_PMKID)) {
-			NdisMoveMemory(&pKeyDesc->KeyData[6], owe->pmkid, LEN_PMKID);
-			} else {
-				DBGPRINT(RT_DEBUG_TRACE, (" WPAStart4WayHS : KeyData buffer overflow detected.\n"));
-				return;
-			}
+		NdisMoveMemory(&pKeyDesc->KeyData[6], owe->pmkid, LEN_PMKID);
 		} else
 #endif /*CONFIG_OWE_SUPPORT*/
-                if (sizeof(pKeyDesc->KeyData) >= (6 + LEN_PMKID)) {
-					NdisMoveMemory(&pKeyDesc->KeyData[6], digest, LEN_PMKID);
-					} else {
-						DBGPRINT(RT_DEBUG_TRACE, (" WPAStart4WayHS : KeyData buffer overflow detected.\n"));
-						return;
-					}
+                NdisMoveMemory(&pKeyDesc->KeyData[6], digest, LEN_PMKID);
 
                 pKeyDesc->KeyData[1] = 0x14;// 4+LEN_PMKID
                 INC_UINT16_TO_ARRARY(pKeyDesc->KeyDataLen, 6 + LEN_PMKID);
@@ -1264,18 +1248,17 @@ VOID PeerPairMsg1Action(
     IN MAC_TABLE_ENTRY  *pEntry,
     IN MLME_QUEUE_ELEM  *Elem)
 {
-	UCHAR		        PTK[80];
-	UCHAR		        Header802_3[14];
+	UCHAR				PTK[80];
+	UCHAR               Header802_3[14];
 	PEAPOL_PACKET		pMsg1;
-	UINT		        MsgLen;
-	UCHAR		        *mpool;
-	PEAPOL_PACKET		pEapolFrame;
-	PUINT8			pCurrentAddr = NULL;
-	PUINT8			pmk_ptr = NULL;
-	UCHAR			group_cipher = Ndis802_11WEPDisabled;
-	PUINT8			rsnie_ptr = NULL;
-	UCHAR			rsnie_len = 0;
-	UINT			IfIndex = 0;     
+	UINT            	MsgLen;
+	UCHAR   			*mpool;
+    PEAPOL_PACKET		pEapolFrame;
+	PUINT8				pCurrentAddr = NULL;
+	PUINT8				pmk_ptr = NULL;
+	UCHAR				group_cipher = Ndis802_11WEPDisabled;
+	PUINT8				rsnie_ptr = NULL;
+	UCHAR				rsnie_len = 0;
 #ifdef MAC_REPEATER_SUPPORT
 	USHORT ifIndex = (USHORT)(Elem->Priv);
 	UCHAR CliIdx = 0xFF;
@@ -1308,6 +1291,8 @@ VOID PeerPairMsg1Action(
 #ifdef APCLI_SUPPORT
 		if (IS_ENTRY_APCLI(pEntry))
 		{
+			UINT IfIndex = 0;
+
 			IfIndex = pEntry->func_tb_idx;
 #ifdef MAC_REPEATER_SUPPORT
 			if (ifIndex >= 64)
@@ -1330,9 +1315,9 @@ VOID PeerPairMsg1Action(
 
 				if (pEntry->AuthMode == Ndis802_11AuthModeOWE
 					&& pEntry->key_deri_alg == SEC_KEY_DERI_SHA256) {
-					if (pEntry->owe.last_try_group == pEntry->owe.curr_group) {
+					if (pEntry->owe.last_try_group == pEntry->owe.curr_group)
 						NdisMoveMemory(pEntry->PMK, pEntry->pmk_cache, LEN_PMK);
-					} else {
+					else {
 						MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 							("===> %s:PMK Cache not valid as owe group changed from %d to %d\n",
 							__func__, pEntry->owe.last_try_group,
@@ -1341,15 +1326,9 @@ VOID PeerPairMsg1Action(
 					}
 				} else if (pEntry->AuthMode == Ndis802_11AuthModeOWE
 					&& pEntry->key_deri_alg == SEC_KEY_DERI_SHA384) {
-					if (pEntry->owe.last_try_group == pEntry->owe.curr_group) {
-						if (sizeof(pEntry->PMK) >= LEN_PMK_SHA384) {
-							NdisMoveMemory(pEntry->PMK, pEntry->pmk_cache, LEN_PMK_SHA384);
-							} else {
-								MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-								("===> %s: PMK buffer overflow risk detected. Size of PMK is insufficient.\n", __func__));
-								return;
-							}
-					} else {
+					if (pEntry->owe.last_try_group == pEntry->owe.curr_group)
+						NdisMoveMemory(pEntry->PMK, pEntry->pmk_cache, LEN_PMK_SHA384);
+					else {
 						MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 							("===> %s:PMK Cache not valid as owe group changed from %d to %d\n",
 							__func__, pEntry->owe.last_try_group,
@@ -1396,9 +1375,7 @@ VOID PeerPairMsg1Action(
 #endif /* CONFIG_AP_SUPPORT */
 
 	if (pCurrentAddr == NULL)
-	{
 		return;
-	}
 
 	/* Store the received frame*/
 	pMsg1 = (PEAPOL_PACKET)&Elem->Msg[hdr_len + LENGTH_802_1_H];
@@ -1514,7 +1491,6 @@ VOID PeerPairMsg1Action(
 					  pEapolFrame);
 
 	/* Make outgoing frame*/
-
 	MAKE_802_3_HEADER(Header802_3, pEntry->Addr, pCurrentAddr, EAPOL);
 
 	RTMPToWirelessSta(pAd, pEntry,
@@ -2717,9 +2693,8 @@ VOID WPAStart2WayGroupHS(
 
 	DBGPRINT(RT_DEBUG_TRACE, ("===> WPAStart2WayGroupHS\n"));
 
-    if ((!pEntry) || !IS_ENTRY_CLIENT(pEntry)) {
+    if ((!pEntry) || !IS_ENTRY_CLIENT(pEntry))
         return;
-	}
 
 	/* delete retry timer*/
 	RTMPCancelTimer(&pEntry->RetryTimer, &Cancelled);
@@ -3118,15 +3093,15 @@ VOID MlmeDeAuthAction(
                           END_OF_ARGS);
 
 #ifdef DOT11W_PMF_SUPPORT
-		#define MAX_BUF_SIZE (LEN_CCMP_HDR + LEN_CCMP_MIC)
 		if (CLIENT_STATUS_TEST_FLAG(pEntry, fCLIENT_STATUS_PMF_CAPABLE))
 		{
 			ULONG	TmpLen;
-			UCHAR res_buf[MAX_BUF_SIZE];
+			UINT	res_len = LEN_CCMP_HDR + LEN_CCMP_MIC;
+			UCHAR	res_buf[res_len];
 
 			/* reserve a buffer for PMF CCMP calculation later */
 			MakeOutgoingFrame(pOutBuffer + FrameLen,	&TmpLen,
-	                          MAX_BUF_SIZE,   			res_buf,
+	                          res_len,   				res_buf,
     	                      END_OF_ARGS);
 			FrameLen += TmpLen;
 

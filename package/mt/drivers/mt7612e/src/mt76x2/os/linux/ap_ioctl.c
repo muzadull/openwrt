@@ -297,10 +297,7 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 				prange->max_qual.qual = 100;
 				prange->max_qual.level = 0; /* dB */
 				prange->max_qual.noise = 0; /* dB */
-				if (copy_to_user(wrq->u.data.pointer, prange, sizeof(struct iw_range)))
-				{
-					DBGPRINT(RT_DEBUG_TRACE, ("SIOCGIWRANGE - wrq->u.data.length = %d\n", wrq->u.data.length));
-				}				
+				copy_to_user(wrq->u.data.pointer, prange, sizeof(struct iw_range));
 				os_free_mem(NULL, prange);
 		    }
 		    break;

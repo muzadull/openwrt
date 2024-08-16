@@ -375,7 +375,7 @@ INT Set_ApCli_Key3_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 INT Set_ApCli_Key4_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 INT Set_ApCli_TxMode_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 INT Set_ApCli_TxMcs_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
-INT Set_ApCli_Cert_Enable_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
+static INT Set_ApCli_Cert_Enable_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 #ifdef APCLI_AUTO_CONNECT_SUPPORT
 INT Set_ApCli_AutoConnect_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 #endif /* APCLI_AUTO_CONNECT_SUPPORT */
@@ -2331,7 +2331,7 @@ INT RTMPAPSetInformation(
 					}
 					{
 						ap_send_broadcast_deauth(pAd, wdev);
-						if (wdev->AuthMode && wdev->WpaMixPairCipher)
+						if ((&wdev->AuthMode) && (&wdev->WpaMixPairCipher))
 							pMbss->CapabilityInfo |= 0x0010;
 						else
 							pMbss->CapabilityInfo &= ~(0x0010);
@@ -2348,10 +2348,9 @@ INT RTMPAPSetInformation(
 							pObj->ioctl_if,
 							pMbss->SsidLen, pMbss->Ssid));
 					}
-				} else {
+				} else
 					Status = -EINVAL;
 					break;
-				   }
 				}
 			} else
 				Status = -EINVAL;
@@ -2372,17 +2371,11 @@ INT RTMPAPSetInformation(
 				DBGPRINT(RT_DEBUG_TRACE, ("%s: PSK = %s\n",
 					__func__, PSK));
 				if (pObj->ioctl_if_type == INT_APCLI) {
-					if (copy_from_user(pAd->ApCfg.ApCliTab[pObj->ioctl_if].PSK, wrq->u.data.pointer, wrq->u.data.length))
-					{
-						DBGPRINT(RT_DEBUG_TRACE, ("ApCfg.ApCliTab - wrq->u.data.length = %d\n", wrq->u.data.length));
-					}
+					copy_from_user(pAd->ApCfg.ApCliTab[pObj->ioctl_if].PSK, wrq->u.data.pointer, wrq->u.data.length);
 					pAd->ApCfg.ApCliTab[pObj->ioctl_if].PSK[wrq->u.data.length] = '\0';
 					pAd->ApCfg.ApCliTab[pObj->ioctl_if].PSKLen = wrq->u.data.length;
 				} else if ((pObj->ioctl_if_type == INT_MAIN || pObj->ioctl_if_type == INT_MBSSID)) {
-					if (copy_from_user(pAd->ApCfg.MBSSID[pObj->ioctl_if].WPAKeyString, wrq->u.data.pointer, wrq->u.data.length))
-					{
-						DBGPRINT(RT_DEBUG_TRACE, ("ApCfg.MBSSID - wrq->u.data.length = %d\n", wrq->u.data.length));
-					}
+					copy_from_user(pAd->ApCfg.MBSSID[pObj->ioctl_if].WPAKeyString, wrq->u.data.pointer, wrq->u.data.length);
 					pAd->ApCfg.MBSSID[pObj->ioctl_if].WPAKeyString[wrq->u.data.length] = '\0';
 					ap_security_init(pAd, &pAd->ApCfg.MBSSID[pObj->ioctl_if].wdev, pObj->ioctl_if);
 				}
@@ -3931,13 +3924,12 @@ INT RTMPAPQueryInformation(
 			pApCliEntry=&pAd->ApCfg.ApCliTab[ifIndex];
 			apcliEn = pAd->ApCfg.ApCliTab[ifIndex].Enable;
 
-			if (!apcliEn) {
+			if (!apcliEn)
 				return FALSE;
-			}
 
 				NdisZeroMemory(&Ssid, sizeof(NDIS_802_11_SSID));
 				NdisZeroMemory(Ssid.Ssid, MAX_LEN_OF_SSID);
-				Ssid.SsidLength = pApCliEntry->CfgSsidLen;
+	            		Ssid.SsidLength = pApCliEntry->CfgSsidLen;
 				NdisMoveMemory(Ssid.Ssid, pApCliEntry->CfgSsid,Ssid.SsidLength);
 #ifdef WH_EZ_SETUP
 			}
@@ -4865,10 +4857,7 @@ INT RTMPAPQueryInformation(
 			pMbssStat->bcPktsTx=  pMbss->bcPktsTx;
 			pMbssStat->bcPktsRx=  pMbss->bcPktsRx;
 			wrq->u.data.length = sizeof(MBSS_STATISTICS);
-			if (copy_to_user(wrq->u.data.pointer, pMbssStat, wrq->u.data.length))
-			{
-				DBGPRINT(RT_DEBUG_TRACE, ("PMBSS_STATISTICS - wrq->u.data.length = %d\n", wrq->u.data.length));
-			}
+			copy_to_user(wrq->u.data.pointer, pMbssStat, wrq->u.data.length);
 			os_free_mem(pAd, pMbssStat);
 		}
 		break;
@@ -9626,18 +9615,15 @@ VOID RTMPIoctlStaticWepCopy(
     }
     else
     {
-		if (copy_from_user(&MacAddr, wrq->u.data.pointer, wrq->u.data.length))
-		{
-			DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlQueryStaAid - wrq->u.data.length = %d\n", wrq->u.data.length));
-			return;
-		}
-			
-		pEntry = MacTableLookup(pAd, MacAddr);
+    	//UINT32 len;
+
+        /*len = */copy_from_user(&MacAddr, wrq->u.data.pointer, wrq->u.data.length);
+        pEntry = MacTableLookup(pAd, MacAddr);
         if (!pEntry)
         {
             DBGPRINT(RT_DEBUG_ERROR, ("RTMPIoctlStaticWepCopy: the mac address isn't match\n"));
             return;
-		}
+        }
         else
         {
             UCHAR	KeyIdx;
@@ -9734,12 +9720,7 @@ VOID RTMPIoctlQueryStaAid(
 	}
 	else
 	{
-		if (copy_from_user(&macBuf, wrq->u.data.pointer, wrq->u.data.length))
-		{
-			DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlQueryStaAid - wrq->u.data.length = %d\n", wrq->u.data.length));
-			return;
-		}
-		
+		copy_from_user(&macBuf, wrq->u.data.pointer, wrq->u.data.length);
 		pEntry = MacTableLookup(pAd, macBuf.StaAddr);
 
 		if (pEntry != NULL)
@@ -10898,11 +10879,8 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 #endif/* DOT11U_INTERWORKING */
     /* Copy the information into the user buffer */
     wrq->u.data.length = strlen(msg);
-	if (copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length))
-	{		
-		DBGPRINT(RT_DEBUG_TRACE, ("RTMPIoctlStatistics- wrq->u.data.length = %d\n", wrq->u.data.length));
-		return;
-	}
+    /*Status = */copy_to_user(wrq->u.data.pointer, msg, wrq->u.data.length);
+
 	os_free_mem(NULL, msg);
 
 #if defined(TXBF_SUPPORT) && defined(ENHANCED_STAT_DISPLAY)
@@ -12931,8 +12909,8 @@ VOID RTMPIoctlNfcStatus(
 	memset(msg, 0 ,128 );
 
 	/*
-		Action: b<7:6>: 0x0 V To NFC, 0x1 V From NFC
-        		b<5:0>: 0x0 V Get, 0x01 - Set
+		Action: b��<7:6>: 0x0 �V To NFC, 0x1 �V From NFC
+        		b��<5:0>: 0x0 �V Get, 0x01 - Set
 	*/
 	UCHAR action = 0, type = TYPE_NFC_STATUS; /* 5 - NFC Status */
 	

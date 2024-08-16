@@ -33,12 +33,11 @@
 #include "rtmp_def.h"
 #include "rtmp.h"
 
-#define ROUTING_ENTRY_AGEOUT (60 * OS_HZ) /* seconds */
-#define ROUTING_ENTRY_RETRY_TIME (2 * OS_HZ) /* seconds */
+#define ROUTING_ENTRY_AGEOUT (60*OS_HZ)  /* seconds */
+#define ROUTING_ENTRY_RETRY_TIME (2*OS_HZ)  /* seconds */
 #define ROUTING_ENTRY_MAX_RETRY 5
-#define ROUTING_POOL_SIZE 256
-#define ROUTING_HASH_TAB_SIZE                                                  \
-	64 /* the legth of hash table must be power of 2. */
+#define ROUTING_POOL_SIZE 128
+#define ROUTING_HASH_TAB_SIZE 64  /* the legth of hash table must be power of 2. */
 
 enum ROUTING_ENTRY_FLAG {
 	ROUTING_ENTRY_NONE = 0x0,
@@ -47,11 +46,11 @@ enum ROUTING_ENTRY_FLAG {
 	ROUTING_ALL_MASK = 0x3
 };
 
-#define IS_VALID_ROUTING_ENTRY_FLAG(_x) (((_x)&ROUTING_ALL_MASK) != 0)
-#define IS_ROUTING_ENTRY(_x) ((_x)->EntryFlag != ROUTING_ENTRY_NONE)
-#define SET_ROUTING_ENTRY(_x, _y) ((_x)->EntryFlag |= (_y))
-#define CLEAR_ROUTING_ENTRY(_x, _y) ((_x)->EntryFlag &= ~(_y))
-#define ROUTING_ENTRY_TEST_FLAG(_x, _y) (((_x)->EntryFlag & (_y)) != 0)
+#define IS_VALID_ROUTING_ENTRY_FLAG(_x)	 (((_x) & ROUTING_ALL_MASK) != 0)
+#define IS_ROUTING_ENTRY(_x)			 ((_x)->EntryFlag != ROUTING_ENTRY_NONE)
+#define SET_ROUTING_ENTRY(_x, _y)	     ((_x)->EntryFlag |= (_y))
+#define CLEAR_ROUTING_ENTRY(_x, _y)	     ((_x)->EntryFlag &= ~(_y))
+#define ROUTING_ENTRY_TEST_FLAG(_x, _y)  (((_x)->EntryFlag & (_y)) != 0)
 
 typedef struct _ROUTING_ENTRY {
 	struct _ROUTING_ENTRY *pNext;
@@ -68,56 +67,94 @@ typedef struct _ROUTING_ENTRY {
 #endif
 } ROUTING_ENTRY, *PROUTING_ENTRY;
 
-VOID RoutingTabInit(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-		    IN UINT32 Flag);
 
-VOID RoutingTabDestory(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-		       IN UINT32 Flag);
+VOID RoutingTabInit(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN UINT32 Flag);
 
-VOID RoutingTabClear(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-		     IN UINT32 Flag);
+VOID RoutingTabDestory(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN UINT32 Flag);
 
-PROUTING_ENTRY RoutingTabGetFree(IN struct _RTMP_ADAPTER *pAd,
-				 IN UCHAR ifIndex);
+VOID RoutingTabClear(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN UINT32 Flag);
 
-VOID RoutingTabSetAllFree(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-			  IN UCHAR Wcid, IN UINT32 Flag);
+PROUTING_ENTRY RoutingTabGetFree(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex);
 
-VOID RoutingTabSetOneFree(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-			  IN PUCHAR pMac, IN UINT32 Flag);
+VOID RoutingTabSetAllFree(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN UCHAR Wcid,
+	IN UINT32 Flag);
 
-VOID RoutingEntryRefresh(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-			 IN PROUTING_ENTRY pRoutingEntry);
+VOID  RoutingTabSetOneFree(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN PUCHAR pMac,
+	IN UINT32 Flag);
 
-VOID RoutingEntrySet(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-		     IN UCHAR Wcid, IN PUCHAR pMac,
-		     IN PROUTING_ENTRY pRoutingEntry);
+VOID RoutingEntryRefresh(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN PROUTING_ENTRY pRoutingEntry);
 
-INT RoutingTabGetEntryCount(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex);
+VOID RoutingEntrySet(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN UCHAR Wcid,
+	IN PUCHAR pMac,
+	IN PROUTING_ENTRY pRoutingEntry);
 
-INT32 GetHashID(IN PUCHAR pMac);
+INT RoutingTabGetEntryCount(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex);
 
-PROUTING_ENTRY GetRoutingTabHead(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-				 IN INT32 Index);
+INT32 GetHashID(
+	IN PUCHAR pMac);
 
-BOOLEAN GetRoutingEntryAll(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-			   IN UCHAR Wcid, IN UINT32 Flag, IN INT32 BufMaxCount,
-			   OUT ROUTING_ENTRY **pEntryListBuf,
-			   OUT PUINT32 pCount);
+PROUTING_ENTRY GetRoutingTabHead(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN INT32 Index);
 
-PROUTING_ENTRY RoutingTabLookup(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-				IN PUCHAR pMac, IN BOOLEAN bUpdateAliveTime,
-				OUT UCHAR *pWcid);
+BOOLEAN GetRoutingEntryAll(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN UCHAR Wcid,
+	IN UINT32 Flag,
+	IN INT32 BufMaxCount,
+	OUT ROUTING_ENTRY **pEntryListBuf,
+	OUT PUINT32 pCount);
 
-VOID RoutingTabARPLookupUpdate(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-			       IN PROUTING_ENTRY pRoutingEntry,
-			       IN UINT32 ARPSenderIP);
+PROUTING_ENTRY RoutingTabLookup(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN PUCHAR pMac,
+	IN BOOLEAN bUpdateAliveTime,
+	OUT UCHAR *pWcid);
 
-INT RoutingEntrySendAliveCheck(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex,
-			       IN PROUTING_ENTRY pRoutingEntry,
-			       IN UCHAR *pSrcMAC, IN UINT32 SrcIP);
+VOID RoutingTabARPLookupUpdate(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN PROUTING_ENTRY pRoutingEntry,
+	IN UINT32 ARPSenderIP);
 
-VOID RoutingTabMaintain(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ifIndex);
+INT RoutingEntrySendAliveCheck(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex,
+	IN PROUTING_ENTRY pRoutingEntry,
+	IN UCHAR *pSrcMAC,
+	IN UINT32 SrcIP);
+
+VOID RoutingTabMaintain(
+	IN struct _RTMP_ADAPTER *pAd,
+	IN UCHAR ifIndex);
 
 #endif /* ROUTING_TAB_SUPPORT */
 #endif /* __ROUTING_TAB_H__ */

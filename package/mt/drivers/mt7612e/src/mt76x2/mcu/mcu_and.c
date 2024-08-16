@@ -100,10 +100,10 @@ loadfw_protect:
 
 #ifdef DBG
 	/* get rom patch information */
-	DBGPRINT(RT_DEBUG_OFF, ("build time = "));
+	printk(KERN_CONT "build time = ");
 	for (loop = 0; loop < 16; loop++)
-		DBGPRINT(RT_DEBUG_OFF, ("%c", *(cap->rom_patch + loop)));
-	DBGPRINT(RT_DEBUG_OFF, ("\n"));
+		printk(KERN_CONT "%c", *(cap->rom_patch + loop));
+	printk(KERN_CONT "\n");
 #endif
 
 	if (IS_MT76x2(ad)) {
@@ -121,22 +121,22 @@ loadfw_protect:
 	}
 	
 #ifdef DBG
-	DBGPRINT(RT_DEBUG_OFF, ("\n"));
+	printk(KERN_CONT "\n");
 
-	DBGPRINT(RT_DEBUG_OFF, ("platform = "));
+	printk(KERN_CONT "platform = ");
 	for (loop = 0; loop < 4; loop++)
-		DBGPRINT(RT_DEBUG_OFF, ("%c", *(cap->rom_patch + 16 + loop)));
-	DBGPRINT(RT_DEBUG_OFF, ("\n"));
+		printk(KERN_CONT "%c", *(cap->rom_patch + 16 + loop));
+	printk(KERN_CONT "\n");
 
-	DBGPRINT(RT_DEBUG_OFF, ("hw/sw version = "));
+	printk(KERN_CONT "hw/sw version = ");
 	for (loop = 0; loop < 4; loop++)
-		DBGPRINT(RT_DEBUG_OFF, ("%x", *(cap->rom_patch + 20 + loop)));
-	DBGPRINT(RT_DEBUG_OFF, ("\n"));
+		printk(KERN_CONT "%x", *(cap->rom_patch + 20 + loop));
+	printk(KERN_CONT "\n");
 
-	DBGPRINT(RT_DEBUG_OFF, ("patch version = "));
+	printk(KERN_CONT "patch version = ");
 	for (loop = 0; loop < 4; loop++)
-		DBGPRINT(RT_DEBUG_OFF, ("%x", *(cap->rom_patch + 24 + loop)));
-	DBGPRINT(RT_DEBUG_OFF, ("\n"));
+		printk(KERN_CONT "%x", *(cap->rom_patch + 24 + loop));
+	printk(KERN_CONT "\n");
 #endif
 
 	RTMP_IO_WRITE32(ad, PCIE_REMAP_BASE4, cap->rom_patch_offset - 10000);
@@ -203,10 +203,8 @@ int andes_pci_erase_rom_patch(RTMP_ADAPTER *ad)
 
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		if (cap->rom_patch)
-		{
 			os_free_mem(NULL, cap->rom_patch);
 			cap->rom_patch = NULL;
-		}
 	}
 
 	return 0;
@@ -241,10 +239,10 @@ int andes_pci_erasefw(RTMP_ADAPTER *ad)
 							(fw_ver & 0x0f00) >> 8, fw_ver & 0x00ff));
 		DBGPRINT(RT_DEBUG_TRACE, ("Build:%x\n", build_ver));
 
-		DBGPRINT(RT_DEBUG_TRACE, ("Build Time:"));
+		printk(KERN_CONT "Build Time:");
 		for (loop = 0; loop < 16; loop++)
-			DBGPRINT(RT_DEBUG_TRACE, ("%c", *(cap->FWImageName + 16 + loop)));
-		DBGPRINT(RT_DEBUG_TRACE, ("\n"));
+			printk(KERN_CONT "%c", *(cap->FWImageName + 16 + loop));
+		printk(KERN_CONT "\n");
 
 		DBGPRINT(RT_DEBUG_TRACE, ("ILM Length = %d(bytes)\n", ilm_len));
 		DBGPRINT(RT_DEBUG_TRACE, ("DLM Length = %d(bytes)\n", dlm_len));
@@ -311,10 +309,8 @@ int andes_pci_erasefw(RTMP_ADAPTER *ad)
 	
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		if (cap->FWImageName)
-		{
 			os_free_mem(NULL, cap->FWImageName);
 			cap->FWImageName = NULL;
-		}
 	}
 
 	return ret;
@@ -390,10 +386,10 @@ loadfw_protect:
 						(fw_ver & 0x0f00) >> 8, fw_ver & 0x00ff));
 	DBGPRINT(RT_DEBUG_OFF, ("Build:%x\n", build_ver));
 
-	DBGPRINT(RT_DEBUG_OFF, ("Build Time:"));
+	printk(KERN_CONT "Build Time:");
 	for (loop = 0; loop < 16; loop++)
-		DBGPRINT(RT_DEBUG_OFF, ("%c", *(cap->FWImageName + 16 + loop)));
-	DBGPRINT(RT_DEBUG_OFF, ("\n"));
+		printk(KERN_CONT "%c", *(cap->FWImageName + 16 + loop));
+	printk(KERN_CONT "\n");
 #endif
 	
 	if (IS_MT76x2(ad)) {
@@ -558,10 +554,8 @@ int andes_usb_erasefw(RTMP_ADAPTER *ad)
 
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		if (cap->FWImageName)
-		{
 			os_free_mem(NULL, cap->FWImageName);
 			cap->FWImageName = NULL;
-		}
 	}
 
 	return 0;

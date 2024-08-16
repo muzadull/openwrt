@@ -44,8 +44,13 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmHexDump(IN char *str, IN UINT8 *pSrcBufVA, IN UINT SrcBufLen,
-		IN UINT32 DbgLvl)
+VOID
+FtmHexDump(
+	IN char *str,
+	IN UINT8 * pSrcBufVA,
+	IN UINT SrcBufLen,
+	IN UINT32 DbgLvl
+)
 {
 #ifdef DBG
 
@@ -55,6 +60,7 @@ VOID FtmHexDump(IN char *str, IN UINT8 *pSrcBufVA, IN UINT SrcBufLen,
 	hex_dump(str, pSrcBufVA, SrcBufLen);
 #endif
 }
+
 
 /*
 ========================================================================
@@ -71,39 +77,30 @@ Return Value:
 ========================================================================
 */
 BOOLEAN
-FtmParmDump(IN PRTMP_ADAPTER pAd, IN PFTM_PARAMETER parm, IN UINT32 DbgLvl)
+FtmParmDump(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PARAMETER	parm,
+	IN UINT32			DbgLvl
+)
 {
 	if (!parm)
 		return FALSE;
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("  FTM Parameter Dump\n"));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    status: %d\n", parm->status));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    value: %d\n", parm->value));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    num_burst_exponent=%d\n",
-		  parm->num_burst_exponent));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    burst_duration=%d\n", parm->burst_duration));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    min_delta_ftm=%d\n", parm->min_delta_ftm));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    partial_tsf_timer=0x%04X\n",
-		  parm->partial_tsf_timer));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    asap_capable=%d\n", parm->asap_capable));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    asap=%d\n", parm->asap));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    ftms_per_burst=%d\n", parm->ftms_per_burst));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    ftm_format_and_bw=%d\n", parm->ftm_format_and_bw));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("	    burst_period=%d\n", parm->burst_period));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("  FTM Parameter Dump\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    status: %d\n", parm->status));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    value: %d\n", parm->value));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    num_burst_exponent=%d\n", parm->num_burst_exponent));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    burst_duration=%d\n", parm->burst_duration));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    min_delta_ftm=%d\n", parm->min_delta_ftm));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    partial_tsf_timer=0x%04X\n", parm->partial_tsf_timer));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    asap_capable=%d\n", parm->asap_capable));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    asap=%d\n", parm->asap));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    ftms_per_burst=%d\n", parm->ftms_per_burst));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    ftm_format_and_bw=%d\n", parm->ftm_format_and_bw));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("	    burst_period=%d\n", parm->burst_period));
 	return TRUE;
 }
+
 
 /*
 ========================================================================
@@ -120,53 +117,43 @@ Return Value:
 ========================================================================
 */
 BOOLEAN
-FtmEntryDump(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry, IN UINT32 DbgLvl)
+FtmEntryDump(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN UINT32			DbgLvl
+)
 {
 	if (!pAd || !pEntry)
 		return FALSE;
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("[FTM Entry Dump] idx=%d 0x%p\n",
-		  GET_FTM_PEER_IDX(pAd, pEntry), pEntry));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- FTM State: %d\n", pEntry->State));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Address: %02x:%02x:%02x:%02x:%02x:%02x\n",
-		  PRINT_MAC(pEntry->Addr)));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("[FTM Entry Dump] idx=%d 0x%p\n", GET_FTM_PEER_IDX(pAd, pEntry), pEntry));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- FTM State: %d\n", pEntry->State));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Address: %02x:%02x:%02x:%02x:%02x:%02x\n", PRINT_MAC(pEntry->Addr)));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- PeerReqParm\n"));
 	FtmParmDump(pAd, &pEntry->PeerReqParm, DbgLvl);
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- VerdictParm\n"));
 	FtmParmDump(pAd, &pEntry->VerdictParm, DbgLvl);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- FTM DialogToken: %d\n", pEntry->DialogToken));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- BurstCntDown: %d\n", pEntry->BurstCntDown));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- FtmCntDown: %d\n", pEntry->FtmCntDown));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- PendingPid: 0x%02X\n", pEntry->PendingPid));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- TransAndRetrans: %u\n", pEntry->TransAndRetrans));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- FTM DialogToken: %d\n", pEntry->DialogToken));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- BurstCntDown: %d\n", pEntry->BurstCntDown));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- FtmCntDown: %d\n", pEntry->FtmCntDown));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- PendingPid: 0x%02X\n", pEntry->PendingPid));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- TransAndRetrans: %u\n", pEntry->TransAndRetrans));
 	FtmPidPendingQDump(pAd, DbgLvl);
 #ifdef FTM_INITIATOR
 	FtmRxTmrQDump(pAd, pEntry, DbgLvl);
 #endif /* FTM_INITIATOR */
-	FtmHexDump("Last TmrHwReport", (UINT8 *)&pEntry->Tmr.HwReport,
-		   sizeof(TMR_FRM_STRUC), DbgLvl);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("TMR calibration result is 0x%X\n",
-		  pAd->pTmrCtrlStruct->TmrCalResult));
+	FtmHexDump("Last TmrHwReport", (UINT8 *)&pEntry->Tmr.HwReport, sizeof(TMR_FRM_STRUC), DbgLvl);
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("TMR calibration result is 0x%X\n", pAd->pTmrCtrlStruct->TmrCalResult));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("\n[Location IE]\n"));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Civic Report: %d\n", pEntry->bCivicMsmtReport));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- LCI Report: %d\n", pEntry->bLciMsmtReport));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Civic Report: %d\n", pEntry->bCivicMsmtReport));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- LCI Report: %d\n", pEntry->bLciMsmtReport));
 
 	if (pEntry->State > FTMPEER_UNUSED)
 		return TRUE;
 	else
 		return FALSE;
 }
+
 
 /*
 ========================================================================
@@ -182,31 +169,30 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmPidPendingQDump(IN PRTMP_ADAPTER pAd, IN UINT32 DbgLvl)
+VOID
+FtmPidPendingQDump(
+	IN PRTMP_ADAPTER	pAd,
+	IN UINT32			DbgLvl
+)
 {
 	PFTM_CTRL pFtm = pAd->pFtmCtrl;
 	PFTM_PEER_ENTRY pNode, pNext;
 	ULONG IrqFlags = 0;
 	int num = 0;
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("FTM PidPendingQ Dump\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("FTM PidPendingQ Dump\n"));
 	RTMP_IRQ_LOCK(&pFtm->PidPendingQLock, IrqFlags);
-	DlListForEachSafe(pNode, pNext, &pFtm->PidPendingQ, FTM_PEER_ENTRY,
-			  PidList)
-	{
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-			("    EntryIdx:%d PID:0x%02X bGotTmr=%d (Next:0x%p Prev:0x%p)\n",
-			 GET_FTM_PEER_IDX(pAd, pNode), pNode->PendingPid,
-			 pNode->bGotTmr, pNode->PidList.Next,
-			 pNode->PidList.Prev));
+	DlListForEachSafe(pNode, pNext, &pFtm->PidPendingQ, FTM_PEER_ENTRY, PidList) {
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
+				 ("    EntryIdx:%d PID:0x%02X bGotTmr=%d (Next:0x%p Prev:0x%p)\n",
+				  GET_FTM_PEER_IDX(pAd, pNode), pNode->PendingPid, pNode->bGotTmr,
+				  pNode->PidList.Next, pNode->PidList.Prev));
 		num++;
 	}
 	RTMP_IRQ_UNLOCK(&pFtm->PidPendingQLock, IrqFlags);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("    Total %d nodes\n", num));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("    Total %d nodes\n", num));
 }
+
 
 /*
 ========================================================================
@@ -223,80 +209,59 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmLciValueDump(IN PRTMP_ADAPTER pAd, IN PLCI_FIELD pLci, IN UINT32 DbgLvl)
+VOID
+FtmLciValueDump(
+	IN PRTMP_ADAPTER	pAd,
+	IN PLCI_FIELD		pLci,
+	IN UINT32			DbgLvl
+)
 {
 	int i;
-	UINT64 u8b;
+	UINT64	u8b;
 
 	if (!pLci)
 		return;
 
 	/* Latitude */
-	u8b = ((UINT64)(pLci->field.Latitude_b2_b33) << 2) |
-	      (pLci->field.Latitude_b0_b1);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("[Latitude]\t0x%09llX\n", u8b));
+	u8b = ((UINT64)(pLci->field.Latitude_b2_b33) << 2) | (pLci->field.Latitude_b0_b1);
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("[Latitude]\t0x%09llX\n", u8b));
 	/* Longitude */
-	u8b = ((UINT64)(pLci->field.Longitude_b2_b33) << 2) |
-	      (pLci->field.Longitude_b0_b1);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("[Longitude]\t0x%09llX\n", u8b));
+	u8b = ((UINT64)(pLci->field.Longitude_b2_b33) << 2) | (pLci->field.Longitude_b0_b1);
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("[Longitude]\t0x%09llX\n", u8b));
 	/* Altitude */
-	u8b = (pLci->field.Altitude_b22_b29 << 22) |
-	      (pLci->field.Altitude_b0_b21);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("[Altitude]\t 0x%08llX\n\n", u8b));
+	u8b = (pLci->field.Altitude_b22_b29 << 22) | (pLci->field.Altitude_b0_b21);
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("[Altitude]\t 0x%08llX\n\n", u8b));
 	/* detail */
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("This AP LCI header length: %d\n",
-		  pAd->pFtmCtrl->LciHdr.Length));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("This AP LCI header length: %d\n", pAd->pFtmCtrl->LciHdr.Length));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("LCI Value:\n"));
 
-	for (i = 0; i < sizeof(LCI_FIELD); i++) {
+	for (i = 0; i  < sizeof(LCI_FIELD); i++) {
 		if ((i > 0) && (i % 4 == 0))
 			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, (" "));
 
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-			 ("%02X ", pLci->byte[i]));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("%02X ", pLci->byte[i]));
 	}
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("\n\n"));
 	/* structure dump */
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- LatitudeUncertainty: 0x%X\n",
-		  pLci->field.LatitudeUncertainty));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Latitude_b0_b1: 0x%X\n", pLci->field.Latitude_b0_b1));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Latitude_b2_b33: 0x%X\n", pLci->field.Latitude_b2_b33));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- LongitudeUncertainty: 0x%X\n",
-		  pLci->field.LongitudeUncertainty));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Longitude_b0_b1: 0x%X\n", pLci->field.Longitude_b0_b1));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Longitude_b2_b33: 0x%X\n", pLci->field.Longitude_b2_b33));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- AltitudeType: 0x%X\n", pLci->field.AltitudeType));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- AltitudeUncertainty: 0x%X\n",
-		  pLci->field.AltitudeUncertainty));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Altitude_b0_b21: 0x%X\n", pLci->field.Altitude_b0_b21));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Altitude_b22_b29: 0x%X\n", pLci->field.Altitude_b22_b29));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Datum: 0x%X\n", pLci->field.Datum));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- RegLocAgreement: 0x%X\n", pLci->field.RegLocAgreement));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- RegLocDSE: 0x%X\n", pLci->field.RegLocDSE));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- Dependent: 0x%X\n", pLci->field.Dependent));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("- STAVersion: 0x%X\n", pLci->field.STAVersion));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- LatitudeUncertainty: 0x%X\n", pLci->field.LatitudeUncertainty));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Latitude_b0_b1: 0x%X\n", pLci->field.Latitude_b0_b1));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Latitude_b2_b33: 0x%X\n", pLci->field.Latitude_b2_b33));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- LongitudeUncertainty: 0x%X\n", pLci->field.LongitudeUncertainty));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Longitude_b0_b1: 0x%X\n", pLci->field.Longitude_b0_b1));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Longitude_b2_b33: 0x%X\n", pLci->field.Longitude_b2_b33));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- AltitudeType: 0x%X\n", pLci->field.AltitudeType));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- AltitudeUncertainty: 0x%X\n", pLci->field.AltitudeUncertainty));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Altitude_b0_b21: 0x%X\n", pLci->field.Altitude_b0_b21));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Altitude_b22_b29: 0x%X\n", pLci->field.Altitude_b22_b29));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Datum: 0x%X\n", pLci->field.Datum));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- RegLocAgreement: 0x%X\n", pLci->field.RegLocAgreement));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- RegLocDSE: 0x%X\n", pLci->field.RegLocDSE));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- Dependent: 0x%X\n", pLci->field.Dependent));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("- STAVersion: 0x%X\n", pLci->field.STAVersion));
 	return;
 }
+
 
 /*
 ========================================================================
@@ -312,7 +277,9 @@ Return Value:
 ========================================================================
 */
 UINT32
-FtmMinDeltaToMS(IN UINT32 MinDelta)
+FtmMinDeltaToMS(
+	IN UINT32	MinDelta
+)
 {
 	UINT32 ms;
 
@@ -324,6 +291,7 @@ FtmMinDeltaToMS(IN UINT32 MinDelta)
 
 	return ms;
 }
+
 
 /*
 ========================================================================
@@ -339,7 +307,9 @@ Return Value:
 ========================================================================
 */
 UINT32
-FtmBurstDurationToMS(IN UINT8 BurstDuration)
+FtmBurstDurationToMS(
+	IN UINT8	BurstDuration
+)
 {
 	UINT32 ms;
 
@@ -386,6 +356,7 @@ FtmBurstDurationToMS(IN UINT8 BurstDuration)
 	return ms;
 }
 
+
 /*
 ========================================================================
 Routine Description:
@@ -400,9 +371,11 @@ Return Value:
 ========================================================================
 */
 UINT8
-FtmEncodeBurstDuration(IN UINT32 time)
+FtmEncodeBurstDuration(
+	IN UINT32	time
+)
 {
-	UINT32 burst_duration; /* FTM_BURST_DURATION_ENCODING */
+	UINT32 burst_duration;	/* FTM_BURST_DURATION_ENCODING */
 
 	if (time > 640)
 		burst_duration = FTMBST_128MS;
@@ -428,6 +401,7 @@ FtmEncodeBurstDuration(IN UINT32 time)
 	return burst_duration;
 }
 
+
 /*
 ========================================================================
 Routine Description:
@@ -443,16 +417,19 @@ Return Value:
 ========================================================================
 */
 UINT8
-FtmGetBurstDuration(IN UINT8 min_delta_ftm, IN UINT8 ftms_per_burst)
+FtmGetBurstDuration(
+	IN UINT8	min_delta_ftm,
+	IN UINT8	ftms_per_burst
+)
 {
 	const UINT8 ASSUME_RETRY_CNT = 2;
-	UINT8 burst_duration; /* FTM_BURST_DURATION_ENCODING */
-	UINT32 time = (ftms_per_burst + ASSUME_RETRY_CNT) *
-		      min_delta_ftm; /* unit: 100 us */
+	UINT8 burst_duration;	/* FTM_BURST_DURATION_ENCODING */
+	UINT32 time = (ftms_per_burst + ASSUME_RETRY_CNT) * min_delta_ftm;	/* unit: 100 us */
 	/* Get burst_duration */
 	burst_duration = FtmEncodeBurstDuration(time);
 	return burst_duration;
 }
+
 
 /*
 ========================================================================
@@ -468,12 +445,15 @@ Return Value:
 ========================================================================
 */
 UINT16
-FtmGetMinBurstPeriod(IN UINT8 burst_duration)
+FtmGetMinBurstPeriod(
+	IN UINT8	burst_duration
+)
 {
 	UINT32 duraion = FtmBurstDurationToMS(burst_duration) / 100 + 1;
 
 	return (UINT16)duraion;
 }
+
 
 /*
 ========================================================================
@@ -495,9 +475,11 @@ Note:
 ========================================================================
 */
 UINT32
-FtmGetTmrBaseOffset(IN PRTMP_ADAPTER pAd)
+FtmGetTmrBaseOffset(
+	IN PRTMP_ADAPTER	pAd
+)
 {
-	UINT32 offset = 0; /* unit: 0.1 ns */
+	UINT32 offset = 0;	/* unit: 0.1 ns */
 	struct wifi_dev *wdev = get_default_wdev(pAd);
 	UCHAR ht_bw = wlan_operate_get_ht_bw(wdev);
 #ifdef MT7615
@@ -530,6 +512,7 @@ FtmGetTmrBaseOffset(IN PRTMP_ADAPTER pAd)
 	return offset;
 }
 
+
 /*
 ========================================================================
 Routine Description:
@@ -546,21 +529,26 @@ Return Value:
 ========================================================================
 */
 BOOLEAN
-FtmConvertTodToa(IN PRTMP_ADAPTER pAd, IN UINT64 *pTOD, IN UINT64 *pTOA)
+FtmConvertTodToa(
+	IN PRTMP_ADAPTER	pAd,
+	IN UINT64		*pTOD,
+	IN UINT64		*pTOA
+)
 {
 	UINT32 base = FtmGetTmrBaseOffset(pAd);
 	*pTOD = *pTOD * 5 / 2;
 	*pTOA = *pTOA * 5 / 2;
 
 	if (*pTOA < base) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-			 ("##### TOA is less than base\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("##### TOA is less than base\n"));
 		return FALSE;
 	} else {
 		*pTOA -= base;
 		return TRUE;
 	}
 }
+
+
 
 /*
 ========================================================================
@@ -578,7 +566,13 @@ Return Value:
 
 ========================================================================
 */
-inline BOOLEAN FtmGTE(IN UINT8 x, IN UINT8 y, IN UINT8 min, IN UINT8 max)
+inline BOOLEAN
+FtmGTE(
+	IN UINT8 x,
+	IN UINT8 y,
+	IN UINT8 min,
+	IN UINT8 max
+)
 {
 	UINT32 diff;
 	BOOLEAN xIsLarger;
@@ -598,6 +592,7 @@ inline BOOLEAN FtmGTE(IN UINT8 x, IN UINT8 y, IN UINT8 min, IN UINT8 max)
 	return xIsLarger;
 }
 
+
 /*
 ========================================================================
 Routine Description:
@@ -611,7 +606,10 @@ Return Value:
 
 ========================================================================
 */
-RTMP_STRING *FtmSkipHexPrefix(IN RTMP_STRING *str)
+RTMP_STRING *
+FtmSkipHexPrefix(
+	IN RTMP_STRING *str
+)
 {
 	if (str != NULL) {
 		if ((str[0] == '0') && ((str[1] == 'x') || (str[1] == 'X')))
@@ -623,6 +621,7 @@ RTMP_STRING *FtmSkipHexPrefix(IN RTMP_STRING *str)
 
 	return str;
 }
+
 
 /*
 * ========================================================================
@@ -638,7 +637,10 @@ RTMP_STRING *FtmSkipHexPrefix(IN RTMP_STRING *str)
 ========================================================================
 */
 BOOLEAN
-FtmGetTargetAddr(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
+FtmGetTargetAddr(
+	IN  PRTMP_ADAPTER	pAd,
+	IN  RTMP_STRING		*arg
+)
 {
 	RTMP_STRING *value;
 	UINT8 macAddr[MAC_ADDR_LEN];
@@ -653,10 +655,8 @@ FtmGetTargetAddr(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 	if (len != 17)
 		return FALSE;
 
-	for (i = 0, value = rstrtok(arg, ":"); value;
-	     value = rstrtok(NULL, ":")) {
-		if ((strlen(value) != 2) || (!isxdigit(*value)) ||
-		    (!isxdigit(*(value + 1))))
+	for (i = 0, value = rstrtok(arg, ":"); value; value = rstrtok(NULL, ":")) {
+		if ((strlen(value) != 2) || (!isxdigit(*value)) || (!isxdigit(*(value + 1))))
 			return FALSE;
 
 		AtoH(value, (UINT8 *)&macAddr[i++], 1);
@@ -665,6 +665,7 @@ FtmGetTargetAddr(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 	NdisCopyMemory(pFtm->Responder, macAddr, MAC_ADDR_LEN);
 	return TRUE;
 }
+
 
 /*
 *========================================================================
@@ -680,10 +681,14 @@ FtmGetTargetAddr(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 *
 *========================================================================
 */
-inline UINT8 FtmGetNewPid(IN PRTMP_ADAPTER pAd)
+inline UINT8
+FtmGetNewPid(
+	IN PRTMP_ADAPTER	pAd
+)
 {
 	return (pAd->pFtmCtrl->DialogToken & MASK_PID_FTM) + PID_FTM_MIN;
 }
+
 
 /*
 ========================================================================
@@ -702,8 +707,12 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmAddPidPendingNode(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-			  IN UINT8 PID)
+VOID
+FtmAddPidPendingNode(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN UINT8			PID
+)
 {
 	PFTM_CTRL pFtm = pAd->pFtmCtrl;
 	PFTM_PEER_ENTRY pNode, pNext;
@@ -711,21 +720,15 @@ VOID FtmAddPidPendingNode(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	ULONG IrqFlags = 0;
 	/* Check existed nodes */
 	RTMP_IRQ_LOCK(&pFtm->PidPendingQLock, IrqFlags);
-	DlListForEachSafe(pNode, pNext, &pFtm->PidPendingQ, FTM_PEER_ENTRY,
-			  PidList)
-	{
+	DlListForEachSafe(pNode, pNext, &pFtm->PidPendingQ, FTM_PEER_ENTRY, PidList) {
 		if (pNode == pEntry) {
 			if (!bHit)
 				bHit = TRUE;
 			else {
 				/* more than one node with the same entry */
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_WARN,
-					("%s()#%d: WARNING: Entry %d is duplicated => remove old node with PID 0x%02X\n",
-					 __func__, __LINE__,
-					 GET_FTM_PEER_IDX(pAd, pNode),
-					 pNode->PendingPid));
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
+						 ("%s()#%d: WARNING: Entry %d is duplicated => remove old node with PID 0x%02X\n",
+						  __func__, __LINE__, GET_FTM_PEER_IDX(pAd, pNode), pNode->PendingPid));
 				DlListDel(&pNode->PidList);
 				ASSERT(FALSE);
 			}
@@ -735,9 +738,8 @@ VOID FtmAddPidPendingNode(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 
 	if (bHit) {
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-			 ("%s()#%d: Entry %d overwrite PID: 0x%02X -> 0x%02X\n",
-			  __func__, __LINE__, GET_FTM_PEER_IDX(pAd, pEntry),
-			  pEntry->PendingPid, PID));
+				 ("%s()#%d: Entry %d overwrite PID: 0x%02X -> 0x%02X\n",
+				  __func__, __LINE__, GET_FTM_PEER_IDX(pAd, pEntry), pEntry->PendingPid, PID));
 		/* Update new PID */
 		RTMP_IRQ_LOCK(&pFtm->PidPendingQLock, IrqFlags);
 		pEntry->PendingPid = PID;
@@ -753,10 +755,10 @@ VOID FtmAddPidPendingNode(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	/* Reset TMR report content */
 	NdisZeroMemory(&pEntry->Tmr, sizeof(TMR_NODE));
 	pEntry->bGotTmr = FALSE;
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("Tx: after add node\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("Tx: after add node\n"));
 	FtmPidPendingQDump(pAd, DBG_LVL_INFO);
 }
+
 
 /*
 ========================================================================
@@ -771,13 +773,16 @@ Return Value:
 
 ========================================================================
 */
-INT FtmDeqPidPendingNode(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
+INT
+FtmDeqPidPendingNode(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry
+)
 {
 	ULONG IrqFlags = 0;
 	INT ret = NDIS_STATUS_FAILURE;
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("%s:()\n", __func__));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("%s:()\n", __func__));
 
 	if (pEntry->PidList.Next) {
 		RTMP_IRQ_LOCK(&pAd->pFtmCtrl->PidPendingQLock, IrqFlags);
@@ -787,13 +792,14 @@ INT FtmDeqPidPendingNode(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 		ret = NDIS_STATUS_SUCCESS;
 	} else {
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("%s()#%d: idx=%d, ERROR! no PendingPid !\n", __func__,
-			  __LINE__, GET_FTM_PEER_IDX(pAd, pEntry)));
+				 ("%s()#%d: idx=%d, ERROR! no PendingPid !\n",
+				  __func__, __LINE__, GET_FTM_PEER_IDX(pAd, pEntry)));
 		ret = NDIS_STATUS_FAILURE;
 	}
 
 	return ret;
 }
+
 
 /*
 ========================================================================
@@ -810,7 +816,10 @@ Return Value:
 ========================================================================
 */
 PFTM_PEER_ENTRY
-FtmGetPidPendingNode(IN PRTMP_ADAPTER pAd, IN UINT8 PID)
+FtmGetPidPendingNode(
+	IN PRTMP_ADAPTER	pAd,
+	IN UINT8	PID
+)
 {
 	PFTM_CTRL pFtm = pAd->pFtmCtrl;
 	PFTM_PEER_ENTRY pEntry = NULL;
@@ -818,9 +827,7 @@ FtmGetPidPendingNode(IN PRTMP_ADAPTER pAd, IN UINT8 PID)
 	ULONG IrqFlags = 0;
 
 	RTMP_IRQ_LOCK(&pFtm->PidPendingQLock, IrqFlags);
-	DlListForEachSafe(pNode, pNext, &pFtm->PidPendingQ, FTM_PEER_ENTRY,
-			  PidList)
-	{
+	DlListForEachSafe(pNode, pNext, &pFtm->PidPendingQ, FTM_PEER_ENTRY, PidList) {
 		if (pNode->PendingPid == PID) {
 			pEntry = pNode;
 			break;
@@ -830,12 +837,16 @@ FtmGetPidPendingNode(IN PRTMP_ADAPTER pAd, IN UINT8 PID)
 	return pEntry;
 }
 
-VOID FtmNeighborTableInit(IN PRTMP_ADAPTER pAd)
+
+VOID
+FtmNeighborTableInit(
+	IN PRTMP_ADAPTER	pAd
+)
 {
 	int idx;
 	PFTM_NEIGHBORS pNeighbor;
 
-	for (idx = 0; idx < MAX_FTM_TBL_SIZE; idx++) {
+	for (idx = 0; idx  < MAX_FTM_TBL_SIZE; idx++) {
 		pNeighbor = &pAd->pFtmCtrl->FtmNeighbor[idx];
 		pNeighbor->LciZ.SubElement = LCI_RPTID_Z;
 		pNeighbor->LciZ.Length = sizeof(Z_ELEMENT) - 2;
@@ -843,6 +854,7 @@ VOID FtmNeighborTableInit(IN PRTMP_ADAPTER pAd)
 		pNeighbor->CivicHdr.Length = 0;
 	}
 }
+
 
 /*
 ========================================================================
@@ -857,19 +869,20 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmMgmtInit(IN PRTMP_ADAPTER pAd)
+VOID
+FtmMgmtInit(
+	IN PRTMP_ADAPTER	pAd
+)
 {
 	PFTM_CTRL pFtm = NULL;
 	ULONG IrqFlags = 0;
 	UINT8 i;
-	UINT8 TestVector_LCI[] = { /* Test Plan 0.0.6 */
-				   0x52, 0x83, 0x4d, 0x12, 0xef, 0xd2,
-				   0xb0, 0x8b, 0x9b, 0x4b, 0xf1, 0xcc,
-				   0x2c, 0x00, 0x00, 0x41
+	UINT8 TestVector_LCI[] = {	/* Test Plan 0.0.6 */
+		0x52, 0x83, 0x4d, 0x12,  0xef, 0xd2, 0xb0, 0x8b,
+		0x9b, 0x4b, 0xf1, 0xcc,  0x2c, 0x00, 0x00, 0x41
 	};
 
-	if (os_alloc_mem(NULL, (UINT8 **)&pFtm, sizeof(FTM_CTRL)) ==
-	    NDIS_STATUS_FAILURE)
+	if (os_alloc_mem(NULL, (UINT8 **)&pFtm, sizeof(FTM_CTRL)) == NDIS_STATUS_FAILURE)
 		return;
 
 	pAd->pFtmCtrl = pFtm;
@@ -889,13 +902,12 @@ VOID FtmMgmtInit(IN PRTMP_ADAPTER pAd)
 	pFtm->CivicHdr.Length = 0;
 	/* Set Test Vector for test plan 0.0.6 */
 	NdisCopyMemory(pFtm->LciField.byte, TestVector_LCI, sizeof(LCI_FIELD));
-	pFtm->Civic.CountryCode[0] =
-		'U'; /* US, Ref: http://zh.wikipedia.org/wiki/ISO_3166-1 */
+	pFtm->Civic.CountryCode[0] = 'U';	/* US, Ref: http://zh.wikipedia.org/wiki/ISO_3166-1 */
 	pFtm->Civic.CountryCode[1] = 'S';
 	pFtm->Civic.CA_Type = 2;
 	pFtm->Civic.CA_Length = MAX_CIVIC_CA_VALUE_LENGTH;
 
-	for (i = 0; i < MAX_CIVIC_CA_VALUE_LENGTH; i++)
+	for (i = 0; i  < MAX_CIVIC_CA_VALUE_LENGTH; i++)
 		pFtm->CA_Value[i] = i + 1;
 
 	pFtm->CivicHdr.Length = sizeof(LOCATION_CIVIC) + pFtm->Civic.CA_Length;
@@ -909,8 +921,7 @@ VOID FtmMgmtInit(IN PRTMP_ADAPTER pAd)
 	FtmPeerTableInit(pAd);
 	/* init Neighbor Table */
 	FtmNeighborTableInit(pAd);
-	RTMPInitTimer(pAd, &pFtm->FtmReqTimer,
-		      GET_TIMER_FUNCTION(FtmReqTxTimerCallback), pAd, FALSE);
+	RTMPInitTimer(pAd, &pFtm->FtmReqTimer, GET_TIMER_FUNCTION(FtmReqTxTimerCallback), pAd, FALSE);
 	pFtm->bSetLciRpt = TRUE;
 	pFtm->bSetZRpt = TRUE;
 	pFtm->bSetCivicRpt = TRUE;
@@ -919,6 +930,7 @@ VOID FtmMgmtInit(IN PRTMP_ADAPTER pAd)
 	pFtm->MinimumApCount = 3;
 	pFtm->RandomizationInterval = 20;
 }
+
 
 /*
 ========================================================================
@@ -933,10 +945,13 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmMgmtExit(IN PRTMP_ADAPTER pAd)
+VOID
+FtmMgmtExit(
+	IN PRTMP_ADAPTER	pAd
+)
 {
 	PFTM_CTRL pFtm = pAd->pFtmCtrl;
-	PFTM_PEER_ENTRY pEntry;
+	PFTM_PEER_ENTRY	pEntry;
 	BOOLEAN Cancelled;
 	ULONG IrqFlags = 0;
 	int idx;
@@ -944,16 +959,14 @@ VOID FtmMgmtExit(IN PRTMP_ADAPTER pAd)
 	PFTM_MAPPING pNode, pNext;
 #endif /* FTM_INITIATOR */
 
-	for (idx = 0; idx < MAX_FTM_TBL_SIZE; idx++) {
+	for (idx = 0; idx  < MAX_FTM_TBL_SIZE; idx++) {
 		pEntry = pAd->pFtmCtrl->FtmPeer + idx;
 		pEntry->State = FTMPEER_UNUSED;
 		RTMPCancelTimer(&pEntry->FtmTimer, &Cancelled);
 		RTMPCancelTimer(&pEntry->FtmTxTimer, &Cancelled);
 #ifdef FTM_INITIATOR
 		RTMP_IRQ_LOCK(&pEntry->RxTmrQLock, IrqFlags);
-		DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING,
-				  list)
-		{
+		DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING, list) {
 			DlListDel(&pNode->list);
 			os_free_mem(pNode);
 		}
@@ -971,6 +984,7 @@ VOID FtmMgmtExit(IN PRTMP_ADAPTER pAd)
 	pAd->pFtmCtrl = NULL;
 }
 
+
 /*
 ========================================================================
 Routine Description:
@@ -984,24 +998,23 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmPeerTableInit(IN PRTMP_ADAPTER pAd)
+VOID
+FtmPeerTableInit(
+	IN PRTMP_ADAPTER	pAd
+)
 {
 	int idx;
-	PFTM_PEER_ENTRY pEntry;
+	PFTM_PEER_ENTRY	pEntry;
 #ifdef FTM_INITIATOR
 	ULONG IrqFlags = 0;
 #endif /* FTM_INITIATOR */
 
-	for (idx = 0; idx < MAX_FTM_TBL_SIZE; idx++) {
+	for (idx = 0; idx  < MAX_FTM_TBL_SIZE; idx++) {
 		pEntry = pAd->pFtmCtrl->FtmPeer + idx;
 		pEntry->State = FTMPEER_UNUSED;
 		pEntry->pAd = (PVOID)pAd;
-		RTMPInitTimer(pAd, &pEntry->FtmTimer,
-			      GET_TIMER_FUNCTION(FtmTimerCallback), pEntry,
-			      FALSE);
-		RTMPInitTimer(pAd, &pEntry->FtmTxTimer,
-			      GET_TIMER_FUNCTION(FtmTxTimerCallback), pEntry,
-			      FALSE);
+		RTMPInitTimer(pAd, &pEntry->FtmTimer, GET_TIMER_FUNCTION(FtmTimerCallback), pEntry, FALSE);
+		RTMPInitTimer(pAd, &pEntry->FtmTxTimer, GET_TIMER_FUNCTION(FtmTxTimerCallback), pEntry, FALSE);
 #ifdef FTM_INITIATOR
 		NdisAllocateSpinLock(pAd, &pEntry->RxTmrQLock);
 		RTMP_IRQ_LOCK(&pEntry->RxTmrQLock, IrqFlags);
@@ -1010,6 +1023,7 @@ VOID FtmPeerTableInit(IN PRTMP_ADAPTER pAd)
 #endif /* FTM_INITIATOR */
 	}
 }
+
 
 /*
 ========================================================================
@@ -1026,8 +1040,12 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmEntrySetValid(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-		      IN UINT8 *Addr)
+VOID
+FtmEntrySetValid(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN UINT8	*Addr
+)
 {
 	/* Clear all members by setting to default value */
 	pEntry->bLciMsmtReq = FALSE;
@@ -1053,6 +1071,7 @@ VOID FtmEntrySetValid(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	pEntry->State = FTMPEER_IDLE;
 }
 
+
 /*
 ========================================================================
 Routine Description:
@@ -1068,7 +1087,10 @@ Return Value:
 ========================================================================
 */
 PFTM_PEER_ENTRY
-FtmEntrySearch(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr)
+FtmEntrySearch(
+	IN PRTMP_ADAPTER	pAd,
+	IN UINT8	*Addr
+)
 {
 	FTM_PEER_ENTRY *pEntry;
 	int HashIdx = FTM_TBL_HASH_INDEX(Addr);
@@ -1077,8 +1099,7 @@ FtmEntrySearch(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr)
 	do {
 		pEntry = pAd->pFtmCtrl->FtmPeer + idx;
 
-		if (pEntry->State &&
-		    NdisEqualMemory(pEntry->Addr, Addr, MAC_ADDR_LEN))
+		if (pEntry->State && NdisEqualMemory(pEntry->Addr, Addr, MAC_ADDR_LEN))
 			return pEntry;
 
 		INCREASE_IDX(idx, 0, MAX_FTM_TBL_SIZE);
@@ -1087,8 +1108,11 @@ FtmEntrySearch(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr)
 	return NULL;
 }
 
+
 UCHAR
-FtmGetBWSetting(IN PRTMP_ADAPTER pAd)
+FtmGetBWSetting(
+	IN PRTMP_ADAPTER	pAd
+)
 {
 	struct wifi_dev *wdev = get_default_wdev(pAd);
 	UCHAR HT_BW = wlan_operate_get_ht_bw(wdev);
@@ -1127,6 +1151,7 @@ FtmGetBWSetting(IN PRTMP_ADAPTER pAd)
 	return ftm_bw;
 }
 
+
 /*
 ========================================================================
 Routine Description:
@@ -1143,7 +1168,10 @@ Return Value:
 ========================================================================
 */
 PFTM_PEER_ENTRY
-FtmEntryGet(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr)
+FtmEntryGet(
+	IN PRTMP_ADAPTER	pAd,
+	IN UINT8	*Addr
+)
 {
 	FTM_PEER_ENTRY *pEntry;
 	int HashIdx, idx;
@@ -1164,8 +1192,8 @@ FtmEntryGet(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr)
 			FtmEntrySetValid(pAd, pEntry, Addr);
 			pAd->pFtmCtrl->LatestJoinPeer = idx;
 			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-				 ("FTM %d_[%02x:%02x:%02x:%02x:%02x:%02x]\n",
-				  idx, PRINT_MAC(pEntry->Addr)));
+					 ("FTM %d_[%02x:%02x:%02x:%02x:%02x:%02x]\n",
+					  idx, PRINT_MAC(pEntry->Addr)));
 			return pEntry;
 		}
 
@@ -1174,6 +1202,7 @@ FtmEntryGet(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr)
 
 	return NULL;
 }
+
 
 /*
 ========================================================================
@@ -1189,14 +1218,17 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
+VOID
+FtmParameterNego(
+	IN PRTMP_ADAPTER		pAd,
+	IN PFTM_PEER_ENTRY		pEntry
+)
 {
 	PFTM_CTRL pFtm = pAd->pFtmCtrl;
 
 	pEntry->State = FTMPEER_NEGO;
 	/* Obtain VerdictParm */
-	NdisCopyMemory(&pEntry->VerdictParm, &pEntry->PeerReqParm,
-		       sizeof(FTM_PARAMETER));
+	NdisCopyMemory(&pEntry->VerdictParm, &pEntry->PeerReqParm, sizeof(FTM_PARAMETER));
 	pEntry->VerdictParm.status = FTMSTATUS_SUCCESS;
 	/* asap_capable: always set to 1 */
 	pEntry->VerdictParm.asap_capable = 1;
@@ -1204,19 +1236,16 @@ VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 	/* ftms_per_burst */
 	if (pEntry->PeerReqParm.ftms_per_burst == FTM_NUM_NO_PREFERENCE)
 		pEntry->VerdictParm.ftms_per_burst = pFtm->ftms_per_burst;
-	else if (pEntry->PeerReqParm.ftms_per_burst ==
-		 1) /* single packet cannot resultin T1~T4 */
+	else if (pEntry->PeerReqParm.ftms_per_burst == 1)	/* single packet cannot resultin T1~T4 */
 		pEntry->VerdictParm.ftms_per_burst = 2;
 
 	/* num_burst_exponent */
 	if (pEntry->PeerReqParm.num_burst_exponent == FTMBST_NO_PREFERENCE)
-		pEntry->VerdictParm.num_burst_exponent =
-			pFtm->num_burst_exponent;
+		pEntry->VerdictParm.num_burst_exponent = pFtm->num_burst_exponent;
 
 	/* min_delta_ftm */
 	{
-		if (pEntry->PeerReqParm.min_delta_ftm ==
-		    FTM_DELTA_NO_PREFERENCE)
+		if (pEntry->PeerReqParm.min_delta_ftm == FTM_DELTA_NO_PREFERENCE)
 			pEntry->VerdictParm.min_delta_ftm = pFtm->min_delta_ftm;
 
 		/* no less than my default setting */
@@ -1230,9 +1259,7 @@ VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 
 		/* set the value being multiple of 10, to fit the unit of software timer */
 		if (pEntry->PeerReqParm.min_delta_ftm % 10)
-			pEntry->VerdictParm.min_delta_ftm =
-				(pEntry->PeerReqParm.min_delta_ftm / 10 + 1) *
-				10;
+			pEntry->VerdictParm.min_delta_ftm = (pEntry->PeerReqParm.min_delta_ftm / 10 + 1) * 10;
 	}
 
 	/* burst_duration */
@@ -1246,15 +1273,11 @@ VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 		UCHAR ftm_cnt;
 
 		if (pEntry->PeerReqParm.burst_duration == FTMBST_NO_PREFERENCE)
-			pEntry->VerdictParm.burst_duration =
-				pFtm->burst_duration;
+			pEntry->VerdictParm.burst_duration = pFtm->burst_duration;
 
 		/* check if burst duration >= min_delta * ftms_per_burst */
-		ftm_cnt = FtmBurstDurationToMS(
-				  pEntry->VerdictParm.burst_duration) *
-			  100 /
-			  (pEntry->VerdictParm.min_delta_ftm * 10 +
-			   1); /* computing unit: 10 us, +1: SIFS*/
+		ftm_cnt = FtmBurstDurationToMS(pEntry->VerdictParm.burst_duration) * 100 /
+				  (pEntry->VerdictParm.min_delta_ftm * 10 + 1);	/* computing unit: 10 us, +1: SIFS*/
 
 		/* otherwise, decrease ftms_per_burst */
 		if (ftm_cnt < pEntry->VerdictParm.ftms_per_burst)
@@ -1262,13 +1285,9 @@ VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 	} else {
 		/* Note: pEntry->PeerReqParm.burst_duration might be 15, means FTMBST_NO_PREFERENCE */
 		if (pEntry->PeerReqParm.burst_duration == FTMBST_NO_PREFERENCE)
-			pEntry->VerdictParm.burst_duration =
-				pFtm->burst_duration;
+			pEntry->VerdictParm.burst_duration = pFtm->burst_duration;
 		else
-			pEntry->VerdictParm.burst_duration =
-				FtmGetBurstDuration(
-					pEntry->VerdictParm.min_delta_ftm,
-					pEntry->VerdictParm.ftms_per_burst);
+			pEntry->VerdictParm.burst_duration = FtmGetBurstDuration(pEntry->VerdictParm.min_delta_ftm, pEntry->VerdictParm.ftms_per_burst);
 	}
 
 	/* burst_period */
@@ -1278,8 +1297,7 @@ VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 		pEntry->VerdictParm.burst_period = 0;
 	} else {
 		/* Multi Burst */
-		UINT16 min_burst_period = FtmGetMinBurstPeriod(
-			pEntry->VerdictParm.burst_duration);
+		UINT16 min_burst_period = FtmGetMinBurstPeriod(pEntry->VerdictParm.burst_duration);
 
 		if (pEntry->VerdictParm.burst_period < min_burst_period)
 			pEntry->VerdictParm.burst_period = min_burst_period;
@@ -1303,16 +1321,10 @@ VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 
 			/* no less than peer's request */
 			if ((pEntry->PeerReqParm.tsf_no_preference == 0) &&
-			    (PartialTSF <
-			     pEntry->PeerReqParm.partial_tsf_timer)) {
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_WARN,
-					("Follow up initiator's PTSF: 0x%04X -> 0x%04X\n",
-					 PartialTSF,
-					 pEntry->PeerReqParm.partial_tsf_timer));
-				PartialTSF =
-					pEntry->PeerReqParm.partial_tsf_timer;
+				(PartialTSF < pEntry->PeerReqParm.partial_tsf_timer)) {
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("Follow up initiator's PTSF: 0x%04X -> 0x%04X\n",
+						 PartialTSF, pEntry->PeerReqParm.partial_tsf_timer));
+				PartialTSF = pEntry->PeerReqParm.partial_tsf_timer;
 			}
 		}
 
@@ -1325,12 +1337,12 @@ VOID FtmParameterNego(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 	pEntry->VerdictParm.rsv_2 = 0;
 	pEntry->FtmCntDown = pEntry->VerdictParm.ftms_per_burst;
 	pEntry->BurstCntDown = (1 << pEntry->VerdictParm.num_burst_exponent);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("%s(): Dump FTM Parameters, FTM_Request Rx\n", __func__));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("%s(): Dump FTM Parameters, FTM_Request Rx\n", __func__));
 	FtmEntryDump(pAd, pEntry, DBG_LVL_INFO);
 	/* Tx FTM with Verdict FTM parameter */
 	SendFTM(pAd, pEntry->Addr, FTMTX_START);
 }
+
 
 /*
 ========================================================================
@@ -1346,20 +1358,23 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmEntryNegoDoneAction(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
+VOID
+FtmEntryNegoDoneAction(
+	IN PRTMP_ADAPTER		pAd,
+	IN PFTM_PEER_ENTRY		pEntry
+)
 {
 	/* Update State */
 	if (pEntry->VerdictParm.asap) {
 		pEntry->State = FTMPEER_MEASURING_IN_BURST;
 		CNT_DOWN_DECREASE(pEntry->FtmCntDown);
-		RTMPSetTimer(
-			&pEntry->FtmTxTimer,
-			FtmMinDeltaToMS(pEntry->VerdictParm.min_delta_ftm));
+		RTMPSetTimer(&pEntry->FtmTxTimer, FtmMinDeltaToMS(pEntry->VerdictParm.min_delta_ftm));
 	} else {
 		pEntry->State = FTMPEER_MEASURING_WAIT_TRIGGER;
 		RTMPSetTimer(&pEntry->FtmTimer, FTM_TRGGER_TIMEOUT);
 	}
 }
+
 
 /*
 ========================================================================
@@ -1377,20 +1392,21 @@ Return Value:
 ========================================================================
 */
 BOOLEAN
-FtmEntryCntDownAction(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
+FtmEntryCntDownAction(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry
+)
 {
 	/* FtmCntDown */
 	CNT_DOWN_DECREASE(pEntry->FtmCntDown);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("   FtmCntDown: %d\n", pEntry->FtmCntDown));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("   FtmCntDown: %d\n", pEntry->FtmCntDown));
 
 	if (pEntry->FtmCntDown)
 		return TRUE;
 
 	/* BurstCntDown */
 	CNT_DOWN_DECREASE(pEntry->BurstCntDown);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("   BurstCntDown: %d\n", pEntry->BurstCntDown));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("   BurstCntDown: %d\n", pEntry->BurstCntDown));
 
 	if (pEntry->BurstCntDown) {
 		pEntry->FtmCntDown = pEntry->VerdictParm.ftms_per_burst;
@@ -1404,6 +1420,7 @@ FtmEntryCntDownAction(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 		return FALSE;
 	}
 }
+
 
 /*
 ========================================================================
@@ -1420,8 +1437,12 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmParmModifyProcedure(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-			    IN PFTM_PARAMETER pRxParm)
+VOID
+FtmParmModifyProcedure(
+	IN PRTMP_ADAPTER		pAd,
+	IN PFTM_PEER_ENTRY		pEntry,
+	IN PFTM_PARAMETER		pRxParm
+)
 {
 	UINT8 TargetAddr[MAC_ADDR_LEN];
 
@@ -1432,6 +1453,7 @@ VOID FtmParmModifyProcedure(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	NdisCopyMemory(&pEntry->PeerReqParm, pRxParm, sizeof(FTM_PARAMETER));
 	FtmParameterNego(pAd, pEntry);
 }
+
 
 /*
 ========================================================================
@@ -1450,8 +1472,11 @@ Return Value:
 ========================================================================
 */
 BOOLEAN
-FtmEntryTerminate(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-		  IN BOOLEAN bTxFTM)
+FtmEntryTerminate(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN BOOLEAN			bTxFTM
+)
 {
 	BOOLEAN TimerCancelled;
 
@@ -1462,8 +1487,8 @@ FtmEntryTerminate(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 		return FALSE;
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-		 ("Terminate: bTxFTM=%d, %02x:%02x:%02x:%02x:%02x:%02x\n",
-		  bTxFTM, PRINT_MAC(pEntry->Addr)));
+			 ("Terminate: bTxFTM=%d, %02x:%02x:%02x:%02x:%02x:%02x\n",
+			  bTxFTM, PRINT_MAC(pEntry->Addr)));
 
 	if (bTxFTM)
 		SendFTM(pAd, pEntry->Addr, FTMTX_STOP);
@@ -1473,11 +1498,11 @@ FtmEntryTerminate(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	pEntry->BurstCntDown = 0;
 	pEntry->FtmCntDown = 0;
 	pEntry->State = FTMPEER_UNUSED;
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("Terminate: after del node\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("Terminate: after del node\n"));
 	FtmPidPendingQDump(pAd, DBG_LVL_INFO);
 	return TRUE;
 }
+
 
 /*
 ========================================================================
@@ -1495,8 +1520,13 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmRequestHandler(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-		       IN PFTM_REQUEST_FRAME pFtmReq, IN UINT32 FtmReqLen)
+VOID
+FtmRequestHandler(
+	IN PRTMP_ADAPTER		pAd,
+	IN PFTM_PEER_ENTRY		pEntry,
+	IN PFTM_REQUEST_FRAME	pFtmReq,
+	IN UINT32				FtmReqLen
+)
 {
 	PEID_STRUCT pEId;
 	MEASUREMENT_REQ *pMsmtReq = NULL;
@@ -1518,33 +1548,24 @@ VOID FtmRequestHandler(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 		case IE_MEASUREMENT_REQUEST:
 			pMsmtReq = (MEASUREMENT_REQ *)pEId;
 
-			if (pMsmtReq->Length >= 3) { /* offest of "Type" */
+			if (pMsmtReq->Length >= 3) {	/* offest of "Type" */
 				switch (pMsmtReq->Type) {
 				case MSMT_LCI_REQ:
 					pEntry->bLciMsmtReq = TRUE;
 					pEntry->LciToken = pMsmtReq->Token;
 					pLciReq = pMsmtReq;
-					MTWF_LOG(
-						DBG_CAT_PROTO, CATPROTO_FTM,
-						DBG_LVL_INFO,
-						("IE_MEASUREMENT_REQUEST[%d] Length:%d Type:0x%02X Token:%u\n",
-						 IE_MEASUREMENT_REQUEST,
-						 pLciReq->Length, pLciReq->Type,
-						 pEntry->LciToken));
+					MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
+							 ("IE_MEASUREMENT_REQUEST[%d] Length:%d Type:0x%02X Token:%u\n",
+							  IE_MEASUREMENT_REQUEST, pLciReq->Length, pLciReq->Type, pEntry->LciToken));
 					break;
 
 				case MSMT_LOCATION_CIVIC_REQ:
 					pEntry->bCivicMsmtReq = TRUE;
 					pEntry->CivicToken = pMsmtReq->Token;
 					pCivicReq = pMsmtReq;
-					MTWF_LOG(
-						DBG_CAT_PROTO, CATPROTO_FTM,
-						DBG_LVL_INFO,
-						("IE_MEASUREMENT_REQUEST[%d] Length:%d Type:0x%02X  Token:%u\n",
-						 IE_MEASUREMENT_REQUEST,
-						 pCivicReq->Length,
-						 pCivicReq->Type,
-						 pEntry->CivicToken));
+					MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
+							 ("IE_MEASUREMENT_REQUEST[%d] Length:%d Type:0x%02X  Token:%u\n",
+							  IE_MEASUREMENT_REQUEST, pCivicReq->Length, pCivicReq->Type, pEntry->CivicToken));
 					break;
 				}
 			}
@@ -1566,10 +1587,8 @@ VOID FtmRequestHandler(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	switch (pEntry->State) {
 	case FTMPEER_IDLE:
 		if (pRxParm) {
-			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-				 ("%s(): Rx Trigger FTMReq !!\n", __func__));
-			NdisCopyMemory(&pEntry->PeerReqParm, pRxParm,
-				       sizeof(FTM_PARAMETER));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("%s(): Rx Trigger FTMReq !!\n", __func__));
+			NdisCopyMemory(&pEntry->PeerReqParm, pRxParm, sizeof(FTM_PARAMETER));
 		}
 
 		FtmParameterNego(pAd, pEntry);
@@ -1581,13 +1600,10 @@ VOID FtmRequestHandler(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 			pEntry->State = FTMPEER_MEASURING_IN_BURST;
 			SendFTM(pAd, pEntry->Addr, FTMTX_ONGOING);
 		} else {
-			MTWF_LOG(
-				DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-				("%s(): warning, pRxParm should not be set here ! Go to modify procedure\n",
-				 __func__));
-			/* Modify FTM */
 			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-				 ("M1\n"));
+					 ("%s(): warning, pRxParm should not be set here ! Go to modify procedure\n", __func__));
+			/* Modify FTM */
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("M1\n"));
 			FtmParmModifyProcedure(pAd, pEntry, pRxParm);
 		}
 
@@ -1596,8 +1612,7 @@ VOID FtmRequestHandler(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	case FTMPEER_MEASURING_IN_BURST:
 		if (pRxParm) {
 			/* Modify FTM */
-			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-				 ("M2\n"));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("M2\n"));
 			FtmParmModifyProcedure(pAd, pEntry, pRxParm);
 		}
 
@@ -1605,7 +1620,11 @@ VOID FtmRequestHandler(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	}
 }
 
-VOID FtmSetInvalidToaTod(IN TMR_NODE *pTmr)
+
+VOID
+FtmSetInvalidToaTod(
+	IN TMR_NODE * pTmr
+)
 {
 	pTmr->tod = 0xFFFFFFFFFFFF;
 	pTmr->toa = 0xFFFFFFFFFFFF;
@@ -1614,6 +1633,7 @@ VOID FtmSetInvalidToaTod(IN TMR_NODE *pTmr)
 	pTmr->HwReport.ToD0 = 0xFFFFFFFF;
 	pTmr->HwReport.ToA0 = 0xFFFFFFFF;
 }
+
 
 /*
 ========================================================================
@@ -1630,18 +1650,21 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmFilloutToaTod(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-		      IN PFTM_FRAME pFtmFr)
+VOID
+FtmFilloutToaTod(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN PFTM_FRAME		pFtmFr
+)
 {
-	TMR_FRM_STRUC *pTmr = &pEntry->FollowUpTmr.HwReport;
+	TMR_FRM_STRUC	*pTmr = &pEntry->FollowUpTmr.HwReport;
 	/* TOD, TOA */
 	NdisCopyMemory(pFtmFr->TOD, (UINT8 *)&pEntry->FollowUpTmr.tod, 6);
 	NdisCopyMemory(pFtmFr->TOA, (UINT8 *)&pEntry->FollowUpTmr.toa, 6);
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("   [Tx]  TOD:0x%012llX  TOA:0x%012llX\n",
-		  pEntry->FollowUpTmr.tod, pEntry->FollowUpTmr.toa));
+			 ("   [Tx]  TOD:0x%012llX  TOA:0x%012llX\n", pEntry->FollowUpTmr.tod, pEntry->FollowUpTmr.toa));
 	/* Max Error */
-	pFtmFr->TODError.MaxError = 150; /* 150 * 0.2 ns = 30 ns */
+	pFtmFr->TODError.MaxError = 150;	/* 150 * 0.2 ns = 30 ns */
 	pFtmFr->TOAError.MaxError = 150;
 
 	if (pTmr->TmrD6.field.ToD32 > pTmr->TmrD6.field.ToA32) {
@@ -1650,12 +1673,17 @@ VOID FtmFilloutToaTod(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	}
 }
 
-ULONG FtmApendFtmHeader(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
-			UINT8 *pOutBuffer, UINT8 DialogToken,
-			UINT8 FollowUpToken, BOOLEAN bFillTodToa)
+
+ULONG FtmApendFtmHeader(
+	PRTMP_ADAPTER		pAd,
+	FTM_PEER_ENTRY		*pEntry,
+	UINT8				*pOutBuffer,
+	UINT8				DialogToken,
+	UINT8				FollowUpToken,
+	BOOLEAN				bFillTodToa)
 {
-	ULONG TmpLen = 0;
-	FTM_FRAME FtmFr;
+	ULONG				TmpLen = 0;
+	FTM_FRAME			FtmFr;
 
 	NdisZeroMemory(&FtmFr, sizeof(FTM_FRAME));
 	FtmFr.Category = CATEGORY_PUBLIC;
@@ -1663,24 +1691,27 @@ ULONG FtmApendFtmHeader(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
 	FtmFr.DialogToken = DialogToken;
 	FtmFr.FollowUpDialogToken = FollowUpToken;
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-		 ("   Token:0x%02X  F:0x%02X\n", FtmFr.DialogToken,
-		  FtmFr.FollowUpDialogToken));
+			 ("   Token:0x%02X  F:0x%02X\n", FtmFr.DialogToken, FtmFr.FollowUpDialogToken));
 
 	if (bFillTodToa == TRUE)
 		FtmFilloutToaTod(pAd, pEntry, &FtmFr);
 
-	MakeOutgoingFrame(pOutBuffer, &TmpLen, sizeof(FTM_FRAME), &FtmFr,
-			  END_OF_ARGS);
+	MakeOutgoingFrame(pOutBuffer, &TmpLen,
+					  sizeof(FTM_FRAME),  &FtmFr,
+					  END_OF_ARGS);
 	return TmpLen;
 }
 
-ULONG FtmApendLciReport(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
-			UINT8 *pOutBuffer)
+
+ULONG FtmApendLciReport(
+	PRTMP_ADAPTER		pAd,
+	FTM_PEER_ENTRY		*pEntry,
+	UINT8				*pOutBuffer)
 {
-	PFTM_CTRL pFtm = pAd->pFtmCtrl;
+	PFTM_CTRL			pFtm = pAd->pFtmCtrl;
 	MEASUREMENT_REPORT LciRpt;
-	ULONG FrameLen = 0;
-	ULONG TmpLen = 0;
+	ULONG				FrameLen = 0;
+	ULONG				TmpLen = 0;
 	PMEASURE_REPORT_MODE pRptMode = NULL;
 
 	NdisZeroMemory(&LciRpt, sizeof(MEASUREMENT_REPORT));
@@ -1707,37 +1738,42 @@ ULONG FtmApendLciReport(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
 	pFtm->LciUsage.RulesAndPolicy.field.RetransAllowed = 1;
 	pFtm->LciUsage.RulesAndPolicy.field.RetExpiresPresent = 0;
 	pFtm->LciUsage.RulesAndPolicy.field.LocationPolicy = 0;
-	pFtm->LciUsage.Length =
-		pFtm->LciUsage.RulesAndPolicy.field.RetExpiresPresent ?
-			(sizeof(USAGE_SUBELEMENT) - 2) :
-			      (sizeof(USAGE_SUBELEMENT) - 2 -
-			 sizeof(pFtm->LciUsage.RetExpires));
+	pFtm->LciUsage.Length = pFtm->LciUsage.RulesAndPolicy.field.RetExpiresPresent ? \
+							(sizeof(USAGE_SUBELEMENT) - 2) :
+							(sizeof(USAGE_SUBELEMENT) - 2 \
+							 - sizeof(pFtm->LciUsage.RetExpires));
 	LciRpt.Length += (pFtm->LciUsage.Length + 2);
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(MEASUREMENT_REPORT),
-			  &LciRpt, sizeof(MSMT_RPT_SUBELEMENT), &pFtm->LciHdr,
-			  pFtm->LciHdr.Length, &pFtm->LciField, END_OF_ARGS);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen,
+					  sizeof(MEASUREMENT_REPORT), &LciRpt,
+					  sizeof(MSMT_RPT_SUBELEMENT), &pFtm->LciHdr,
+					  pFtm->LciHdr.Length, &pFtm->LciField,
+					  END_OF_ARGS);
 
 	if (pAd->pFtmCtrl->bSetZRpt) {
 		MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-				  sizeof(Z_ELEMENT), &pFtm->LciZ, END_OF_ARGS);
+						  sizeof(Z_ELEMENT), &pFtm->LciZ,
+						  END_OF_ARGS);
 		FrameLen += TmpLen;
 	}
 
 	MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-			  (pFtm->LciUsage.Length + 2), &pFtm->LciUsage,
-			  END_OF_ARGS);
+					  (pFtm->LciUsage.Length + 2), &pFtm->LciUsage,
+					  END_OF_ARGS);
 	FrameLen += TmpLen;
-	return FrameLen;
+	return  FrameLen;
 }
 
-ULONG FtmApendCivicReport(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
-			  UINT8 *pOutBuffer)
+
+ULONG FtmApendCivicReport(
+	PRTMP_ADAPTER		pAd,
+	FTM_PEER_ENTRY		*pEntry,
+	UINT8				*pOutBuffer)
 {
-	PFTM_CTRL pFtm = pAd->pFtmCtrl;
+	PFTM_CTRL			pFtm = pAd->pFtmCtrl;
 	MEASUREMENT_REPORT CivicRpt;
 	UINT8 CivicLocationType;
-	ULONG FrameLen = 0;
-	ULONG TmpLen = 0;
+	ULONG				FrameLen = 0;
+	ULONG				TmpLen = 0;
 	PMEASURE_REPORT_MODE pRptMode = NULL;
 
 	NdisZeroMemory(&CivicRpt, sizeof(MEASUREMENT_REPORT));
@@ -1753,41 +1789,49 @@ ULONG FtmApendCivicReport(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
 	/* Location Civic Report */
 	CivicLocationType = CIVIC_TYPE_IETF_RFC4776_2006;
 	CivicRpt.Length += sizeof(CivicLocationType);
-	CivicRpt.Length +=
-		(sizeof(MSMT_RPT_SUBELEMENT) + pFtm->CivicHdr.Length);
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(MEASUREMENT_REPORT),
-			  &CivicRpt, sizeof(CivicLocationType),
-			  &CivicLocationType, sizeof(MSMT_RPT_SUBELEMENT),
-			  &pFtm->CivicHdr, END_OF_ARGS);
+	CivicRpt.Length += (sizeof(MSMT_RPT_SUBELEMENT) + pFtm->CivicHdr.Length);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen,
+					  sizeof(MEASUREMENT_REPORT), &CivicRpt,
+					  sizeof(CivicLocationType), &CivicLocationType,
+					  sizeof(MSMT_RPT_SUBELEMENT), &pFtm->CivicHdr,
+					  END_OF_ARGS);
 
 	if (pFtm->CivicHdr.Length) {
 		MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-				  sizeof(LOCATION_CIVIC), &pFtm->Civic,
-				  pFtm->Civic.CA_Length, pFtm->CA_Value,
-				  END_OF_ARGS);
+						  sizeof(LOCATION_CIVIC), &pFtm->Civic,
+						  pFtm->Civic.CA_Length, pFtm->CA_Value,
+						  END_OF_ARGS);
 		FrameLen += TmpLen;
 	}
 
 	return FrameLen;
 }
 
-ULONG FtmApendFtmParam(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
-		       UINT8 *pOutBuffer)
+
+ULONG FtmApendFtmParam(
+	PRTMP_ADAPTER		pAd,
+	FTM_PEER_ENTRY     *pEntry,
+	UINT8				*pOutBuffer)
 {
-	ULONG TmpLen = 0;
-	FTM_PARM_IE FtmParm;
+	ULONG			TmpLen = 0;
+	FTM_PARM_IE		FtmParm;
 
 	NdisZeroMemory(&FtmParm, sizeof(FTM_PARM_IE));
 	FtmParm.ID = IE_FTM_PARM;
 	FtmParm.Length = sizeof(FTM_PARAMETER);
 	NdisCopyMemory(&FtmParm.p, &pEntry->VerdictParm, sizeof(FTM_PARAMETER));
-	MakeOutgoingFrame(pOutBuffer, &TmpLen, sizeof(FTM_PARM_IE), &FtmParm,
-			  END_OF_ARGS);
+	MakeOutgoingFrame(pOutBuffer, &TmpLen,
+					  sizeof(FTM_PARM_IE), &FtmParm,
+					  END_OF_ARGS);
 	return TmpLen;
 }
 
-VOID FtmFrameKickOut(PRTMP_ADAPTER pAd, FTM_PEER_ENTRY *pEntry,
-		     UINT8 *pOutBuffer, ULONG FrameLen)
+
+VOID FtmFrameKickOut(
+	PRTMP_ADAPTER   pAd,
+	FTM_PEER_ENTRY  *pEntry,
+	UINT8			*pOutBuffer,
+	ULONG			FrameLen)
 {
 	FtmHexDump("FtmFrameKickOut", pOutBuffer, FrameLen, DBG_LVL_INFO);
 	/* Packet send out */
@@ -1820,14 +1864,19 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmTxForResponse(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-		      IN CHAR Reason, IN BOOLEAN bReportLci,
-		      IN BOOLEAN bReportCivic)
+VOID
+FtmTxForResponse(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN CHAR				Reason,
+	IN BOOLEAN			bReportLci,
+	IN BOOLEAN			bReportCivic
+)
 {
-	PUINT8 pOutBuffer = NULL;
-	ULONG FrameLen = 0;
-	HEADER_802_11 FtmHdr;
-	NDIS_STATUS NStatus;
+	PUINT8				pOutBuffer = NULL;
+	ULONG				FrameLen = 0;
+	HEADER_802_11		FtmHdr;
+	NDIS_STATUS			NStatus;
 
 	NStatus = MlmeAllocateMemory(pAd, &pOutBuffer);
 
@@ -1838,10 +1887,11 @@ VOID FtmTxForResponse(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	/* Construct 802.11 header */
 	FtmHdr.FC.FrDs = 1;
 	MgtMacHeaderInit(pAd, &FtmHdr, SUBTYPE_ACTION, 0, pEntry->Addr,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.if_addr,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(HEADER_802_11), &FtmHdr,
-			  END_OF_ARGS);
+					 pAd->ApCfg.MBSSID[BSS0].wdev.if_addr,
+					 pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen,
+					  sizeof(HEADER_802_11), &FtmHdr,
+					  END_OF_ARGS);
 
 	switch (Reason) {
 	case FTMTX_START: {
@@ -1850,25 +1900,31 @@ VOID FtmTxForResponse(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 		pEntry->bLciMsmtReport = FALSE;
 		pEntry->bCivicMsmtReport = FALSE;
 		/* Construct FTM frame */
-		FrameLen +=
-			FtmApendFtmHeader(pAd, pEntry, (pOutBuffer + FrameLen),
-					  pAd->pFtmCtrl->DialogToken, 0, FALSE);
+		FrameLen += FtmApendFtmHeader(pAd,
+									  pEntry,
+									  (pOutBuffer + FrameLen),
+									  pAd->pFtmCtrl->DialogToken,
+									  0,
+									  FALSE);
 
 		/* Construct LCIMsmtReport */
 		if (pEntry->bLciMsmtReq && bReportLci) {
-			FrameLen += FtmApendLciReport(pAd, pEntry,
-						      (pOutBuffer + FrameLen));
+			FrameLen += FtmApendLciReport(pAd,
+										  pEntry,
+										  (pOutBuffer + FrameLen));
 		}
 
 		/* Construct CivicRpt */
 		if (pEntry->bCivicMsmtReq && bReportCivic) {
-			FrameLen += FtmApendCivicReport(
-				pAd, pEntry, (pOutBuffer + FrameLen));
+			FrameLen += FtmApendCivicReport(pAd,
+											pEntry,
+											(pOutBuffer + FrameLen));
 		}
 
 		/* Construct FTM Parameter */
-		FrameLen +=
-			FtmApendFtmParam(pAd, pEntry, (pOutBuffer + FrameLen));
+		FrameLen += FtmApendFtmParam(pAd,
+									 pEntry,
+									 (pOutBuffer + FrameLen));
 		FtmFrameKickOut(pAd, pEntry, pOutBuffer, FrameLen);
 		break;
 	}
@@ -1878,22 +1934,28 @@ VOID FtmTxForResponse(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 		/* case 4: ONGOING and not 1st FTM */
 		if (pEntry->FtmCntDown == pEntry->VerdictParm.ftms_per_burst) {
 			/* Construct FTM frame */
-			FrameLen += FtmApendFtmHeader(
-				pAd, pEntry, (pOutBuffer + FrameLen),
-				pAd->pFtmCtrl->DialogToken, 0, FALSE);
+			FrameLen += FtmApendFtmHeader(pAd,
+										  pEntry,
+										  (pOutBuffer + FrameLen),
+										  pAd->pFtmCtrl->DialogToken,
+										  0,
+										  FALSE);
 		} else if (pEntry->FtmCntDown == 1) {
 			/* The final one FTM */
-			FrameLen +=
-				FtmApendFtmHeader(pAd, pEntry,
-						  (pOutBuffer + FrameLen), 0,
-						  pEntry->FollowUpToken, TRUE);
+			FrameLen += FtmApendFtmHeader(pAd,
+										  pEntry,
+										  (pOutBuffer + FrameLen),
+										  0,
+										  pEntry->FollowUpToken,
+										  TRUE);
 		} else {
 			/* Construct FTM frame */
-			FrameLen +=
-				FtmApendFtmHeader(pAd, pEntry,
-						  (pOutBuffer + FrameLen),
-						  pAd->pFtmCtrl->DialogToken,
-						  pEntry->FollowUpToken, TRUE);
+			FrameLen += FtmApendFtmHeader(pAd,
+										  pEntry,
+										  (pOutBuffer + FrameLen),
+										  pAd->pFtmCtrl->DialogToken,
+										  pEntry->FollowUpToken,
+										  TRUE);
 		}
 
 		FtmFrameKickOut(pAd, pEntry, pOutBuffer, FrameLen);
@@ -1904,6 +1966,7 @@ VOID FtmTxForResponse(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 		break;
 	}
 }
+
 
 /*
 ========================================================================
@@ -1919,13 +1982,17 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmTxForStop(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
+VOID
+FtmTxForStop(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry
+)
 {
-	PUINT8 pOutBuffer = NULL;
-	ULONG FrameLen = 0;
-	HEADER_802_11 FtmHdr;
-	FTM_FRAME FtmFr;
-	NDIS_STATUS NStatus;
+	PUINT8			pOutBuffer = NULL;
+	ULONG			FrameLen = 0;
+	HEADER_802_11   FtmHdr;
+	FTM_FRAME		FtmFr;
+	NDIS_STATUS		NStatus;
 
 	NStatus = MlmeAllocateMemory(pAd, &pOutBuffer);
 
@@ -1937,20 +2004,23 @@ VOID FtmTxForStop(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry)
 	/* Construct 802.11 header */
 	FtmHdr.FC.FrDs = 1;
 	MgtMacHeaderInit(pAd, &FtmHdr, SUBTYPE_ACTION, 0, pEntry->Addr,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.if_addr,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
+					 pAd->ApCfg.MBSSID[BSS0].wdev.if_addr,
+					 pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
 	/* Construct FTM frame */
 	FtmFr.Category = CATEGORY_PUBLIC;
 	FtmFr.Action = ACTION_FTM;
 	FtmFr.DialogToken = 0;
 	FtmFilloutToaTod(pAd, pEntry, &FtmFr);
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(HEADER_802_11), &FtmHdr,
-			  sizeof(FTM_FRAME), &FtmFr, END_OF_ARGS);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen,
+					  sizeof(HEADER_802_11), &FtmHdr,
+					  sizeof(FTM_FRAME),  &FtmFr,
+					  END_OF_ARGS);
 	/* Packet send out */
 	pEntry->bNeedTmr = TRUE;
 	MiniportMMRequest(pAd, QID_AC_BE, pOutBuffer, FrameLen);
 	MlmeFreeMemory(pOutBuffer);
 }
+
 
 /*
 ========================================================================
@@ -1967,9 +2037,14 @@ Return Value:
 
 ========================================================================
 */
-VOID SendFTM(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr, IN CHAR Reason)
+VOID
+SendFTM(
+	IN PRTMP_ADAPTER	pAd,
+	IN UINT8			*Addr,
+	IN CHAR				Reason
+)
 {
-	PFTM_PEER_ENTRY pEntry;
+	PFTM_PEER_ENTRY		pEntry;
 
 	if (!Addr || !pAd)
 		return;
@@ -1978,20 +2053,17 @@ VOID SendFTM(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr, IN CHAR Reason)
 
 	if (!pEntry) {
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-			 ("%s()#%d: FTM_peer_entry search failed !\n", __func__,
-			  __LINE__));
+				 ("%s()#%d: FTM_peer_entry search failed !\n", __func__, __LINE__));
 		return;
 	}
 
-	MTWF_LOG(
-		DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		("Send FTM frame to %02x:%02x:%02x:%02x:%02x:%02x, Reason=%d\n",
-		 PRINT_MAC(Addr), Reason));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
+			 ("Send FTM frame to %02x:%02x:%02x:%02x:%02x:%02x, Reason=%d\n",
+			  PRINT_MAC(Addr), Reason));
 
 	switch (Reason) {
 	case FTMTX_START:
-		FtmTxForResponse(pAd, pEntry, Reason, pAd->pFtmCtrl->bSetLciRpt,
-				 pAd->pFtmCtrl->bSetCivicRpt);
+		FtmTxForResponse(pAd, pEntry, Reason, pAd->pFtmCtrl->bSetLciRpt, pAd->pFtmCtrl->bSetCivicRpt);
 		break;
 
 	case FTMTX_ONGOING:
@@ -2003,6 +2075,7 @@ VOID SendFTM(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr, IN CHAR Reason)
 		break;
 	}
 }
+
 
 /*
 ========================================================================
@@ -2018,7 +2091,11 @@ Return Value:
 
 ========================================================================
 */
-VOID ReceiveFTMReq(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
+VOID
+ReceiveFTMReq(
+	IN PRTMP_ADAPTER pAd,
+	IN MLME_QUEUE_ELEM * Elem
+)
 {
 	FTM_PEER_ENTRY *pEntry;
 	FTM_REQUEST_FRAME *pFtmReq;
@@ -2028,32 +2105,25 @@ VOID ReceiveFTMReq(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 		return;
 
 	if (Elem->MsgLen < (LENGTH_802_11 + sizeof(FTM_REQUEST_FRAME))) {
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-			("ACTION - FTM Request Frame length=%ld is too short!\n",
-			 Elem->MsgLen));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("ACTION - FTM Request Frame length=%ld is too short!\n", Elem->MsgLen));
 		return;
 	}
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("ACTION - Rx FTM Request Frame\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("ACTION - Rx FTM Request Frame\n"));
 	FtmHexDump("FTMRequestFrame", Elem->Msg, Elem->MsgLen, DBG_LVL_INFO);
 	Fr = (PFRAME_802_11)Elem->Msg;
 	pEntry = FtmEntryGet(pAd, Fr->Hdr.Addr2);
 
 	if (!pEntry) {
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-			("ACTION - FTM Request Frame, no available entry to handle\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("ACTION - FTM Request Frame, no available entry to handle\n"));
 		return;
 	}
 
-	pFtmReq = (FTM_REQUEST_FRAME *)&Elem->Msg[LENGTH_802_11];
+	pFtmReq = (FTM_REQUEST_FRAME *) &Elem->Msg[LENGTH_802_11];
 
 	switch (pFtmReq->Trigger) {
 	case FTM_TRIGGER_START_OR_CONTI:
-		FtmRequestHandler(pAd, pEntry, pFtmReq,
-				  Elem->MsgLen - LENGTH_802_11);
+		FtmRequestHandler(pAd, pEntry, pFtmReq, Elem->MsgLen - LENGTH_802_11);
 		break;
 
 	case FTM_TRIGGER_STOP:
@@ -2062,6 +2132,7 @@ VOID ReceiveFTMReq(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 		break;
 	}
 }
+
 
 /*
 ========================================================================
@@ -2077,14 +2148,17 @@ Return Value:
 
 ========================================================================
 */
-VOID ReceiveFTM(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
+VOID
+ReceiveFTM(
+	IN PRTMP_ADAPTER pAd,
+	IN MLME_QUEUE_ELEM * Elem)
 {
 	FTM_FRAME *pFtm;
 	MEASUREMENT_REPORT *pLCIMsmtReport = NULL;
 	MEASUREMENT_REPORT *pLocationCivicMsmtRport = NULL;
 	FTM_PARAMETER *parm = NULL;
 	FTM_PEER_ENTRY *pEntry = NULL;
-	PFRAME_802_11 Fr = NULL;
+	PFRAME_802_11   Fr = NULL;
 	UINT8 *pBuf;
 	UINT16 SN;
 #ifdef FTM_INITIATOR
@@ -2096,11 +2170,9 @@ VOID ReceiveFTM(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 		return;
 
 	if (Elem->MsgLen < (LENGTH_802_11 + sizeof(FTM_FRAME))) {
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-			("ACTION - FTM Frame length=%ld is too short! (sizeof(FTM_FRAME)=%d)(sum=%d)\n",
-			 Elem->MsgLen, sizeof(FTM_FRAME),
-			 (LENGTH_802_11 + sizeof(FTM_FRAME))));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
+				 ("ACTION - FTM Frame length=%ld is too short! (sizeof(FTM_FRAME)=%d)(sum=%d)\n",
+				  Elem->MsgLen, sizeof(FTM_FRAME), (LENGTH_802_11 + sizeof(FTM_FRAME))));
 		return;
 	}
 
@@ -2109,45 +2181,26 @@ VOID ReceiveFTM(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 	pEntry = FtmEntryGet(pAd, Fr->Hdr.Addr2);
 
 	if (!pEntry) {
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-			("ACTION - FTM Frame, no available entry to handle\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("ACTION - FTM Frame, no available entry to handle\n"));
 		return;
 	}
 
-	pFtm = (FTM_FRAME *)&Elem->Msg[LENGTH_802_11];
+	pFtm = (FTM_FRAME *) &Elem->Msg[LENGTH_802_11];
 	pBuf = (UINT8 *)(pFtm->Variable);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("ACTION - Rx FTM Frame\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("ACTION - Rx FTM Frame\n"));
 	FtmHexDump("FTMFrame", Elem->Msg, Elem->MsgLen, DBG_LVL_INFO);
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("FTM Content\n"));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("	  Category=%d\n", pFtm->Category));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("	  Action=%d\n", pFtm->Action));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("   Token:0x%02X FollowUp:0x%02X SN:0x%04X(%d)\n",
-		  pFtm->DialogToken, pFtm->FollowUpDialogToken, SN,
-		  Fr->Hdr.Sequence));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("	  TOD: %02X %02X %02X %02X %02X %02X\n", pFtm->TOD[0],
-		  pFtm->TOD[1], pFtm->TOD[2], pFtm->TOD[3], pFtm->TOD[4],
-		  pFtm->TOD[5]));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("	  TOA: %02X %02X %02X %02X %02X %02X\n", pFtm->TOA[0],
-		  pFtm->TOA[1], pFtm->TOA[2], pFtm->TOA[3], pFtm->TOA[4],
-		  pFtm->TOA[5]));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("	  TODError: NotConti=%d, MaxError=%d\n",
-		  pFtm->TODError.NotConti, pFtm->TODError.MaxError));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("	  TOAError: NotConti=%d, MaxError=%d\n",
-		  pFtm->TOAError.NotConti, pFtm->TOAError.MaxError));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("	  Category=%d\n", pFtm->Category));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("	  Action=%d\n", pFtm->Action));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("   Token:0x%02X FollowUp:0x%02X SN:0x%04X(%d)\n", pFtm->DialogToken, pFtm->FollowUpDialogToken, SN, Fr->Hdr.Sequence));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("	  TOD: %02X %02X %02X %02X %02X %02X\n", pFtm->TOD[0], pFtm->TOD[1], pFtm->TOD[2], pFtm->TOD[3], pFtm->TOD[4], pFtm->TOD[5]));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("	  TOA: %02X %02X %02X %02X %02X %02X\n", pFtm->TOA[0], pFtm->TOA[1], pFtm->TOA[2], pFtm->TOA[3], pFtm->TOA[4], pFtm->TOA[5]));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("	  TODError: NotConti=%d, MaxError=%d\n", pFtm->TODError.NotConti, pFtm->TODError.MaxError));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("	  TOAError: NotConti=%d, MaxError=%d\n", pFtm->TOAError.NotConti, pFtm->TOAError.MaxError));
 	NdisCopyMemory((UINT8 *)&pEntry->Tmr.tod, pFtm->TOD, 6);
 	NdisCopyMemory((UINT8 *)&pEntry->Tmr.toa, pFtm->TOA, 6);
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-		 ("   [Rx]  TOD:0x%012llX  TOA:0x%012llX\n", pEntry->Tmr.tod,
-		  pEntry->Tmr.toa));
+			 ("   [Rx]  TOD:0x%012llX  TOA:0x%012llX\n", pEntry->Tmr.tod, pEntry->Tmr.toa));
 #ifdef FTM_INITIATOR
 	/* Record Rx information and get mapping node */
 	pCurNode = FtmSearchRxMappingNodeBySN(pAd, pEntry, SN);
@@ -2157,56 +2210,38 @@ VOID ReceiveFTM(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 		pCurNode->FollowUpToken = pFtm->FollowUpDialogToken;
 		pCurNode->PeerTOA = pEntry->Tmr.toa;
 		pCurNode->PeerTOD = pEntry->Tmr.tod;
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-			("    sn:0x%04X DialogToken:0x%02X FollowUpToken:0x%02X (Next:0x%p Prev:0x%p)\n",
-			 pCurNode->sn, pCurNode->DialogToken,
-			 pCurNode->FollowUpToken, pCurNode->list.Next,
-			 pCurNode->list.Prev));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
+				 ("    sn:0x%04X DialogToken:0x%02X FollowUpToken:0x%02X (Next:0x%p Prev:0x%p)\n",
+				  pCurNode->sn, pCurNode->DialogToken, pCurNode->FollowUpToken, pCurNode->list.Next, pCurNode->list.Prev));
 
 		if (pFtm->FollowUpDialogToken) {
-			pMappingNode = FtmGetRxMappingNodeByToken(
-				pAd, pEntry, pFtm->FollowUpDialogToken);
+			pMappingNode = FtmGetRxMappingNodeByToken(pAd, pEntry, pFtm->FollowUpDialogToken);
 
 			if (pMappingNode) {
 				INT32 RTT;
 				/* Calculate RTT */
 				RTT = FtmRTTCalculate(
-					&pCurNode->PeerTOD, /* T1: TOD of FTM Responder */
-					&pMappingNode->tmr
-						 .toa, /* T2: TOA of FTM Initiator */
-					&pMappingNode->tmr
-						 .tod, /* T3: TOD of FTM Initiator */
-					&pCurNode->PeerTOA); /* T4: TOA of FTM Reaponder */
-				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM,
-					 DBG_LVL_WARN,
-					 ("   RTT: %d ns	(0x%02X 0x%04X)\n",
-					  RTT, pFtm->FollowUpDialogToken,
-					  pMappingNode->sn));
+						  &pCurNode->PeerTOD,		/* T1: TOD of FTM Responder */
+						  &pMappingNode->tmr.toa,	/* T2: TOA of FTM Initiator */
+						  &pMappingNode->tmr.tod,	/* T3: TOD of FTM Initiator */
+						  &pCurNode->PeerTOA);		/* T4: TOA of FTM Reaponder */
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
+						 ("   RTT: %d ns	(0x%02X 0x%04X)\n", RTT, pFtm->FollowUpDialogToken, pMappingNode->sn));
 				/* Dequeue pMappingNode */
 				{
 					PFTM_MAPPING pNode, pPrev;
 
-					RTMP_IRQ_LOCK(&pEntry->RxTmrQLock,
-						      IrqFlags);
+					RTMP_IRQ_LOCK(&pEntry->RxTmrQLock, IrqFlags);
 
-					for (pNode = DlListEntry(
-						     &pMappingNode->list,
-						     FTM_MAPPING, list),
-					    pPrev = DlListEntry(
-						    pNode->list.Prev,
-						    FTM_MAPPING, list);
-					     &pNode->list != (&pEntry->RxTmrQ);
-					     pNode = pPrev,
-					    pPrev = DlListEntry(
-						    pPrev->list.Prev,
-						    FTM_MAPPING, list)) {
+					for (pNode = DlListEntry(&pMappingNode->list, FTM_MAPPING, list),
+						 pPrev = DlListEntry(pNode->list.Prev, FTM_MAPPING, list);
+						 &pNode->list != (&pEntry->RxTmrQ);
+						 pNode = pPrev, pPrev = DlListEntry(pPrev->list.Prev, FTM_MAPPING, list)) {
 						DlListDel(&pNode->list);
 						os_free_mem(pNode);
 					}
 
-					RTMP_IRQ_UNLOCK(&pEntry->RxTmrQLock,
-							IrqFlags);
+					RTMP_IRQ_UNLOCK(&pEntry->RxTmrQLock, IrqFlags);
 				}
 			}
 		}
@@ -2226,32 +2261,30 @@ VOID ReceiveFTM(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 		pLCIMsmtReport = (MEASUREMENT_REPORT *)pBuf;
 		pBuf += (pLCIMsmtReport->Length + 2);
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-			 ("IE_MEASUREMENT_REPORT[%d] Length:%d\n",
-			  IE_MEASUREMENT_REPORT, pLCIMsmtReport->Length));
+				 ("IE_MEASUREMENT_REPORT[%d] Length:%d\n",
+				  IE_MEASUREMENT_REPORT, pLCIMsmtReport->Length));
 	}
 
 	if (*pBuf == IE_MEASUREMENT_REPORT) {
 		pLocationCivicMsmtRport = (MEASUREMENT_REPORT *)pBuf;
 		pBuf += (pLocationCivicMsmtRport->Length + 2);
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-			 ("IE_MEASUREMENT_REPORT[%d] Length:%d\n",
-			  IE_MEASUREMENT_REPORT,
-			  pLocationCivicMsmtRport->Length));
+				 ("IE_MEASUREMENT_REPORT[%d] Length:%d\n",
+				  IE_MEASUREMENT_REPORT, pLocationCivicMsmtRport->Length));
 	}
 
 	if (*pBuf == IE_FTM_PARM) {
 		parm = (FTM_PARAMETER *)(pBuf + 2);
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-			 ("Dump FTM Parameters, FTM Rx\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO, ("Dump FTM Parameters, FTM Rx\n"));
 		FtmParmDump(pAd, parm, DBG_LVL_TRACE);
 	}
 
 	if (pAd->pFtmCtrl->WaitForNego) {
 		pAd->pFtmCtrl->WaitForNego = FALSE;
-		RTMPSetTimer(&pAd->pFtmCtrl->FtmReqTimer,
-			     10); /* partial tsf ? */
+		RTMPSetTimer(&pAd->pFtmCtrl->FtmReqTimer, 10);	/* partial tsf ? */
 	}
 }
+
 
 /*
 ========================================================================
@@ -2266,21 +2299,23 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
-		      IN PVOID SystemSpecific2, IN PVOID SystemSpecific3)
+VOID FtmTimerCallback(
+	IN PVOID SystemSpecific1,
+	IN PVOID FunctionContext,
+	IN PVOID SystemSpecific2,
+	IN PVOID SystemSpecific3)
 {
 	if (FunctionContext) {
 		PFTM_PEER_ENTRY pEntry = (PFTM_PEER_ENTRY)FunctionContext;
-		PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pEntry->pAd;
+		PRTMP_ADAPTER	pAd = (PRTMP_ADAPTER)pEntry->pAd;
 
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_INFO,
-			 ("%s()#%d: idx=%d, State=%d\n", __func__, __LINE__,
-			  GET_FTM_PEER_IDX(pAd, pEntry), pEntry->State));
+				 ("%s()#%d: idx=%d, State=%d\n", __func__, __LINE__,
+				  GET_FTM_PEER_IDX(pAd, pEntry), pEntry->State));
 
 		switch (pEntry->State) {
 		case FTMPEER_MEASURING_WAIT_TRIGGER:
-			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-				 ("T5\n"));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("T5\n"));
 			FtmEntryTerminate(pAd, pEntry, TRUE);
 			break;
 
@@ -2290,12 +2325,15 @@ VOID FtmTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
 	}
 }
 
-VOID FtmTxTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
-			IN PVOID SystemSpecific2, IN PVOID SystemSpecific3)
+VOID FtmTxTimerCallback(
+	IN PVOID SystemSpecific1,
+	IN PVOID FunctionContext,
+	IN PVOID SystemSpecific2,
+	IN PVOID SystemSpecific3)
 {
 	if (FunctionContext) {
 		PFTM_PEER_ENTRY pEntry = (PFTM_PEER_ENTRY)FunctionContext;
-		PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pEntry->pAd;
+		PRTMP_ADAPTER	pAd = (PRTMP_ADAPTER)pEntry->pAd;
 
 		if (pEntry->State == FTMPEER_UNUSED)
 			return;
@@ -2303,17 +2341,15 @@ VOID FtmTxTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
 		if (pEntry->bTxSCallbackCheck == 1) {
 			/* Check for TxS callback */
 			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-				 ("%s()#%d: %d, TxS NOT callback!!\n", __func__,
-				  __LINE__, GET_FTM_PEER_IDX(pAd, pEntry)));
+					 ("%s()#%d: %d, TxS NOT callback!!\n", __func__, __LINE__,
+					  GET_FTM_PEER_IDX(pAd, pEntry)));
 			/* Go to next stage */
 			pEntry->bTxSCallbackCheck = 0;
 			RTMPSetTimer(&pEntry->FtmTxTimer, 1);
 		} else {
 			UINT8 Reason;
 
-			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-				 ("   - GotTmr:%d TxOK:%d\n", pEntry->bGotTmr,
-				  pEntry->bTxOK));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("   - GotTmr:%d TxOK:%d\n", pEntry->bGotTmr, pEntry->bTxOK));
 
 			if (pEntry->State == FTMPEER_NEGO)
 				Reason = FTMTX_START;
@@ -2327,24 +2363,19 @@ VOID FtmTxTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
 				pEntry->FollowUpToken = pEntry->DialogToken;
 
 				if (pEntry->bGotTmr)
-					NdisCopyMemory(&pEntry->FollowUpTmr,
-						       &pEntry->Tmr,
-						       sizeof(TMR_NODE));
+					NdisCopyMemory(&pEntry->FollowUpTmr, &pEntry->Tmr, sizeof(TMR_NODE));
 				else
-					FtmSetInvalidToaTod(
-						&pEntry->FollowUpTmr);
+					FtmSetInvalidToaTod(&pEntry->FollowUpTmr);
 
 				SendFTM(pAd, pEntry->Addr, Reason);
 			} else {
 				/* Retry Procedure */
-				if (pEntry->TransAndRetrans <
-				    FTM_MAX_NUM_OF_RETRY) {
+				if (pEntry->TransAndRetrans < FTM_MAX_NUM_OF_RETRY) {
 					pEntry->TransAndRetrans++;
 					SendFTM(pAd, pEntry->Addr, Reason);
 				} else {
 					/* Retry count exceeds */
-					MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM,
-						 DBG_LVL_OFF, ("T3\n"));
+					MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF, ("T3\n"));
 					FtmEntryTerminate(pAd, pEntry, TRUE);
 				}
 			}
@@ -2355,9 +2386,9 @@ VOID FtmTxTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
 VOID FtmSendCivicToDaemon(IN PRTMP_ADAPTER pAd)
 {
 	/* construct anqp location event to daemon , using pAd->pFtmCtrl->Civic */
-	PUINT8 pOutBuffer = NULL;
-	ULONG FrameLen = 0;
-	POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
+	PUINT8				pOutBuffer = NULL;
+	ULONG				FrameLen = 0;
+	POS_COOKIE pObj = (POS_COOKIE) pAd->OS_Cookie;
 	PNET_DEV NetDev = pAd->ApCfg.MBSSID[pObj->ioctl_if].wdev.if_dev;
 	UINT8 CivicLocationType = CIVIC_TYPE_IETF_RFC4776_2006;
 	INT NStatus = MlmeAllocateMemory(pAd, &pOutBuffer);
@@ -2365,36 +2396,37 @@ VOID FtmSendCivicToDaemon(IN PRTMP_ADAPTER pAd)
 	if (NStatus != NDIS_STATUS_SUCCESS)
 		return;
 
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(CivicLocationType),
-			  &CivicLocationType, sizeof(MSMT_RPT_SUBELEMENT),
-			  &pAd->pFtmCtrl->CivicHdr, sizeof(LOCATION_CIVIC),
-			  &pAd->pFtmCtrl->Civic, pAd->pFtmCtrl->Civic.CA_Length,
-			  pAd->pFtmCtrl->CA_Value, END_OF_ARGS);
-	SendLocationElementEvent(NetDev, pOutBuffer, FrameLen,
-				 AP_CIVIC_LOCATION);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen,
+					  sizeof(CivicLocationType), &CivicLocationType,
+					  sizeof(MSMT_RPT_SUBELEMENT), &pAd->pFtmCtrl->CivicHdr,
+					  sizeof(LOCATION_CIVIC), &pAd->pFtmCtrl->Civic,
+					  pAd->pFtmCtrl->Civic.CA_Length, pAd->pFtmCtrl->CA_Value,
+					  END_OF_ARGS);
+	SendLocationElementEvent(NetDev, pOutBuffer, FrameLen, AP_CIVIC_LOCATION);
 	MlmeFreeMemory(pOutBuffer);
 }
 
 VOID FtmSendLciToDaemon(IN PRTMP_ADAPTER pAd)
 {
 	/* construct anqp location event to daemon , using pAd->pFtmCtrl->Civic */
-	PUINT8 pOutBuffer = NULL;
-	ULONG FrameLen = 0, TmpLen = 0;
-	POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
+	PUINT8				pOutBuffer = NULL;
+	ULONG				FrameLen = 0, TmpLen = 0;
+	POS_COOKIE pObj = (POS_COOKIE) pAd->OS_Cookie;
 	PNET_DEV NetDev = pAd->ApCfg.MBSSID[pObj->ioctl_if].wdev.if_dev;
 	INT NStatus = MlmeAllocateMemory(pAd, &pOutBuffer);
 
 	if (NStatus != NDIS_STATUS_SUCCESS)
 		return;
 
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(MSMT_RPT_SUBELEMENT),
-			  &pAd->pFtmCtrl->LciHdr, pAd->pFtmCtrl->LciHdr.Length,
-			  &pAd->pFtmCtrl->LciField, END_OF_ARGS);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen,
+					  sizeof(MSMT_RPT_SUBELEMENT), &pAd->pFtmCtrl->LciHdr,
+					  pAd->pFtmCtrl->LciHdr.Length, &pAd->pFtmCtrl->LciField,
+					  END_OF_ARGS);
 
 	if (pAd->pFtmCtrl->bSetZRpt) {
 		MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-				  sizeof(Z_ELEMENT), &pAd->pFtmCtrl->LciZ,
-				  END_OF_ARGS);
+						  sizeof(Z_ELEMENT), &pAd->pFtmCtrl->LciZ,
+						  END_OF_ARGS);
 		FrameLen += TmpLen;
 	}
 
@@ -2402,19 +2434,18 @@ VOID FtmSendLciToDaemon(IN PRTMP_ADAPTER pAd)
 	/* pAd->pFtmCtrl->LciUsage.RulesAndPolicy.field.RetransAllowed = 1;  //should follow profile settings */
 	pAd->pFtmCtrl->LciUsage.RulesAndPolicy.field.RetExpiresPresent = 0;
 	pAd->pFtmCtrl->LciUsage.RulesAndPolicy.field.LocationPolicy = 0;
-	pAd->pFtmCtrl->LciUsage.Length =
-		pAd->pFtmCtrl->LciUsage.RulesAndPolicy.field.RetExpiresPresent ?
-			(sizeof(USAGE_SUBELEMENT) - 2) :
-			      (sizeof(USAGE_SUBELEMENT) - 2 -
-			 sizeof(pAd->pFtmCtrl->LciUsage.RetExpires));
+	pAd->pFtmCtrl->LciUsage.Length = pAd->pFtmCtrl->LciUsage.RulesAndPolicy.field.RetExpiresPresent ? \
+									 (sizeof(USAGE_SUBELEMENT) - 2) :
+									 (sizeof(USAGE_SUBELEMENT) - 2 \
+									  - sizeof(pAd->pFtmCtrl->LciUsage.RetExpires));
 	MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-			  (pAd->pFtmCtrl->LciUsage.Length + 2),
-			  &pAd->pFtmCtrl->LciUsage, END_OF_ARGS);
+					  (pAd->pFtmCtrl->LciUsage.Length + 2), &pAd->pFtmCtrl->LciUsage,
+					  END_OF_ARGS);
 	FrameLen += TmpLen;
-	SendLocationElementEvent(NetDev, pOutBuffer, FrameLen,
-				 AP_GEOSPATIAL_LOCATION);
+	SendLocationElementEvent(NetDev, pOutBuffer, FrameLen, AP_GEOSPATIAL_LOCATION);
 	MlmeFreeMemory(pOutBuffer);
 }
+
 
 #ifdef FTM_INITIATOR
 /*
@@ -2432,8 +2463,12 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmRxTmrQDump(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-		   IN UINT32 DbgLvl)
+VOID
+FtmRxTmrQDump(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN UINT32			DbgLvl
+)
 {
 	PFTM_MAPPING pNode, pNext;
 	ULONG IrqFlags = 0;
@@ -2441,20 +2476,19 @@ VOID FtmRxTmrQDump(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("FTM RxTmrQ Dump\n"));
 	RTMP_IRQ_LOCK(&pEntry->RxTmrQLock, IrqFlags);
-	DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING, list)
-	{
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-			("    sn:0x%04X DialogToken:0x%02X FollowUpToken:0x%02X [TOA:0x%012llX TOD:0x%012llX] [TOD:0x%012llX TOA:0x%012llX]\n",
-			 pNode->sn, pNode->DialogToken, pNode->FollowUpToken,
-			 pNode->tmr.toa, pNode->tmr.tod, pNode->PeerTOD,
-			 pNode->PeerTOA));
+	DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING, list) {
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
+				 ("    sn:0x%04X DialogToken:0x%02X FollowUpToken:0x%02X [TOA:0x%012llX TOD:0x%012llX] [TOD:0x%012llX TOA:0x%012llX]\n",
+				  pNode->sn, pNode->DialogToken, pNode->FollowUpToken,
+				  pNode->tmr.toa, pNode->tmr.tod,
+				  pNode->PeerTOD, pNode->PeerTOA
+				 ));
 		num++;
 	}
 	RTMP_IRQ_UNLOCK(&pEntry->RxTmrQLock, IrqFlags);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl,
-		 ("    Total %d nodes\n", num));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DbgLvl, ("    Total %d nodes\n", num));
 }
+
 
 /*
 ========================================================================
@@ -2472,8 +2506,11 @@ Return Value:
 ========================================================================
 */
 PFTM_MAPPING
-FtmSearchRxMappingNodeBySN(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-			   IN UINT16 sn)
+FtmSearchRxMappingNodeBySN(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN UINT16			sn
+)
 {
 	PFTM_MAPPING pNode, pNext;
 	PFTM_MAPPING pTarget = NULL;
@@ -2483,8 +2520,7 @@ FtmSearchRxMappingNodeBySN(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 		return NULL;
 
 	RTMP_IRQ_LOCK(&pEntry->RxTmrQLock, IrqFlags);
-	DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING, list)
-	{
+	DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING, list) {
 		if (pNode->sn == sn) {
 			pTarget = pNode;
 			break;
@@ -2493,6 +2529,7 @@ FtmSearchRxMappingNodeBySN(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	RTMP_IRQ_UNLOCK(&pEntry->RxTmrQLock, IrqFlags);
 	return pTarget;
 }
+
 
 /*
 ========================================================================
@@ -2510,16 +2547,18 @@ Return Value:
 ========================================================================
 */
 PFTM_MAPPING
-FtmGetRxMappingNodeByToken(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
-			   IN UINT8 DialogToken)
+FtmGetRxMappingNodeByToken(
+	IN PRTMP_ADAPTER	pAd,
+	IN PFTM_PEER_ENTRY	pEntry,
+	IN UINT8	DialogToken
+)
 {
 	PFTM_MAPPING pNode, pNext;
 	PFTM_MAPPING pTarget = NULL;
 	ULONG IrqFlags = 0;
 
 	RTMP_IRQ_LOCK(&pEntry->RxTmrQLock, IrqFlags);
-	DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING, list)
-	{
+	DlListForEachSafe(pNode, pNext, &pEntry->RxTmrQ, FTM_MAPPING, list) {
 		if (pNode->DialogToken == DialogToken) {
 			pTarget = pNode;
 			break;
@@ -2528,6 +2567,7 @@ FtmGetRxMappingNodeByToken(IN PRTMP_ADAPTER pAd, IN PFTM_PEER_ENTRY pEntry,
 	RTMP_IRQ_UNLOCK(&pEntry->RxTmrQLock, IrqFlags);
 	return pTarget;
 }
+
 
 /*
 ========================================================================
@@ -2546,22 +2586,26 @@ Return Value:
 ========================================================================
 */
 BOOLEAN
-FtmDeltaCalculate(IN UINT64 *pStart, IN UINT64 *pEnd, IN UINT8 *pStr,
-		  OUT INT32 *pDelta)
+FtmDeltaCalculate(
+	IN UINT64	*pStart,
+	IN UINT64	*pEnd,
+	IN UINT8		*pStr,
+	OUT INT32		*pDelta
+)
 {
 	UINT64 Delta_LL = *pEnd - *pStart;
 
 	if (Delta_LL >> 32) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-			 ("(X) %s, Delta_LL = 0x%016llX", pStr, Delta_LL));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("(X) %s, Delta_LL = 0x%016llX", pStr, Delta_LL));
 		return FALSE;
 	} else {
 		*pDelta = (INT32)(Delta_LL & 0x00000000FFFFFFFF);
-		*pDelta /= 10; /* unit: 0.1 ns -> 1 ns */
+		*pDelta /= 10;	/* unit: 0.1 ns -> 1 ns */
 	}
 
 	return TRUE;
 }
+
 
 /*
 ========================================================================
@@ -2577,24 +2621,30 @@ Return Value:
 ========================================================================
 */
 INT32
-FtmRTTCalculate(IN UINT64 *pT1, IN UINT64 *pT2, IN UINT64 *pT3, IN UINT64 *pT4)
+FtmRTTCalculate(
+	IN UINT64	*pT1,
+	IN UINT64	*pT2,
+	IN UINT64	*pT3,
+	IN UINT64	*pT4
+)
 {
 	INT32 DeltaTx, DeltaRx;
 	INT32 RTT = 0;
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("   T1:%15lld(0x%012llX)  T4:%15lld(0x%012llX) (0.1ns)\n",
-		  *pT1, *pT1, *pT4, *pT4));
+			 ("   T1:%15lld(0x%012llX)  T4:%15lld(0x%012llX) (0.1ns)\n",
+			  *pT1, *pT1, *pT4, *pT4));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("   T2:%15lld(0x%012llX)  T3:%15lld(0x%012llX) (0.1ns)\n",
-		  *pT2, *pT2, *pT3, *pT3));
+			 ("   T2:%15lld(0x%012llX)  T3:%15lld(0x%012llX) (0.1ns)\n",
+			  *pT2, *pT2, *pT3, *pT3));
 
 	if (FtmDeltaCalculate(pT1, pT4, "DeltaTx", &DeltaTx) &&
-	    FtmDeltaCalculate(pT2, pT3, "DeltaRx", &DeltaRx))
+		FtmDeltaCalculate(pT2, pT3, "DeltaRx", &DeltaRx))
 		RTT = (DeltaTx - DeltaRx) / 2;
 
 	return RTT;
 }
+
 
 /*
 ========================================================================
@@ -2609,7 +2659,11 @@ Return Value:
 
 ========================================================================
 */
-INT Show_FtmRxTmrQ_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT
+Show_FtmRxTmrQ_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 EntryIdx = 0;
 
@@ -2620,6 +2674,7 @@ INT Show_FtmRxTmrQ_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
 	return TRUE;
 }
 #endif /* FTM_INITIATOR */
+
 
 /*
 ========================================================================
@@ -2634,13 +2689,15 @@ Return Value:
 
 ========================================================================
 */
-VOID FtmReqTxTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
-			   IN PVOID SystemSpecific2, IN PVOID SystemSpecific3)
+VOID FtmReqTxTimerCallback(
+	IN PVOID SystemSpecific1,
+	IN PVOID FunctionContext,
+	IN PVOID SystemSpecific2,
+	IN PVOID SystemSpecific3)
 {
-	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)FunctionContext;
+	PRTMP_ADAPTER	pAd = (PRTMP_ADAPTER)FunctionContext;
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("%s()#%d\n", __func__, __LINE__));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("%s()#%d\n", __func__, __LINE__));
 
 	if (!FunctionContext)
 		return;
@@ -2649,8 +2706,7 @@ VOID FtmReqTxTimerCallback(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
 	CNT_DOWN_DECREASE(pAd->pFtmCtrl->BurstCntDown);
 
 	if (pAd->pFtmCtrl->BurstCntDown)
-		RTMPSetTimer(&pAd->pFtmCtrl->FtmReqTimer,
-			     100 * pAd->pFtmCtrl->burst_period);
+		RTMPSetTimer(&pAd->pFtmCtrl->FtmReqTimer, 100 * pAd->pFtmCtrl->burst_period);
 }
 
 /*
@@ -2670,18 +2726,24 @@ Return Value:
 
 ========================================================================
 */
-VOID SendFTMRequest(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr, IN BOOLEAN bSetLci,
-		    IN BOOLEAN bSetCivic, IN BOOLEAN bSetParm)
+VOID
+SendFTMRequest(
+	IN PRTMP_ADAPTER	pAd,
+	IN UINT8			*Addr,
+	IN BOOLEAN			bSetLci,
+	IN BOOLEAN			bSetCivic,
+	IN BOOLEAN			bSetParm
+)
 {
-	PFTM_CTRL pFtm;
-	PUINT8 pOutBuffer = NULL;
-	ULONG FrameLen = 0;
-	ULONG TmpLen = 0;
-	PMEASURE_REQ_MODE pReqMode = NULL;
-	HEADER_802_11 FtmHdr;
-	FTM_REQUEST_FRAME FtmReq;
-	FTM_PARM_IE FtmParm;
-	NDIS_STATUS NStatus;
+	PFTM_CTRL			pFtm;
+	PUINT8				pOutBuffer = NULL;
+	ULONG				FrameLen = 0;
+	ULONG				TmpLen = 0;
+	PMEASURE_REQ_MODE	pReqMode = NULL;
+	HEADER_802_11	FtmHdr;
+	FTM_REQUEST_FRAME	FtmReq;
+	FTM_PARM_IE			FtmParm;
+	NDIS_STATUS	NStatus;
 
 	NStatus = MlmeAllocateMemory(pAd, &pOutBuffer);
 
@@ -2693,64 +2755,66 @@ VOID SendFTMRequest(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr, IN BOOLEAN bSetLci,
 	NdisZeroMemory(&FtmReq, sizeof(FTM_REQUEST_FRAME));
 	NdisZeroMemory(&FtmParm, sizeof(FTM_PARM_IE));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-		 ("Send FTM Request frame to %02x:%02x:%02x:%02x:%02x:%02x\n",
-		  PRINT_MAC(Addr)));
+			 ("Send FTM Request frame to %02x:%02x:%02x:%02x:%02x:%02x\n",
+			  PRINT_MAC(Addr)));
 	/* 802.11 Header */
 	FtmHdr.FC.FrDs = 0;
 	MgtMacHeaderInit(pAd, &FtmHdr, SUBTYPE_ACTION, 0, Addr,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.if_addr,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
+					 pAd->ApCfg.MBSSID[BSS0].wdev.if_addr,
+					 pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
 	/* Construct FTM Request frame */
 	FtmReq.Category = CATEGORY_PUBLIC;
 	FtmReq.Action = ACTION_FTM_REQUEST;
 	FtmReq.Trigger = 1;
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(HEADER_802_11), &FtmHdr,
-			  sizeof(FTM_REQUEST_FRAME), &FtmReq, END_OF_ARGS);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen,
+					  sizeof(HEADER_802_11), &FtmHdr,
+					  sizeof(FTM_REQUEST_FRAME), &FtmReq,
+					  END_OF_ARGS);
 
 	/* Construct LCIMsmtReport */
 	if (bSetLci) {
-		MEASUREMENT_REQ LciReq;
-		MSMT_REQ_LCI Lci;
+		MEASUREMENT_REQ	LciReq;
+		MSMT_REQ_LCI		Lci;
 
 		NdisZeroMemory(&LciReq, sizeof(MEASUREMENT_REQ));
 		NdisZeroMemory(&Lci, sizeof(MSMT_REQ_LCI));
 		LciReq.ID = IE_MEASUREMENT_REQUEST;
-		LciReq.Length =
-			sizeof(MEASUREMENT_REQ) - 2 + sizeof(MSMT_REQ_LCI);
+		LciReq.Length = sizeof(MEASUREMENT_REQ) - 2 + sizeof(MSMT_REQ_LCI);
 		LciReq.Token = pFtm->TokenLCI;
 		pFtm->TokenLCI++;
 		pReqMode = (PMEASURE_REQ_MODE)&LciReq.RequestMode;
-		pReqMode->field.Enable = 0; /* 802.11mc D3.0 p.1122 */
+		pReqMode->field.Enable = 0;	/* 802.11mc D3.0 p.1122 */
 		LciReq.Type = MSMT_LCI_REQ;
 		Lci.LocationSubj = LSUBJ_REMOTE;
 		MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-				  sizeof(MEASUREMENT_REQ), &LciReq,
-				  sizeof(MSMT_REQ_LCI), &Lci, END_OF_ARGS);
+						  sizeof(MEASUREMENT_REQ), &LciReq,
+						  sizeof(MSMT_REQ_LCI), &Lci,
+						  END_OF_ARGS);
 		FrameLen += TmpLen;
 	}
 
 	/* Construct CivicReq */
 	if (bSetCivic) {
-		MEASUREMENT_REQ CivicReq;
-		MSMT_REQ_CIVIC Civic;
+		MEASUREMENT_REQ	CivicReq;
+		MSMT_REQ_CIVIC		Civic;
 
 		NdisZeroMemory(&CivicReq, sizeof(MEASUREMENT_REQ));
 		NdisZeroMemory(&Civic, sizeof(MSMT_REQ_CIVIC));
 		CivicReq.ID = IE_MEASUREMENT_REQUEST;
-		CivicReq.Length =
-			sizeof(MEASUREMENT_REQ) - 2 + sizeof(MSMT_REQ_CIVIC);
+		CivicReq.Length = sizeof(MEASUREMENT_REQ) - 2 + sizeof(MSMT_REQ_CIVIC);
 		CivicReq.Token = pFtm->TokenCivic;
 		pFtm->TokenCivic++;
 		pReqMode = (PMEASURE_REQ_MODE)&CivicReq.RequestMode;
-		pReqMode->field.Enable = 0; /* 802.11mc D3.0 p.1122 */
+		pReqMode->field.Enable = 0;	/* 802.11mc D3.0 p.1122 */
 		CivicReq.Type = MSMT_LOCATION_CIVIC_REQ;
 		Civic.LocationSubj = LSUBJ_REMOTE;
 		Civic.CivicLocType = CIVIC_TYPE_IETF_RFC4776_2006;
 		Civic.ServiceIntvUnits = CIVIC_UNIT_SECOND;
-		Civic.ServiceInterval = 0; /* 802.11mc D3.0 p.1122 */
+		Civic.ServiceInterval = 0;	/* 802.11mc D3.0 p.1122 */
 		MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-				  sizeof(MEASUREMENT_REQ), &CivicReq,
-				  sizeof(MSMT_REQ_CIVIC), &Civic, END_OF_ARGS);
+						  sizeof(MEASUREMENT_REQ), &CivicReq,
+						  sizeof(MSMT_REQ_CIVIC), &Civic,
+						  END_OF_ARGS);
 		FrameLen += TmpLen;
 	}
 
@@ -2768,7 +2832,8 @@ VOID SendFTMRequest(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr, IN BOOLEAN bSetLci,
 		FtmParm.p.burst_duration = pFtm->burst_duration;
 		FtmParm.p.burst_period = pFtm->burst_period;
 		MakeOutgoingFrame(pOutBuffer + FrameLen, &TmpLen,
-				  sizeof(FTM_PARM_IE), &FtmParm, END_OF_ARGS);
+						  sizeof(FTM_PARM_IE), &FtmParm,
+						  END_OF_ARGS);
 		FrameLen += TmpLen;
 	}
 
@@ -2778,15 +2843,18 @@ VOID SendFTMRequest(IN PRTMP_ADAPTER pAd, IN UINT8 *Addr, IN BOOLEAN bSetLci,
 	FtmEntryGet(pAd, Addr);
 }
 
-INT Set_FtmReqTx_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmReqTx_Proc(
+	IN  PRTMP_ADAPTER   pAd,
+	IN  RTMP_STRING *arg
+)
 {
 	PFTM_CTRL pFtm = pAd->pFtmCtrl;
 
 	if (FtmGetTargetAddr(pAd, arg) == FALSE)
 		return FALSE;
 
-	SendFTMRequest(pAd, pFtm->Responder, pFtm->bSetLciReq,
-		       pFtm->bSetCivicReq, TRUE);
+	SendFTMRequest(pAd, pFtm->Responder, pFtm->bSetLciReq, pFtm->bSetCivicReq, TRUE);
 	pFtm->BurstCntDown = (1 << pFtm->num_burst_exponent);
 
 	if (pFtm->asap)
@@ -2796,81 +2864,91 @@ INT Set_FtmReqTx_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 		if (!pFtm->asap)
 			pFtm->WaitForNego = TRUE;
 		else
-			RTMPSetTimer(&pFtm->FtmReqTimer,
-				     10 + 100 * pFtm->burst_period);
+			RTMPSetTimer(&pFtm->FtmReqTimer, 10 + 100 * pFtm->burst_period);
 	}
 
 	return TRUE;
 }
 
-INT Set_FtmAsapReq_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmAsapReq_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 asap = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->asap, asap));
+			 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->asap, asap));
 	pAd->pFtmCtrl->asap = asap;
 	return TRUE;
 }
-INT Set_FtmMinDelta_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT Set_FtmMinDelta_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 MinDelta = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->min_delta_ftm,
-		  MinDelta));
+			 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->min_delta_ftm, MinDelta));
 	pAd->pFtmCtrl->min_delta_ftm = MinDelta;
 	return TRUE;
 }
 
-INT Set_FtmNum_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT Set_FtmNum_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 FtmNum = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->ftms_per_burst,
-		  FtmNum));
+			 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->ftms_per_burst, FtmNum));
 	pAd->pFtmCtrl->ftms_per_burst = FtmNum;
 	return TRUE;
 }
 
-INT Set_FtmBurstExp_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT Set_FtmBurstExp_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 BurstExp = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d -> %d\n", __func__,
-		  pAd->pFtmCtrl->num_burst_exponent, BurstExp));
+			 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->num_burst_exponent, BurstExp));
 	pAd->pFtmCtrl->num_burst_exponent = BurstExp;
 	return TRUE;
 }
 
-INT Set_FtmLciValue_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmLciValue_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	PLCI_FIELD pLci = &pAd->pFtmCtrl->LciField;
 
 	if (strlen(arg) != (sizeof(LCI_FIELD) * 2)) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("(X) illegal size: LCI should be %d hex bytes\n",
-			  sizeof(LCI_FIELD)));
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("example:\n"));
-		MTWF_LOG(
-			DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			("iwpriv ra0 set FtmLciValue=52834d12efd2b08b9b4bf1cc2c000041\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("(X) illegal size: LCI should be %d hex bytes\n", sizeof(LCI_FIELD)));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("example:\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("iwpriv ra0 set FtmLciValue=52834d12efd2b08b9b4bf1cc2c000041\n"));
 		return TRUE;
 	}
 
 	/* update */
 	AtoH(arg, pLci->byte, sizeof(LCI_FIELD));
 	/* dump all */
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-		 ("Update LciField\n"));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("Update LciField\n"));
 	FtmLciValueDump(pAd, pLci, DBG_LVL_WARN);
 	return TRUE;
 }
 
-INT Set_FtmLciLat_ThisAP_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT Set_FtmLciLat_ThisAP_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	PLCI_FIELD pLci = &pAd->pFtmCtrl->LciField;
 
@@ -2878,7 +2956,10 @@ INT Set_FtmLciLat_ThisAP_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
 	return TRUE;
 }
 
-INT Set_FtmLciLng_ThisAP_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT Set_FtmLciLng_ThisAP_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	PLCI_FIELD pLci = &pAd->pFtmCtrl->LciField;
 
@@ -2886,7 +2967,10 @@ INT Set_FtmLciLng_ThisAP_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
 	return TRUE;
 }
 
-INT Set_FtmLciAlt_ThisAP_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT Set_FtmLciAlt_ThisAP_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	PLCI_FIELD pLci = &pAd->pFtmCtrl->LciField;
 
@@ -2894,8 +2978,11 @@ INT Set_FtmLciAlt_ThisAP_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
 	return TRUE;
 }
 
-INT Set_FtmLciLat_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg,
-		       IN PLCI_FIELD pLci)
+INT Set_FtmLciLat_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg,
+	IN PLCI_FIELD pLci
+)
 {
 	int arg_len;
 	UINT8 high = 0;
@@ -2905,20 +2992,18 @@ INT Set_FtmLciLat_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg,
 	arg_len = strlen(arg);
 
 	if (arg_len > 9) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("(X) illegal size of Latitude: exceed 34 bits\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("(X) illegal size of Latitude: exceed 34 bits\n"));
 		return TRUE;
 	}
 
 	if (arg_len == 9) {
 		AtoH(arg, &high, 1);
-		high = (high >> 4) & 3; /* take bit 33 and 32 */
+		high = (high >> 4) & 3;	/* take bit 33 and 32 */
 		arg++;
 	}
 
 	low = os_str_tol(arg, 0, 16);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-		 ("Updated Latitude: 0x%02X %08X\n\n", high, low));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("Updated Latitude: 0x%02X %08X\n\n", high, low));
 	/* update */
 	pLci->field.Latitude_b0_b1 = low & 0x3;
 	pLci->field.Latitude_b2_b33 = ((UINT32)high << 30) | (low >> 2);
@@ -2927,8 +3012,12 @@ INT Set_FtmLciLat_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg,
 	return TRUE;
 }
 
-INT Set_FtmLciLng_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg,
-		       IN PLCI_FIELD pLci)
+
+INT Set_FtmLciLng_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg,
+	IN PLCI_FIELD pLci
+)
 {
 	int arg_len;
 	UINT8 high = 0;
@@ -2938,20 +3027,18 @@ INT Set_FtmLciLng_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg,
 	arg_len = strlen(arg);
 
 	if (arg_len > 9) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("(X) illegal size of Longitude: exceed 34 bits\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("(X) illegal size of Longitude: exceed 34 bits\n"));
 		return TRUE;
 	}
 
 	if (arg_len == 9) {
 		AtoH(arg, &high, 1);
-		high = (high >> 4) & 3; /* take bit 33 and 32 */
+		high = (high >> 4) & 3;	/* take bit 33 and 32 */
 		arg++;
 	}
 
 	low = os_str_tol(arg, 0, 16);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-		 ("Updated Longitude: 0x%02X %08X\n\n", high, low));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("Updated Longitude: 0x%02X %08X\n\n", high, low));
 	/* update */
 	pLci->field.Longitude_b0_b1 = low & 0x3;
 	pLci->field.Longitude_b2_b33 = ((UINT32)high << 30) | (low >> 2);
@@ -2960,31 +3047,37 @@ INT Set_FtmLciLng_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg,
 	return TRUE;
 }
 
-INT Set_FtmLciAlt_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg,
-		       IN PLCI_FIELD pLci)
+
+INT Set_FtmLciAlt_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg,
+	IN PLCI_FIELD pLci
+)
 {
 	UINT32 value;
 
 	arg = FtmSkipHexPrefix(arg);
 	if (strlen(arg) > 8) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("(X) illegal size of Altitude: exceed 30 bits\n"));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("(X) illegal size of Altitude: exceed 30 bits\n"));
 		return TRUE;
 	}
 
 	value = os_str_tol(arg, 0, 16);
-	value &= 0x3FFFFFFF; /* bit31 and bit30 are invalid, truncate them */
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN,
-		 ("Updated Altitude: 0x%08X\n\n", value));
+	value &= 0x3FFFFFFF;	/* bit31 and bit30 are invalid, truncate them */
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_WARN, ("Updated Altitude: 0x%08X\n\n", value));
 	/* update */
-	pLci->field.Altitude_b0_b21 = value & 0x3FFFFF; /* mask bit0 ~ bit21 */
+	pLci->field.Altitude_b0_b21 = value & 0x3FFFFF;	/* mask bit0 ~ bit21 */
 	pLci->field.Altitude_b22_b29 = value >> 22;
 	/* dump all */
 	FtmLciValueDump(pAd, pLci, DBG_LVL_WARN);
 	return TRUE;
 }
 
-INT Set_FtmLciKnown_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmLciKnown_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 flag = os_str_tol(arg, 0, 10);
 
@@ -2995,87 +3088,110 @@ INT Set_FtmLciKnown_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
 		pAd->pFtmCtrl->LciHdr.Length = 0;
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d => LciHdr.Length=%d\n", __func__, flag,
-		  pAd->pFtmCtrl->LciHdr.Length));
+			 ("%s(): %d => LciHdr.Length=%d\n", __func__, flag, pAd->pFtmCtrl->LciHdr.Length));
 	return TRUE;
 }
 
-INT Set_FtmLciFlag_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmLciFlag_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 flag = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): Request:%d->%d, Report:%d->%d\n", __func__,
-		  pAd->pFtmCtrl->bSetLciReq, flag, pAd->pFtmCtrl->bSetLciRpt,
-		  flag));
+			 ("%s(): Request:%d->%d, Report:%d->%d\n",
+			  __func__, pAd->pFtmCtrl->bSetLciReq, flag,
+			  pAd->pFtmCtrl->bSetLciRpt, flag));
 	pAd->pFtmCtrl->bSetLciReq = flag;
 	pAd->pFtmCtrl->bSetLciRpt = flag;
 	return TRUE;
 }
 
-INT Set_FtmCivicKnown_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmCivicKnown_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 flag = os_str_tol(arg, 0, 10);
 
 	if (flag) {
-		pAd->pFtmCtrl->CivicHdr.Length =
-			sizeof(LOCATION_CIVIC) + pAd->pFtmCtrl->Civic.CA_Length;
+		pAd->pFtmCtrl->CivicHdr.Length = sizeof(LOCATION_CIVIC) + pAd->pFtmCtrl->Civic.CA_Length;
 		FtmSendCivicToDaemon(pAd);
 	} else
 		pAd->pFtmCtrl->CivicHdr.Length = 0;
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d => CivicHdr.Length=%d\n", __func__, flag,
-		  pAd->pFtmCtrl->CivicHdr.Length));
+			 ("%s(): %d => CivicHdr.Length=%d\n", __func__, flag, pAd->pFtmCtrl->CivicHdr.Length));
 	return TRUE;
 }
 
-INT Set_FtmCivicFlag_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmCivicFlag_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 flag = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): Request:%d->%d, Report:%d->%d\n", __func__,
-		  pAd->pFtmCtrl->bSetCivicReq, flag,
-		  pAd->pFtmCtrl->bSetCivicRpt, flag));
+			 ("%s(): Request:%d->%d, Report:%d->%d\n",
+			  __func__, pAd->pFtmCtrl->bSetCivicReq, flag,
+			  pAd->pFtmCtrl->bSetCivicRpt, flag));
 	pAd->pFtmCtrl->bSetCivicReq = flag;
 	pAd->pFtmCtrl->bSetCivicRpt = flag;
 	return TRUE;
 }
 
-INT Set_FtmZFlag_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmZFlag_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 flag = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->bSetZRpt, flag));
+			 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->bSetZRpt, flag));
 	pAd->pFtmCtrl->bSetZRpt = flag;
 	return TRUE;
 }
 
-INT Set_FtmBurstDuration_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmBurstDuration_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 value = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->burst_duration,
-		  value));
+			 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->burst_duration, value));
 	pAd->pFtmCtrl->burst_duration = value;
 	return TRUE;
 }
 
-INT Set_FtmBurstPeriod_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Set_FtmBurstPeriod_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 value = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->burst_period,
-		  value));
+			 ("%s(): %d -> %d\n", __func__, pAd->pFtmCtrl->burst_period, value));
 	pAd->pFtmCtrl->burst_period = value;
 	return TRUE;
 }
 
-INT Show_FtmEntry_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Show_FtmEntry_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 EntryIdx = 0;
 
@@ -3088,20 +3204,27 @@ INT Show_FtmEntry_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
 	return TRUE;
 }
 
-INT Show_FtmPidList_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Show_FtmPidList_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	FtmPidPendingQDump(pAd, DBG_LVL_OFF);
 	return TRUE;
 }
 
-INT Show_FtmLciValue_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+
+INT Show_FtmLciValue_Proc(
+	IN RTMP_ADAPTER * pAd,
+	IN RTMP_STRING *arg
+)
 {
 	FtmLciValueDump(pAd, &pAd->pFtmCtrl->LciField, DBG_LVL_OFF);
 	return TRUE;
 }
 
-void FtmMapSigmaCmdToLocLCI(RTMP_ADAPTER *pAd, RTMP_STRING *tmpbuf,
-			    PLCI_FIELD pLci)
+void FtmMapSigmaCmdToLocLCI(RTMP_ADAPTER *pAd, RTMP_STRING *tmpbuf, PLCI_FIELD pLci)
 {
 	/*lci,		120d3649bc0312c32e6e2e01010f330b00000100000001*/
 	/*tmpbuf     [0                                       ~						45]*/
@@ -3126,8 +3249,7 @@ void FtmMapSigmaCmdToLocLCI(RTMP_ADAPTER *pAd, RTMP_STRING *tmpbuf,
 	/* map sigma 23 byte to LCI 16 byte */
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\n"));
 	for (i = 0; i < 46; i++) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("\033[1;33m%c\033[0m", tmpbuf[i]));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;33m%c\033[0m", tmpbuf[i]));
 	}
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\n"));
 
@@ -3174,8 +3296,8 @@ void FtmMapSigmaCmdToLocLCI(RTMP_ADAPTER *pAd, RTMP_STRING *tmpbuf,
 	return;
 }
 
-VOID FtmProfileNeighborApParse(RTMP_ADAPTER *pAd, UINT NeighborIdx,
-			       RTMP_STRING *tmpbuf)
+
+VOID FtmProfileNeighborApParse(RTMP_ADAPTER *pAd, UINT NeighborIdx, RTMP_STRING *tmpbuf)
 {
 	RTMP_STRING *NeighborInfo = NULL, *Nvalue = NULL;
 	UINT8 j = 0, k = 0;
@@ -3183,11 +3305,9 @@ VOID FtmProfileNeighborApParse(RTMP_ADAPTER *pAd, UINT NeighborIdx,
 
 	pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborValid = TRUE;
 
-	for (j = 0, NeighborInfo = rstrtok(tmpbuf, ";"); NeighborInfo;
-	     NeighborInfo = rstrtok(NULL, ";"), j++) {
+	for (j = 0, NeighborInfo = rstrtok(tmpbuf, ";"); NeighborInfo; NeighborInfo = rstrtok(NULL, ";"), j++) {
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-			 ("\033[1;34m %s NeighborInfo  %s \033[0m\n", __func__,
-			  NeighborInfo));
+				("\033[1;34m %s NeighborInfo  %s \033[0m\n", __func__, NeighborInfo));
 
 		if (strncmp(NeighborInfo, "Bssid:", 6) == 0) {
 			NdisZeroMemory(tmpNeighborInfo, 1024);
@@ -3197,200 +3317,85 @@ VOID FtmProfileNeighborApParse(RTMP_ADAPTER *pAd, UINT NeighborIdx,
 
 			if ((strstr(NeighborInfo, "PHYtype") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.NeighborPhyType =
-					(UINT8)os_str_tol(pch + 1, 0, 10);
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, NeighborPhyType  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .NeighborPhyType));
-			} else if ((strstr(NeighborInfo, "FTMinBssidInfo") !=
-				    0)) {
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborPhyType = (UINT8)os_str_tol(pch + 1, 0, 10);
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, NeighborPhyType  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborPhyType));
+			} else if ((strstr(NeighborInfo, "FTMinBssidInfo") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.NeighborFTMCap =
-					(UINT8)os_str_tol(pch + 1, 0, 10);
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, NeighborFTMCap  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .NeighborFTMCap));
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborFTMCap = (UINT8)os_str_tol(pch + 1, 0, 10);
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, NeighborFTMCap  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborFTMCap));
 			} else if ((strstr(NeighborInfo, "OpChannel") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.NeighborChannel =
-					(UINT8)os_str_tol(pch + 1, 0, 10);
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, NeighborChannel  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .NeighborChannel));
-			} else if ((strncmp(NeighborInfo,
-					    "LocCivicAddr:", 13) == 0)) {
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborChannel = (UINT8)os_str_tol(pch + 1, 0, 10);
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, NeighborChannel  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborChannel));
+			} else if ((strncmp(NeighborInfo, "LocCivicAddr:", 13) == 0)) {
 				pch = strchr(NeighborInfo, ':');
 
-				for (j = 0; j < MAX_CIVIC_CA_VALUE_LENGTH &&
-					    *(pch + 1 + j * 2) != 0;
-				     j++)
-					AtoH(pch + 1 + j * 2,
-					     &pAd->pFtmCtrl
-						      ->FtmNeighbor[NeighborIdx]
-						      .CA_Value[j],
-					     1);
+				for (j = 0; j < MAX_CIVIC_CA_VALUE_LENGTH && *(pch + 1 + j * 2) != 0; j++)
+					AtoH(pch + 1 + j * 2, &pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].CA_Value[j], 1);
 
 				/* hex_dump_my("NeighborLocCA",pAd->pFtmCtrl->CA_Value,MAX_CIVIC_CA_VALUE_LENGTH); */
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, LocCivicAddr  %s \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .CA_Value));
-			} else if ((strstr(NeighborInfo, "LocCivicAddrType") !=
-				    0)) {
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, LocCivicAddr  %s \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].CA_Value));
+			} else if ((strstr(NeighborInfo, "LocCivicAddrType") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.Civic.CA_Type =
-					(UINT8)os_str_tol(pch + 1, 0, 10);
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, LocCivicAddrType  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .Civic.CA_Type));
-			} else if ((strstr(NeighborInfo,
-					   "LocCivicAddrLength") != 0)) {
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Type = (UINT8)os_str_tol(pch + 1, 0, 10);
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, LocCivicAddrType  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Type));
+			} else if ((strstr(NeighborInfo, "LocCivicAddrLength") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.Civic.CA_Length =
-					(UINT8)os_str_tol(pch + 1, 0, 10);
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Length = (UINT8)os_str_tol(pch + 1, 0, 10);
 
-				if (pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					    .Civic.CA_Length >=
-				    MAX_CIVIC_CA_VALUE_LENGTH)
-					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						.Civic.CA_Length =
-						MAX_CIVIC_CA_VALUE_LENGTH;
+				if (pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Length >= MAX_CIVIC_CA_VALUE_LENGTH)
+					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Length = MAX_CIVIC_CA_VALUE_LENGTH;
 
-				if (pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					    .Civic.CA_Length == 0)
-					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						.CivicHdr.Length = 0;
+				if (pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Length == 0)
+					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].CivicHdr.Length = 0;
 				else
-					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						.CivicHdr.Length =
-						sizeof(LOCATION_CIVIC) +
-						pAd->pFtmCtrl
-							->FtmNeighbor[NeighborIdx]
-							.Civic.CA_Length;
+					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].CivicHdr.Length = sizeof(LOCATION_CIVIC) + pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Length;
 
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, LocCivicAddrLength  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .Civic.CA_Length));
-			} else if ((strstr(NeighborInfo, "lci") != 0) ||
-				   (strstr(NeighborInfo, "LCI") != 0)) {
-				UCHAR LciField
-					[50]; /* sigma lci is either 1 byte or 46 byte long */
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, LocCivicAddrLength  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].Civic.CA_Length));
+			} else if ((strstr(NeighborInfo, "lci") != 0) || (strstr(NeighborInfo, "LCI") != 0)) {
+				UCHAR LciField[50]; /* sigma lci is either 1 byte or 46 byte long */
 
 				pch = strchr(NeighborInfo, ':');
 
 				if (strlen(pch + 1) == 46) {
-					NdisCopyMemory(LciField, pch + 1,
-						       strlen(pch + 1));
-					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						.LciHdr.Length =
-						sizeof(LCI_FIELD);
-					FtmMapSigmaCmdToLocLCI(
-						pAd, LciField,
-						&pAd->pFtmCtrl
-							 ->FtmNeighbor[NeighborIdx]
-							 .LciField);
+					NdisCopyMemory(LciField, pch + 1, strlen(pch + 1));
+					pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciHdr.Length = sizeof(LCI_FIELD);
+					FtmMapSigmaCmdToLocLCI(pAd, LciField, &pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciField);
 				} else
-					MTWF_LOG(
-						DBG_CAT_PROTO, CATPROTO_FTM,
-						DBG_LVL_ERROR,
-						("\033[1;32m %s, Neighbor lci lenth %d , remain unknown\033[0m\n",
-						 __func__, strlen(pch + 1)));
+					MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, Neighbor lci lenth %d , remain unknown\033[0m\n", __func__, strlen(pch + 1)));
 			} else if ((strstr(NeighborInfo, "FloorInfoZ") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.LciZ.Floor.word =
-					(UINT16)os_str_tol(pch + 1, 0, 10);
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.bSetNeighbotZRpt = TRUE;
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, FloorInfoZ  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .LciZ.Floor.word));
-			} else if ((strstr(NeighborInfo, "HeightAboveFloorZ") !=
-				    0)) {
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciZ.Floor.word = (UINT16)os_str_tol(pch + 1, 0, 10);
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].bSetNeighbotZRpt = TRUE;
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, FloorInfoZ  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciZ.Floor.word));
+			} else if ((strstr(NeighborInfo, "HeightAboveFloorZ") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.LciZ.HeightAboveFloor =
-					(UINT16)os_str_tol(pch + 1, 0, 10);
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.bSetNeighbotZRpt = TRUE;
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, HeightAboveFloorZ  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .LciZ.HeightAboveFloor));
-			} else if ((strstr(NeighborInfo,
-					   "HeightAboveFloorUncZ") != 0)) {
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciZ.HeightAboveFloor = (UINT16)os_str_tol(pch + 1, 0, 10);
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].bSetNeighbotZRpt = TRUE;
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, HeightAboveFloorZ  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciZ.HeightAboveFloor));
+			} else if ((strstr(NeighborInfo, "HeightAboveFloorUncZ") != 0)) {
 				pch = strchr(NeighborInfo, ':');
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.LciZ.HeightUncertainty =
-					(UINT8)os_str_tol(pch + 1, 0, 10);
-				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-					.bSetNeighbotZRpt = TRUE;
-				MTWF_LOG(
-					DBG_CAT_PROTO, CATPROTO_FTM,
-					DBG_LVL_ERROR,
-					("\033[1;32m %s, HeightAboveFloorUncZ  %d \033[0m\n",
-					 __func__,
-					 pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-						 .LciZ.HeightUncertainty));
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciZ.HeightUncertainty = (UINT8)os_str_tol(pch + 1, 0, 10);
+				pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].bSetNeighbotZRpt = TRUE;
+				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, HeightAboveFloorUncZ  %d \033[0m\n", __func__, pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].LciZ.HeightUncertainty));
 			}
 		}
 	}
 
-	for (j = 0, Nvalue = rstrtok(tmpNeighborInfo, ":"); Nvalue;
-	     Nvalue = rstrtok(NULL, ":"), j++) {
-		if ((strlen(Nvalue) != 2) || (!isxdigit(*Nvalue)) ||
-		    (!isxdigit(*(Nvalue + 1))))
-			continue; /*Invalid */
+	for (j = 0, Nvalue = rstrtok(tmpNeighborInfo, ":"); Nvalue; Nvalue = rstrtok(NULL, ":"), j++) {
+		if ((strlen(Nvalue) != 2) || (!isxdigit(*Nvalue)) || (!isxdigit(*(Nvalue + 1))))
+			continue;  /*Invalid */
 
-		AtoH(Nvalue,
-		     &pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborBSSID[k++],
-		     1);
+		AtoH(Nvalue, &pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborBSSID[k++], 1);
 	}
 
-	MTWF_LOG(
-		DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR,
-		("\033[1;32m %s, Neighbor[%d] %02x:%02x:%02x:%02x:%02x:%02x \033[0m\n",
-		 __func__, NeighborIdx,
-		 PRINT_MAC(pAd->pFtmCtrl->FtmNeighbor[NeighborIdx]
-				   .NeighborBSSID)));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_ERROR, ("\033[1;32m %s, Neighbor[%d] %02x:%02x:%02x:%02x:%02x:%02x \033[0m\n"
+			 , __func__, NeighborIdx, PRINT_MAC(pAd->pFtmCtrl->FtmNeighbor[NeighborIdx].NeighborBSSID)));
 }
 
-INT Send_ANQP_Req_For_Test(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
+INT Send_ANQP_Req_For_Test(
+	IN PRTMP_ADAPTER pAd,
+	IN RTMP_STRING *arg)
 {
 	UCHAR *Buf, *buf_anqp, *Pos;
 	/* RTMP_STRING *value; */
@@ -3400,7 +3405,7 @@ INT Send_ANQP_Req_For_Test(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 	static UINT32 Token;
 	UINT32 anqp_req_len = 0;
 	struct anqp_frame *anqp_req;
-	UCHAR PeerMACAddr[MAC_ADDR_LEN] = { 0x00, 0x0C, 0x43, 0xE1, 0x76, 0x28 };
+	UCHAR PeerMACAddr[MAC_ADDR_LEN] = {0x00, 0x0C, 0x43, 0xE1, 0x76, 0x28};
 	ULONG choice = os_str_tol(arg, 0, 10);
 
 	printk("%s  choice  %ld\n", __func__, choice);
@@ -3459,38 +3464,37 @@ INT Send_ANQP_Req_For_Test(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 	NdisZeroMemory(Buf, sizeof(*GASFrame) + anqp_req_len);
 	GASFrame = (GAS_FRAME *)Buf;
 	ActHeaderInit(pAd, &GASFrame->Hdr, PeerMACAddr, pAd->CurrentAddress,
-		      PeerMACAddr);
+				  PeerMACAddr);
 	FrameLen += sizeof(HEADER_802_11);
 	GASFrame->Category = CATEGORY_PUBLIC;
 	GASFrame->u.GAS_INIT_REQ.Action = ACTION_GAS_INIT_REQ;
-	GASFrame->u.GAS_INIT_REQ.DialogToken =
-		Token++; /* Event->u.GAS_REQ_DATA.DialogToken; */
+	GASFrame->u.GAS_INIT_REQ.DialogToken = Token++; /* Event->u.GAS_REQ_DATA.DialogToken; */
 	FrameLen += 3;
 	Pos = GASFrame->u.GAS_INIT_REQ.Variable;
 	*Pos++ = IE_ADVERTISEMENT_PROTO;
 	*Pos++ = 2; /* Length field */
 	*Pos++ = 0; /* Query response info field */
-	*Pos++ =
-		ACCESS_NETWORK_QUERY_PROTOCOL; /* Advertisement Protocol ID field */
+	*Pos++ = ACCESS_NETWORK_QUERY_PROTOCOL; /* Advertisement Protocol ID field */
 	tmpLen = cpu2le16(anqp_req_len);
 	NdisMoveMemory(Pos, &tmpLen, 2);
 	Pos += 2;
 	FrameLen += 6;
 	NdisMoveMemory(Pos, buf_anqp, anqp_req_len);
 	FrameLen += anqp_req_len;
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("Location Anqp Req to %02x:%02x:%02x:%02x:%02x:%02x\n",
-		  PRINT_MAC(PeerMACAddr)));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF, ("Location Anqp Req to %02x:%02x:%02x:%02x:%02x:%02x\n",
+			 PRINT_MAC(PeerMACAddr)));
 	MiniportMMRequest(pAd, 0, Buf, FrameLen);
 	os_free_mem(Buf);
 	os_free_mem(buf_anqp);
 	return TRUE;
+	os_free_mem(Buf);
 error0:
-	os_free_mem(buf_anqp);
 	return FALSE;
 }
 
-INT Send_NeighborReq_For_Test(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
+INT Send_NeighborReq_For_Test(
+	IN PRTMP_ADAPTER pAd,
+	IN RTMP_STRING *arg)
 {
 	HEADER_802_11 ActHdr;
 	PUCHAR pOutBuffer = NULL;
@@ -3502,74 +3506,73 @@ INT Send_NeighborReq_For_Test(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 	if (FtmGetTargetAddr(pAd, arg) == FALSE)
 		return FALSE;
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s().\n", __func__));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF, ("%s().\n", __func__));
 	NStatus = MlmeAllocateMemory(pAd, (PVOID)&pOutBuffer);
 
 	if (NStatus != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-			 ("%s() allocate memory failed\n", __func__));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("%s() allocate memory failed\n", __func__));
 		return FALSE;
 	}
 
 	/* build action frame header. */
-	MgtMacHeaderInit(pAd, &ActHdr, SUBTYPE_ACTION, 0,
-			 pAd->pFtmCtrl->Responder,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.if_addr,
-			 pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(HEADER_802_11), &ActHdr,
-			  END_OF_ARGS);
-	InsertActField(pAd, (pOutBuffer + FrameLen), &FrameLen, CATEGORY_RM,
-		       RRM_NEIGHTBOR_REQ);
+	MgtMacHeaderInit(pAd, &ActHdr, SUBTYPE_ACTION, 0, pAd->pFtmCtrl->Responder,
+					pAd->ApCfg.MBSSID[BSS0].wdev.if_addr, pAd->ApCfg.MBSSID[BSS0].wdev.bssid);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(HEADER_802_11), &ActHdr, END_OF_ARGS);
+	InsertActField(pAd, (pOutBuffer + FrameLen), &FrameLen, CATEGORY_RM, RRM_NEIGHTBOR_REQ);
 
 	/* fill Dialog Token */
 	InsertDialogToken(pAd, (pOutBuffer + FrameLen), &FrameLen, DialogToken);
 	{
 		ULONG TempLen;
-		UCHAR ElemetnID = 38, measurementType = MSMT_LCI_RPT,
-		      length = 5, MeasurementMode = 0;
+		UCHAR ElemetnID = 38, measurementType = MSMT_LCI_RPT, length = 5, MeasurementMode = 0;
 
-		MakeOutgoingFrame((pOutBuffer + FrameLen), &TempLen, 1,
-				  &ElemetnID, 1, &length, 1, &MeasurementToken,
-				  1, &MeasurementMode, 1, &measurementType,
-				  END_OF_ARGS);
+		MakeOutgoingFrame((pOutBuffer + FrameLen),	&TempLen,
+						  1,				&ElemetnID,
+						  1,				&length,
+						  1,				&MeasurementToken,
+						  1,				&MeasurementMode,
+						  1,				&measurementType,
+						  END_OF_ARGS);
 		FrameLen = FrameLen + TempLen;
 	}
 	MiniportMMRequest(pAd, QID_AC_BE, pOutBuffer, FrameLen);
 
 	if (pOutBuffer) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-			 ("%s() sent out Neighbor Req.\n", __func__));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF, ("%s() sent out Neighbor Req.\n", __func__));
 		MlmeFreeMemory(pOutBuffer);
 	}
 
 	return TRUE;
 }
 
-INT Set_FtmRMRandomizationInterval_Proc(IN RTMP_ADAPTER *pAd,
-					IN RTMP_STRING *arg)
+INT Set_FtmRMRandomizationInterval_Proc(
+	IN RTMP_ADAPTER *pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT16 value = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): RandomizationInterval %d\n", __func__,
-		  pAd->pFtmCtrl->RandomizationInterval));
+			 ("%s(): RandomizationInterval %d\n", __func__, pAd->pFtmCtrl->RandomizationInterval));
 	pAd->pFtmCtrl->RandomizationInterval = value;
 	return TRUE;
 }
-INT Set_FtmRMMinimumApCount_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg)
+INT Set_FtmRMMinimumApCount_Proc(
+	IN RTMP_ADAPTER *pAd,
+	IN RTMP_STRING *arg
+)
 {
 	UINT8 value = os_str_tol(arg, 0, 10);
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s(): MinimumApCount %d\n", __func__,
-		  pAd->pFtmCtrl->MinimumApCount));
+			 ("%s(): MinimumApCount %d\n", __func__, pAd->pFtmCtrl->MinimumApCount));
 	pAd->pFtmCtrl->MinimumApCount = value;
 	return TRUE;
 }
 
-INT Send_RadioMeasurement_Req_For_Test(IN PRTMP_ADAPTER pAd,
-				       IN RTMP_STRING *arg)
+INT Send_RadioMeasurement_Req_For_Test(
+	IN PRTMP_ADAPTER pAd,
+	IN RTMP_STRING *arg)
 {
 	HEADER_802_11 ActHdr;
 	PUCHAR pOutBuffer = NULL;
@@ -3577,18 +3580,16 @@ INT Send_RadioMeasurement_Req_For_Test(IN PRTMP_ADAPTER pAd,
 	ULONG FrameLen;
 	UINT8 DialogToken = RandomByte(pAd);
 	UINT8 MeasurementToken = RandomByte(pAd);
-	UINT i = 0;
-	PFTM_CTRL pFtm = pAd->pFtmCtrl;
+	UINT  i = 0;
+	PFTM_CTRL	pFtm = pAd->pFtmCtrl;
 	BSS_STRUCT *pMbss;
 	RRM_BSSID_INFO BssidInfo;
-	POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
-	struct wifi_dev *wdev = get_wdev_by_ioctl_idx_and_iftype(
-		pAd, pObj->ioctl_if, pObj->ioctl_if_type);
+	POS_COOKIE pObj = (POS_COOKIE) pAd->OS_Cookie;
+	struct wifi_dev *wdev = get_wdev_by_ioctl_idx_and_iftype(pAd, pObj->ioctl_if, pObj->ioctl_if_type);
 	UINT8 CondensedPhyType = (wdev->channel > 14) ? 9 : 7; /* 7:2G, 9:5G */
 	RRM_NEIGHBOR_REP_INFO NeighborRepInfo;
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-		 ("%s().\n", __func__));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF, ("%s().\n", __func__));
 
 	if (FtmGetTargetAddr(pAd, arg) == FALSE)
 		return FALSE;
@@ -3596,34 +3597,34 @@ INT Send_RadioMeasurement_Req_For_Test(IN PRTMP_ADAPTER pAd,
 	pMbss = &pAd->ApCfg.MBSSID[BSS0];
 	NStatus = MlmeAllocateMemory(pAd, (PVOID)&pOutBuffer);
 	if (NStatus != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE,
-			 ("%s() allocate memory failed\n", __func__));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_TRACE, ("%s() allocate memory failed\n", __func__));
 		return FALSE;
 	}
 
 	/* build action frame header. */
-	MgtMacHeaderInit(pAd, &ActHdr, SUBTYPE_ACTION, 0, pFtm->Responder,
-			 pMbss->wdev.if_addr, pMbss->wdev.bssid);
-	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(HEADER_802_11), &ActHdr,
-			  END_OF_ARGS);
-	InsertActField(pAd, (pOutBuffer + FrameLen), &FrameLen, CATEGORY_RM,
-		       RRM_MEASURE_REQ);
+	MgtMacHeaderInit(pAd, &ActHdr, SUBTYPE_ACTION, 0, pFtm->Responder, pMbss->wdev.if_addr, pMbss->wdev.bssid);
+	MakeOutgoingFrame(pOutBuffer, &FrameLen, sizeof(HEADER_802_11), &ActHdr, END_OF_ARGS);
+	InsertActField(pAd, (pOutBuffer + FrameLen), &FrameLen, CATEGORY_RM, RRM_MEASURE_REQ);
 	InsertDialogToken(pAd, (pOutBuffer + FrameLen), &FrameLen, DialogToken);
 	{
 		ULONG TempLen;
-		UCHAR ElementID = 38, measurementType = MSMT_FTM_RANGE_REQ,
-		      MeasurementMode = 0;
+		UCHAR ElementID = 38, measurementType = MSMT_FTM_RANGE_REQ, MeasurementMode = 0;
 		UCHAR length = 6 + 15 * pFtm->MinimumApCount;
 		UINT16 NumberOfRepetitions = 0;
 
-		MakeOutgoingFrame((pOutBuffer + FrameLen), &TempLen, 2,
-				  &NumberOfRepetitions, 1, &ElementID, 1,
-				  &length, 1, &MeasurementToken, END_OF_ARGS);
+		MakeOutgoingFrame((pOutBuffer + FrameLen),	&TempLen,
+						  2,				&NumberOfRepetitions,
+						  1,				&ElementID,
+						  1,				&length,
+						  1,				&MeasurementToken,
+						  END_OF_ARGS);
 		FrameLen = FrameLen + TempLen;
-		MakeOutgoingFrame((pOutBuffer + FrameLen), &TempLen, 1,
-				  &MeasurementMode, 1, &measurementType, 2,
-				  &pFtm->RandomizationInterval, 1,
-				  &pFtm->MinimumApCount, END_OF_ARGS);
+		MakeOutgoingFrame((pOutBuffer + FrameLen),	&TempLen,
+						  1,				&MeasurementMode,
+						  1,				&measurementType,
+						  2,				&pFtm->RandomizationInterval,
+						  1,				&pFtm->MinimumApCount,
+						  END_OF_ARGS);
 		FrameLen = FrameLen + TempLen;
 	}
 
@@ -3631,29 +3632,23 @@ INT Send_RadioMeasurement_Req_For_Test(IN PRTMP_ADAPTER pAd,
 	BssidInfo.word = 0;
 	BssidInfo.field.APReachAble = 3;
 	BssidInfo.field.Security = 0; /* rrm to do. */
-	BssidInfo.field.KeyScope =
-		0; /* "report AP has same authenticator as the AP. */
-	BssidInfo.field.SpectrumMng =
-		(pMbss->CapabilityInfo & (1 << 8)) ? 1 : 0;
+	BssidInfo.field.KeyScope = 0; /* "report AP has same authenticator as the AP. */
+	BssidInfo.field.SepctrumMng = (pMbss->CapabilityInfo & (1 << 8)) ? 1 : 0;
 	BssidInfo.field.Qos = (pMbss->CapabilityInfo & (1 << 9)) ? 1 : 0;
 	BssidInfo.field.APSD = (pMbss->CapabilityInfo & (1 << 11)) ? 1 : 0;
 #ifdef DOT11K_RRM_SUPPORT
 	BssidInfo.field.RRM = (pMbss->CapabilityInfo & RRM_CAP_BIT) ? 1 : 0;
 #endif
-	BssidInfo.field.DelayBlockAck =
-		(pMbss->CapabilityInfo & (1 << 14)) ? 1 : 0;
-	BssidInfo.field.ImmediateBA =
-		(pMbss->CapabilityInfo & (1 << 15)) ? 1 : 0;
+	BssidInfo.field.DelayBlockAck = (pMbss->CapabilityInfo & (1 << 14)) ? 1 : 0;
+	BssidInfo.field.ImmediateBA = (pMbss->CapabilityInfo & (1 << 15)) ? 1 : 0;
 	BssidInfo.field.FTM = 1;
 	COPY_MAC_ADDR(NeighborRepInfo.Bssid, pMbss->wdev.bssid);
 	NeighborRepInfo.BssidInfo = BssidInfo.word;
-	NeighborRepInfo.RegulatoryClass = get_regulatory_class(
-		pAd, pMbss->wdev.channel, pMbss->wdev.PhyMode, &pMbss->wdev);
+	NeighborRepInfo.RegulatoryClass = get_regulatory_class(pAd, pMbss->wdev.channel, pMbss->wdev.PhyMode, &pMbss->wdev);
 	NeighborRepInfo.ChNum = pMbss->wdev.channel;
 	NeighborRepInfo.PhyType = CondensedPhyType;
 	RRM_InsertNeighborRepIE(pAd, (pOutBuffer + FrameLen), &FrameLen,
-				sizeof(RRM_NEIGHBOR_REP_INFO),
-				&NeighborRepInfo);
+							sizeof(RRM_NEIGHBOR_REP_INFO), &NeighborRepInfo);
 
 	/* neighbor info */
 	for (i = 0; i < (pFtm->MinimumApCount - 1); i++) {
@@ -3662,42 +3657,30 @@ INT Send_RadioMeasurement_Req_For_Test(IN PRTMP_ADAPTER pAd,
 		BssidInfo.word = 0;
 		BssidInfo.field.APReachAble = 3;
 		BssidInfo.field.Security = 0; /* rrm to do. */
-		BssidInfo.field.KeyScope =
-			0; /* "report AP has same authenticator as the AP. */
-		BssidInfo.field.SpectrumMng =
-			(pMbss->CapabilityInfo & (1 << 8)) ? 1 : 0;
-		BssidInfo.field.Qos =
-			(pMbss->CapabilityInfo & (1 << 9)) ? 1 : 0;
-		BssidInfo.field.APSD =
-			(pMbss->CapabilityInfo & (1 << 11)) ? 1 : 0;
+		BssidInfo.field.KeyScope = 0; /* "report AP has same authenticator as the AP. */
+		BssidInfo.field.SepctrumMng = (pMbss->CapabilityInfo & (1 << 8)) ? 1 : 0;
+		BssidInfo.field.Qos = (pMbss->CapabilityInfo & (1 << 9)) ? 1 : 0;
+		BssidInfo.field.APSD = (pMbss->CapabilityInfo & (1 << 11)) ? 1 : 0;
 #ifdef DOT11K_RRM_SUPPORT
-		BssidInfo.field.RRM =
-			(pMbss->CapabilityInfo & RRM_CAP_BIT) ? 1 : 0;
+		BssidInfo.field.RRM = (pMbss->CapabilityInfo & RRM_CAP_BIT) ? 1 : 0;
 #endif
-		BssidInfo.field.DelayBlockAck =
-			(pMbss->CapabilityInfo & (1 << 14)) ? 1 : 0;
-		BssidInfo.field.ImmediateBA =
-			(pMbss->CapabilityInfo & (1 << 15)) ? 1 : 0;
+		BssidInfo.field.DelayBlockAck = (pMbss->CapabilityInfo & (1 << 14)) ? 1 : 0;
+		BssidInfo.field.ImmediateBA = (pMbss->CapabilityInfo & (1 << 15)) ? 1 : 0;
 		BssidInfo.field.FTM = pFtmNeighbor->NeighborFTMCap;
-		printk("\033[1;36m %s, %u  RRM_InsertNeighborRepIE %d \033[0m\n",
-		       __func__, __LINE__, i); /* Kyle Debug Print */
-		COPY_MAC_ADDR(NeighborRepInfo.Bssid,
-			      pFtmNeighbor->NeighborBSSID);
+		printk("\033[1;36m %s, %u  RRM_InsertNeighborRepIE %d \033[0m\n", __func__, __LINE__, i); /* Kyle Debug Print */
+		COPY_MAC_ADDR(NeighborRepInfo.Bssid, pFtmNeighbor->NeighborBSSID);
 		NeighborRepInfo.BssidInfo = BssidInfo.word;
 		NeighborRepInfo.RegulatoryClass = pFtmNeighbor->NeighborOpClass;
 		NeighborRepInfo.ChNum = pFtmNeighbor->NeighborChannel;
 		NeighborRepInfo.PhyType = pFtmNeighbor->NeighborPhyType;
 		RRM_InsertNeighborRepIE(pAd, (pOutBuffer + FrameLen), &FrameLen,
-					sizeof(RRM_NEIGHBOR_REP_INFO),
-					&NeighborRepInfo);
+								sizeof(RRM_NEIGHBOR_REP_INFO), &NeighborRepInfo);
 	}
 
 	MiniportMMRequest(pAd, QID_AC_BE, pOutBuffer, FrameLen);
 
 	if (pOutBuffer) {
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF,
-			 ("%s() sent out RadioMeasurement Req. FrameLen:%ld\n",
-			  __func__, FrameLen));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM, DBG_LVL_OFF, ("%s() sent out RadioMeasurement Req. FrameLen:%ld\n", __func__, FrameLen));
 		hex_dump("RM OUT", pOutBuffer, FrameLen);
 		MlmeFreeMemory(pOutBuffer);
 	}

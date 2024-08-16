@@ -1056,13 +1056,8 @@ VOID WPAStart4WayHS(
 		pEapolFrame->KeyDesc.KeyData[3] = 0x0F;
 		pEapolFrame->KeyDesc.KeyData[4] = 0xAC;
 		pEapolFrame->KeyDesc.KeyData[5] = 0x04;
-		
-		if (sizeof(pEapolFrame->KeyDesc.KeyData) >= (6 + LEN_PMKID)) {
+
 		NdisMoveMemory(&pEapolFrame->KeyDesc.KeyData[6], &pMbss->PMKIDCache.BSSIDInfo[pEntry->PMKID_CacheIdx].PMKID, LEN_PMKID);
-		} else {
-			DBGPRINT(RT_DEBUG_TRACE, (" WPAStart4WayHS : KeyData buffer overflow detected.\n"));
-			return;
-		}
 		NdisMoveMemory(&pMbss->PMK, &pMbss->PMKIDCache.BSSIDInfo[pEntry->PMKID_CacheIdx].PMK, PMK_LEN);
 
 		pEapolFrame->KeyDesc.KeyData[1] = 0x14;/* 4+LEN_PMKID*/
@@ -2310,9 +2305,8 @@ VOID WPAStart2WayGroupHS(
     BOOLEAN				Cancelled;
 	DBGPRINT(RT_DEBUG_TRACE, ("===> WPAStart2WayGroupHS\n"));
 
-    if ((!pEntry) || !IS_ENTRY_CLIENT(pEntry)) {
+    if ((!pEntry) || !IS_ENTRY_CLIENT(pEntry))
         return;
-	}
 
 	/* delete retry timer*/
 	RTMPCancelTimer(&pEntry->RetryTimer, &Cancelled);

@@ -574,21 +574,10 @@ VOID PMF_InsertIGTKKDE(
 	idx = (pPmfCfg->IGTK_KeyIdx == 5) ? 1 : 0;
 			
 	/* Fill in the IPN field */
-	if (sizeof(igtk_kde_ptr->IPN) >= LEN_WPA_TSC) {
 	NdisMoveMemory(igtk_kde_ptr->IPN, &pPmfCfg->IPN[idx][0], LEN_WPA_TSC);
-	} else {
-		DBGPRINT(RT_DEBUG_TRACE, (" PMF_InsertIGTKKDE : buffer overflow detected in IPN field.\n"));
-		return;
-	}
 
 	/* Fill uin the IGTK field */
-	if (sizeof(igtk_kde_ptr->IGTK) >= LEN_AES_GTK) {
 	NdisMoveMemory(igtk_kde_ptr->IGTK, &pPmfCfg->IGTK[idx][0], LEN_AES_GTK);
-	} else {
-		DBGPRINT(RT_DEBUG_TRACE, (" PMF_InsertIGTKKDE : buffer overflow detected in IGTK field.\n"));
-		return;
-	}
-		
 
 	/* Update the total output length */
 	*pFrameLen = *pFrameLen + LEN_KDE_HDR + LEN_PMF_IGTK_KDE;

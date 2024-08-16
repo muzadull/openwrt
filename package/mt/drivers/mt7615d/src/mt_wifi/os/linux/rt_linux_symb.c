@@ -20,6 +20,7 @@
 #include "rtmp_osabl.h"
 #include "rt_os_util.h"
 
+
 #ifdef OS_ABL_FUNC_SUPPORT
 
 EXPORT_SYMBOL(DebugLevel);
@@ -268,6 +269,8 @@ EXPORT_SYMBOL(BG_FTPH_Remove);
 #endif /* BG_FT_SUPPORT */
 #endif /* CONFIG_AP_SUPPORT */
 
+
+
 /* only for PCI */
 #ifdef RTMP_MAC_PCI
 EXPORT_SYMBOL(RTMP_AllocateRxPacketBuffer);
@@ -287,6 +290,7 @@ EXPORT_SYMBOL(RtmpFlashRead);
 EXPORT_SYMBOL(RtmpFlashWrite);
 #endif /* defined(RTMP_RBUS_SUPPORT) || defined (RTMP_FLASH_SUPPORT)  */
 
+
 EXPORT_SYMBOL(RtPrivIoctlSetVal);
 EXPORT_SYMBOL(RtmpOsSpinLockIrqSave);
 EXPORT_SYMBOL(RtmpOsSpinUnlockIrqRestore);
@@ -297,3 +301,4 @@ EXPORT_SYMBOL(OS_SET_BIT);
 EXPORT_SYMBOL(OS_CLEAR_BIT);
 EXPORT_SYMBOL(OS_LOAD_CODE_FROM_BIN);
 #endif /* OS_ABL_SUPPORT */
+

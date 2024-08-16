@@ -275,8 +275,7 @@ MAC_TABLE_ENTRY *MacTableInsertWDSEntry(
 		if ((wdev->PhyMode == MODE_VHT) &&
 			(pAd->CommonCfg.Channel > 14))
 		{
-			VHT_CAP_IE vht_cap_data;
-			VHT_CAP_IE *vht_cap = &vht_cap_data;
+			VHT_CAP_IE *vht_cap = NULL;
 			VHT_CAP_INFO *vht_cap_info;
 			build_vht_cap_ie(pAd, (UCHAR *)vht_cap);
 

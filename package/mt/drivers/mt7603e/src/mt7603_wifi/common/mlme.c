@@ -26,7 +26,7 @@
 */
 
 #include "rt_config.h"
-#include <linux/stdarg.h>
+#include <stdarg.h>
 #ifdef DOT11R_FT_SUPPORT
 #include "ft.h"
 #endif /* DOT11R_FT_SUPPORT */
@@ -3187,7 +3187,7 @@ static VOID update_bss_by_owe_trans(struct _RTMP_ADAPTER *ad,
 	if (MAC_ADDR_EQUAL(extracted_trans_bss->Bssid, pair_bssid)) {
 		if (extracted_trans_bss->Hidden == 1) {
 			/*double confirm the hidden bss is OWE AKM*/
-			if (extracted_trans_bss->AuthMode != Ndis802_11AuthModeOWE) {
+			if (extracted_trans_bss->AuthMode != Ndis802_11AuthModeOWE)
 				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 					("%s : %02x-%02x-%02x-%02x-%02x-%02x, hidden SSID but not OWE_AKM:0x%x!?\n",
 					__func__,
@@ -3204,7 +3204,6 @@ static VOID update_bss_by_owe_trans(struct _RTMP_ADAPTER *ad,
 					__func__,
 					PRINT_MAC(extracted_trans_bss->Bssid),
 					extracted_trans_bss->Ssid));
-			}
 		}
 	}
 }
@@ -5188,9 +5187,8 @@ BOOLEAN MlmeEnqueueForWsc(
 	DBGPRINT(RT_DEBUG_TRACE, ("-----> MlmeEnqueueForWsc\n"));
     /* Do nothing if the driver is starting halt state.*/
     /* This might happen when timer already been fired before cancel timer with mlmehalt*/
-    if (RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_HALT_IN_PROGRESS)) {
+    if (RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_HALT_IN_PROGRESS))
         return FALSE;
-	}
 
 	/* First check the size, it MUST not exceed the mlme queue size*/
 	if (MsgLen > MGMT_DMA_BUFFER_SIZE)

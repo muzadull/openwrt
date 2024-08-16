@@ -391,9 +391,7 @@ MAC_TABLE_ENTRY *MacTableInsertEntry(
 	BOOLEAN Cancelled;
 
 	if (pAd->MacTab.Size >= MAX_LEN_OF_MAC_TABLE)
-	{
 		return NULL;
-	}
 
 		FirstWcid = 1;
 
@@ -1364,7 +1362,11 @@ VOID MacTableReset(RTMP_ADAPTER *pAd)
 		DBGPRINT(RT_DEBUG_TRACE, ("2McastPsQueue.Number %u...\n", pAd->MacTab.McastPsQueue.Number));
 
 		/* ENTRY PREEMPTION: Zero Mac Table but entry's content */
-		NdisZeroMemory(&pAd->MacTab, sizeof(MAC_TABLE));
+/*		NdisZeroMemory(&pAd->MacTab, sizeof(MAC_TABLE));*/
+		NdisZeroMemory(&pAd->MacTab.Size,
+							sizeof(MAC_TABLE)-
+							sizeof(pAd->MacTab.Hash)-
+							sizeof(pAd->MacTab.Content));
 
 		InitializeQueueHeader(&pAd->MacTab.McastPsQueue);
 		/*NdisReleaseSpinLock(&pAd->MacTabLock);*/

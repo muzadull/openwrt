@@ -28,14 +28,16 @@
 	Paul Lin    08-01-2002    created
 
 */
-#ifndef __RT_CONFIG_H__
-#define __RT_CONFIG_H__
+#ifndef	__RT_CONFIG_H__
+#define	__RT_CONFIG_H__
+
 
 #include "rtmp_comm.h"
 
 #include "rtmp_def.h"
 #include "rtmp_chip.h"
 #include "rtmp_timer.h"
+
 
 #ifdef AGS_SUPPORT
 #include "ags.h"
@@ -47,6 +49,8 @@
 #endif /* BAND_STEERING */
 
 #endif /* CONFIG_AP_SUPPORT */
+
+
 
 #ifdef MT_MAC
 #ifdef CUT_THROUGH
@@ -88,6 +92,7 @@
 
 #include "rt_os_net.h"
 
+
 #ifdef UAPSD_SUPPORT
 #include "uapsd.h"
 #endif /* UAPSD_SUPPORT */
@@ -127,11 +132,15 @@
 #include "a4_conn.h"
 #endif
 
+
+
 #endif /* CONFIG_AP_SUPPORT */
 
 #ifdef MAT_SUPPORT
 #include "mat.h"
 #endif /* MAT_SUPPORT */
+
+
 
 #ifdef BLOCK_NET_IF
 #include "netif_block.h"
@@ -171,6 +180,7 @@
 #endif /* CONFIG_ATE */
 #endif /* CONFIG_QA */
 
+
 #ifdef CONFIG_AP_SUPPORT
 #ifdef APCLI_SUPPORT
 #ifdef MAC_REPEATER_SUPPORT
@@ -178,6 +188,7 @@
 #endif /* MAC_REPEATER_SUPPORT */
 #endif /* APCLI_SUPPORT */
 #endif /* CONFIG_AP_SUPPORT */
+
 
 #ifdef DOT11K_RRM_SUPPORT
 #include "rrm.h"
@@ -187,9 +198,6 @@
 #include "mbo.h"
 #endif /* MBO_SUPPORT */
 
-#ifdef OCE_SUPPORT
-#include "oce.h"
-#endif /* OCE_SUPPORT */
 
 #if defined(AP_WSC_INCLUDED) || defined(STA_WSC_INCLUDED)
 #define WSC_INCLUDED
@@ -197,9 +205,10 @@
 
 #ifdef CONFIG_AP_SUPPORT
 #ifdef WDS_SUPPORT
-#define RALINK_PASSPHRASE "Ralink"
+#define RALINK_PASSPHRASE	"Ralink"
 #endif /* WDS_SUPPORT */
 #endif /* CONFIG_AP_SUPPORT */
+
 
 #ifdef APCLI_WPA_SUPPLICANT_SUPPORT
 #ifndef APCLI_SUPPORT
@@ -208,6 +217,8 @@
 #define WPA_SUPPLICANT_SUPPORT
 #endif /* APCLI_WPA_SUPPLICANT_SUPPORT */
 
+
+
 #ifdef WSC_INCLUDED
 #include "security/crypt_biginteger.h"
 #include "security/crypt_dh.h"
@@ -215,12 +226,13 @@
 
 #endif /* WSC_INCLUDED */
 
+
 #ifdef IKANOS_VX_1X0
 #include "vr_ikans.h"
 #endif /* IKANOS_VX_1X0 */
 
 #ifdef DOT11R_FT_SUPPORT
-#include "ft.h"
+#include	"ft.h"
 #endif /* DOT11R_FT_SUPPORT */
 
 #ifdef DOT11K_RRM_SUPPORT
@@ -231,9 +243,13 @@
 #include "security/pmf.h"
 #endif /* DOT11W_PMF_SUPPORT */
 
+
 #ifdef FTM_SUPPORT
 #include "ftm.h"
 #endif /* FTM_SUPPORT */
+
+
+
 
 #ifdef DOT11_VHT_AC
 #include "vht.h"
@@ -368,7 +384,7 @@
 #endif /* RED_SUPPORT */
 #include "fq_qm.h"
 #include "cmm_rvr_dbg.h"
-#ifdef CONFIG_STEERING_API_SUPPORT
+#ifdef  CONFIG_STEERING_API_SUPPORT
 #include <linux/rtc.h>
 #endif
 #ifdef WIFI_DIAG
@@ -377,4 +393,4 @@
 
 #include "misc_app.h"
 
-#endif /* __RT_CONFIG_H__ */
+#endif	/* __RT_CONFIG_H__ */

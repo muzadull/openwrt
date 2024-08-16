@@ -799,7 +799,7 @@ BOOLEAN RTMPRepeaterVaildMacEntry(
 
 INVAILD_TRIGGER_MAC_ENTRY *RepeaterInvaildMacLookup(
 	IN PRTMP_ADAPTER pAd,
-	IN const UCHAR *pAddr)
+	IN PUCHAR pAddr)
 {
 	ULONG HashIdx;
 	INVAILD_TRIGGER_MAC_ENTRY *pEntry = NULL;
@@ -825,7 +825,7 @@ INVAILD_TRIGGER_MAC_ENTRY *RepeaterInvaildMacLookup(
 
 VOID RTMPRepeaterInsertInvaildMacEntry(
 	IN PRTMP_ADAPTER pAd,
-	IN const UCHAR *pAddr)
+	IN PUCHAR pAddr)
 {
 	UCHAR HashIdx, idx = 0;
 	INVAILD_TRIGGER_MAC_ENTRY *pEntry = NULL;
