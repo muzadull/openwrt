@@ -10,8 +10,10 @@ KERNELNAME:=vmlinux vmlinuz
 # make Kernel/CopyImage use $LINUX_DIR/vmlinuz
 IMAGES_DIR:=../../..
 
-DEFAULT_PACKAGES += wpad-basic-mbedtls uboot-envtools kmod-ramips_hnat kmod-br-netfilter kmod-sched-connmark iptables-mod-conntrack-extra \
-                    luci luci-app-adblock luci-app-https-dns-proxy luci-app-sqm luci-app-ttyd ethtool irqbalance curl swconfig switch
+DEFAULT_PACKAGES += wpad-basic-mbedtls uboot-envtools \
+                    kmod-br-netfilter kmod-iptables kmod-ip6tables kmod-ipt-conntrack kmod-ipt-extra kmod-ipt-nat kmod-ipt-offload kmod-ramips_hnat kmod-sched-connmark \
+                    iptables-mod-conntrack-extra iptables-zz-legacy ip6tables-zz-legacy iptables-mod-ipopt \
+                    luci luci-app-adblock luci-app-https-dns-proxy luci-app-sqm luci-app-ttyd curl ethtool irqbalance swconfig switch
 
 define Target/Description
 	Build firmware images for Ralink MT7621 based boards.
