@@ -155,6 +155,8 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, struct mtk_ppe *ppe, bool bind)
 		*((__be16 *)&h_source[4]) = htons(l2->src_mac_lo);
 		*((__be32 *)h_dest) = htonl(l2->dest_mac_hi);
 		*((__be16 *)&h_dest[4]) = htons(l2->dest_mac_lo);
+		
+		if (acct) {
 
 		seq_printf(m, " eth=%pM->%pM etype=%04x"
 			      " vlan=%d,%d ib1=%08x ib2=%08x"
@@ -163,6 +165,14 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, struct mtk_ppe *ppe, bool bind)
 			   l2->vlan1, l2->vlan2, entry->ib1, ib2,
 			   acct->packets, acct->bytes
 			   );
+			   
+		} else {
+			seq_printf(m, " eth=%pM->%pM etype=%04x"
+			" vlan=%d,%d ib1=%08x ib2=%08x",
+			h_source, h_dest, ntohs(l2->etype),
+			l2->vlan1, l2->vlan2, entry->ib1, ib2
+			);
+		}			
 	}
 
 	return 0;
