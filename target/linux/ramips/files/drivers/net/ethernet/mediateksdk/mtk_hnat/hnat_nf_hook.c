@@ -992,7 +992,6 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 	hnat_set_head_frags(state, skb, -1, hnat_set_iif);
 
 	hw_path.dev = skb->dev;
-	hw_path.virt_dev = skb->dev;
 
 	if (skb_hnat_tops(skb) && skb_hnat_is_decap(skb) &&
 	    is_magic_tag_valid(skb) &&
@@ -1459,8 +1458,7 @@ int hnat_bind_crypto_entry(struct sk_buff *skb, const struct net_device *dev, in
 	u32 gmac = NR_DISCARD;
 	int udp = 0;
 	struct mtk_mac *mac = netdev_priv(dev);
-	struct flow_offload_hw_path_fake hw_path = { .dev = (struct net_device *) dev,
-						.virt_dev = (struct net_device *) dev };
+	struct flow_offload_hw_path_fake hw_path = { .dev = (struct net_device *) dev };
 
 	if (!tnl_toggle) {
 		pr_notice("tnl_toggle is disable now!|\n");
@@ -3256,8 +3254,7 @@ static unsigned int mtk_hnat_nf_post_routing(
 {
 	struct ethhdr eth = {0};
 	struct foe_entry *entry;
-	struct flow_offload_hw_path_fake hw_path = { .dev = (struct net_device*)out,
-						.virt_dev = (struct net_device*)out };
+	struct flow_offload_hw_path_fake hw_path = { .dev = (struct net_device*)out };
 	const struct net_device *arp_dev = out;
 	bool is_virt_dev = false;
 
@@ -3280,7 +3277,7 @@ static unsigned int mtk_hnat_nf_post_routing(
 	if (out->netdev_ops->ndo_flow_offload_check) {
 		out->netdev_ops->ndo_flow_offload_check(&hw_path);
 
-		out = (IS_GMAC1_MODE) ? hw_path.virt_dev : hw_path.dev;
+		out = (IS_GMAC1_MODE) ? hw_path.dev : hw_path.dev;
 		if (hw_path.flags & FLOW_OFFLOAD_PATH_TNL && mtk_tnl_encap_offload) {
 			if (ntohs(skb->protocol) == ETH_P_IP &&
 			    ip_hdr(skb)->protocol == IPPROTO_TCP) {
