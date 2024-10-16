@@ -60,6 +60,7 @@ int hnat_dsa_fill_stag(const struct net_device *netdev,
 	if (IS_ERR(dp))
 		return -ENODEV;
 
+#if defined(CONFIG_DSA_TAG_PROTO_MXL862_8021Q)
 	if (IS_DSA_TAG_PROTO_MXL862_8021Q(dp)) {
 		dsa_tag = port_index + BIT(11);
 
@@ -90,6 +91,7 @@ int hnat_dsa_fill_stag(const struct net_device *netdev,
 
 		entry->bfib1.vpm = 1;
 	} else {
+#endif		
 		dsa_tag = BIT(port_index);
 
 		if (!entry->bfib1.vlan_layer)
@@ -106,8 +108,10 @@ int hnat_dsa_fill_stag(const struct net_device *netdev,
 			entry->l2_bridge.sp_tag = dsa_tag;
 
 		entry->bfib1.vpm = 0;
+#if defined(CONFIG_DSA_TAG_PROTO_MXL862_8021Q)
 	}
 
+#endif
 	return port_index;
 #else
 	return -EINVAL;
