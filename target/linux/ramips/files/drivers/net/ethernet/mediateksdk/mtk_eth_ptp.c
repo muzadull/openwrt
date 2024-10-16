@@ -281,7 +281,8 @@ static int mtk_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 
 	if (scaled_ppm) {
 		base = 0x4 << 16;
-		negative = diff_by_scaled_ppm(base, scaled_ppm, &adj);
+		negative = (scaled_ppm < 0);
+		adj = negative ? -scaled_ppm : scaled_ppm;
 		data16 = (u16)adj;
 
 		if (negative)
