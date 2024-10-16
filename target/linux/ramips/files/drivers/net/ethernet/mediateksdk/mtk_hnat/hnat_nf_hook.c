@@ -209,10 +209,13 @@ static void foe_clear_ethdev_bind_entries(struct net_device *dev)
 		if (IS_ERR(dp))
 			return;
 
+#if defined(CONFIG_DSA_TAG_PROTO_MXL862_8021Q)
 		if (IS_DSA_TAG_PROTO_MXL862_8021Q(dp))
 			dsa_tag = port_id + BIT(11);
 		else
+#else
 			dsa_tag = BIT(port_id);
+#endif
 	}
 
 	for (i = 0; i < CFG_PPE_NUM; i++) {
@@ -225,17 +228,21 @@ static void foe_clear_ethdev_bind_entries(struct net_device *dev)
 							   entry->ipv6_5t_route.iblk2.dp == gmac;
 
 			if (match_dev && port_id >= 0) {
+#if defined(CONFIG_DSA_TAG_PROTO_MXL862_8021Q)
 				if (IS_DSA_TAG_PROTO_MXL862_8021Q(dp)) {
 					match_dev = (IS_IPV4_GRP(entry)) ?
 						entry->ipv4_hnapt.vlan1 == dsa_tag :
 						entry->ipv6_5t_route.vlan1 == dsa_tag;
 				} else {
+#endif
 					match_dev = (IS_IPV4_GRP(entry)) ?
 						!!(entry->ipv4_hnapt.sp_tag & dsa_tag) :
 						!!(entry->ipv6_5t_route.sp_tag & dsa_tag);
 				}
+#if defined(CONFIG_DSA_TAG_PROTO_MXL862_8021Q)
 			}
 
+#endif
 			if (match_dev) {
 				entry->bfib1.state = INVALID;
 				entry->bfib1.time_stamp =
@@ -1494,7 +1501,7 @@ int hnat_bind_crypto_entry(struct sk_buff *skb, const struct net_device *dev, in
 		switch (iph->protocol) {
 		case IPPROTO_UDP:
 			udp = 1;
-			/* fallthrough */
+			fallthrough;
 		case IPPROTO_TCP:
 			entry.ipv4_hnapt.sp_tag = htons(ETH_P_IP);
 			if (IS_IPV4_GRP(&entry)) {
@@ -1671,7 +1678,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		switch (iph->protocol) {
 		case IPPROTO_UDP:
 			udp = 1;
-			/* fallthrough */
+			fallthrough;
 		case IPPROTO_TCP:
 			entry.ipv4_hnapt.sp_tag = htons(ETH_P_IP);
 
@@ -1834,7 +1841,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		switch (ip6h->nexthdr) {
 		case NEXTHDR_UDP:
 			udp = 1;
-			/* fallthrough */
+			fallthrough;
 		case NEXTHDR_TCP: /* IPv6-5T or IPv6-3T */
 			entry.ipv6_5t_route.sp_tag = htons(ETH_P_IPV6);
 
