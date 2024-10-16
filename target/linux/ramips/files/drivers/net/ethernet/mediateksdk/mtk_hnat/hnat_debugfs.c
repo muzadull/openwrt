@@ -657,7 +657,9 @@ int entry_detail(u32 ppe_id, int index)
 			"Unbind" : entry->bfib1.state == 2 ?
 			"BIND" : entry->bfib1.state == 3 ?
 			"FIN" : "Unknown");
+#if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 		pr_info("DR_IDX = %x\n", entry->l2_bridge.iblk2.rxid);
+#endif		
 		pr_info("Vlan_Layer = %u, ", entry->bfib1.vlan_layer);
 		pr_info("SP_TAG = 0x%04x, New_Vid1 = 0x%x, New_Vid2 = 0x%x\n",
 			entry->l2_bridge.sp_tag, entry->l2_bridge.new_vlan1,
