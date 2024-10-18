@@ -6293,7 +6293,7 @@ static int mtk_probe(struct platform_device *pdev)
 
 	if (eth->soc->offload_version) {
 		err = mtk_ppe_init(&eth->ppe, eth->dev,
-				   eth->base + MTK_ETH_PPE_BASE, 2);
+				   eth->base + MTK_ETH_PPE_BASE, 1);
 		if (err)
 			goto err_free_dev;
 
@@ -6412,7 +6412,7 @@ static const struct mtk_soc_data mt2701_data = {
 	.required_clks = MT7623_CLKS_BITMAP,
 	.required_pctl = true,
 	.has_sram = false,
-	.offload_version = 2,
+	.offload_version = 1,
 	.rss_num = 0,
 	.txrx = {
 		.txd_size = sizeof(struct mtk_tx_dma),
@@ -6433,7 +6433,7 @@ static const struct mtk_soc_data mt7621_data = {
 	.required_clks = MT7621_CLKS_BITMAP,
 	.required_pctl = false,
 	.has_sram = false,
-	.offload_version = 2,
+	.offload_version = 1,
 	.rss_num = 0,
 	.txrx = {
 		.txd_size = sizeof(struct mtk_tx_dma),
@@ -6476,7 +6476,7 @@ static const struct mtk_soc_data mt7623_data = {
 	.required_clks = MT7623_CLKS_BITMAP,
 	.required_pctl = true,
 	.has_sram = false,
-	.offload_version = 2,
+	.offload_version = 1,
 	.rss_num = 0,
 	.txrx = {
 		.txd_size = sizeof(struct mtk_tx_dma),
@@ -6579,7 +6579,7 @@ static const struct mtk_soc_data mt7987_data = {
 	.ana_rgc3 = 0x128,
 	.caps = MT7987_CAPS,
 	.hw_features = MTK_HW_FEATURES,
-	.required_clks = MT7988_CLKS_BITMAP,
+	.required_clks = MT7987_CLKS_BITMAP,
 	.required_pctl = false,
 	.has_sram = false,
 	.rss_num = 4,
