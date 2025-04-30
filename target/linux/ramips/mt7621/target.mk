@@ -11,7 +11,7 @@ KERNELNAME:=vmlinux vmlinuz
 IMAGES_DIR:=../../..
 
 DEFAULT_PACKAGES += wpad-basic-mbedtls uboot-envtools \
-                    kmod-ip6tables kmod-ipt-conntrack kmod-ipt-extra kmod-ipt-nat kmod-br-netfilter kmod-ipt-offload kmod-sched-connmark kmod-veth \
+                    kmod-ip6tables kmod-ipt-conntrack kmod-ipt-extra kmod-ipt-nat kmod-br-netfilter kmod-ipt-offload kmod-sched kmod-sched-connmark kmod-veth \
                     iptables-mod-conntrack-extra iptables-zz-legacy ip6tables-zz-legacy iptables-mod-ipopt \
                     luci luci-app-adblock luci-app-https-dns-proxy luci-app-sqm luci-app-ttyd curl ethtool irqbalance swconfig switch
 
