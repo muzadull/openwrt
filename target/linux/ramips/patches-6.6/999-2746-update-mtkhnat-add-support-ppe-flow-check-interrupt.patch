@@ -1,0 +1,27 @@
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index cc4fb3b..086aa28 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -95,6 +95,11 @@
+ #define MTK_GDM1_AF		BIT(28)
+ #define MTK_GDM2_AF		BIT(29)
+ 
++ /* Frame Engine Interrupt Status 2 Register */
++#define MTK_FE_INT_ENABLE2	0x2C
++#define MTK_FE_INT2_PPE0_FLOW_CHK	BIT(28)
++#define MTK_FE_INT2_PPE1_FLOW_CHK	BIT(29)
++
+ /* PDMA HW LRO Alter Flow Timer Register */
+ #define MTK_PDMA_LRO_ALT_REFRESH_TIMER	0x1c
+ 
+@@ -260,6 +265,10 @@
+ /* QDMA TX Scheduler Rate Control Register */
+ #define MTK_QDMA_TX_SCH_MAX_WFQ		BIT(15)
+ 
++
++ /* QDMA Page Configuration Register */
++#define MTK_QTX_PER_PAGE	(16)
++
+ /* QDMA Global Configuration Register */
+ #define MTK_RX_2B_OFFSET	BIT(31)
+ #define MTK_RX_BT_32DWORDS	(3 << 11)

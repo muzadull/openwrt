@@ -13,7 +13,8 @@ IMAGES_DIR:=../../..
 DEFAULT_PACKAGES += wpad-basic-mbedtls uboot-envtools kmod-crypto-hw-eip93 swconfig switch \
                     luci luci-app-adblock luci-app-https-dns-proxy luci-app-sqm luci-app-ttyd curl ethtool irqbalance \
                     kmod-br-netfilter kmod-sched kmod-sched-connmark \
-	            iptables-mod-conntrack-extra iptables-mod-ipopt iptables-zz-legacy ip6tables-zz-legacy
+		    iptables-mod-conntrack-extra iptables-mod-ipopt iptables-zz-legacy ip6tables-zz-legacy \
+                    kmod-ipt-conntrack kmod-ipt-extra kmod-ipt-nat kmod-ipt-offload ip-bridge ip-full
 
 define Target/Description
 	Build firmware images for Ralink MT7621 based boards.

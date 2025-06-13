@@ -130,6 +130,10 @@
     status = "okay";
 };	
 
+&hnat {
+    status = "okay";
+};
+
 &state_default {
 	gpio {
 		groups = "uart3", "uart2", "jtag", "wdt";

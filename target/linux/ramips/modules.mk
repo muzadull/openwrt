@@ -170,3 +170,20 @@ define KernelPackage/keyboard-sx951x/description
 endef
 
 $(eval $(call KernelPackage,keyboard-sx951x))
+
+define KernelPackage/ramips_hnat
+  SUBMENU:=Network Devices
+  TITLE:=ramips HNAT module
+  DEPENDS:=@TARGET_ramips +kmod-nf-conntrack
+  KCONFIG:= \
+	CONFIG_BRIDGE_NETFILTER=y \
+	CONFIG_NETFILTER_FAMILY_BRIDGE=y 
+  FILES:= \
+        $(LINUX_DIR)/drivers/net/ethernet/mediatek/mtk_hnat/mtkhnat.ko
+endef
+
+define KernelPackage/ramips_hnat/description
+  Kernel modules for ramips HW NAT offloading
+endef
+
+$(eval $(call KernelPackage,ramips_hnat))
