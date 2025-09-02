@@ -111,9 +111,9 @@ index dc3dcfa..8db4549 100644
 -		mtk_w32(mac->hw, mcr_new, MTK_MAC_MCR(mac->id));
 -}
 -
- static void mtk_hw_dump_reg(struct mtk_eth *eth, char *name, u32 offset, u32 range)
+ static void mtk_hw_reset(struct mtk_eth *eth)
  {
- 	u32 cur = offset;
+ 	u32 val;
 @@ -4963,14 +4972,10 @@ static int mtk_hw_init(struct mtk_eth *eth, bool reset)
  	 * invoked.
  	 */
