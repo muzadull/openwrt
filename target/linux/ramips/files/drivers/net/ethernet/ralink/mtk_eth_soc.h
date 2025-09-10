@@ -518,9 +518,7 @@ static inline void *priv_netdev(struct fe_priv *priv)
 int mtk_ppe_probe(struct fe_priv *eth);
 void mtk_ppe_remove(struct fe_priv *eth);
 int mtk_flow_offload(struct fe_priv *eth,
-		     enum flow_offload_type type,
 		     struct flow_offload *flow,
-		     struct flow_offload_hw_path *src,
 		     struct flow_offload_hw_path *dest);
 int mtk_offload_check_rx(struct fe_priv *eth, struct sk_buff *skb, u32 rxd4);
 
