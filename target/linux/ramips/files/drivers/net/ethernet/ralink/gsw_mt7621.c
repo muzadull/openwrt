@@ -216,8 +216,8 @@ int mtk_gsw_init(struct fe_priv *priv)
 	priv->soc->swpriv = gsw;
 
 	if (gsw->irq) {
-		request_irq(gsw->irq, gsw_interrupt_mt7621, 0,
-			    "gsw", priv);
+		return (request_irq(gsw->irq, gsw_interrupt_mt7621, 0,
+			    "gsw", priv));
 		disable_irq(gsw->irq);
 	}
 
