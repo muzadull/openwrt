@@ -27,12 +27,7 @@
 #define MTK_DMA_SIZE(x)		(SZ_##x)
 #define MTK_FQ_DMA_HEAD		32
 #define MTK_FQ_DMA_LENGTH	2048
-
-#if defined(CONFIG_SOC_MT7621)
-#define MTK_NAPI_WEIGHT		64
-#else
-#define MTK_NAPI_WEIGHT		256	
-#endif
+#define MTK_NAPI_WEIGHT		256
 
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 #define MTK_MAC_COUNT		3
