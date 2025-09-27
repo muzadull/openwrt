@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+/* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Weijie Gao <weijie.gao@mediatek.com>
@@ -8,9 +8,6 @@
 #define _MT753X_REGS_H_
 
 #include <linux/bitops.h>
-
-/* ethernet wrap register */
-#define ETH_RESET		0x8
 
 /* Values of Egress TAG Control */
 #define ETAG_CTRL_UNTAG			0
@@ -262,6 +259,10 @@
 #define SW_SYS_RST			BIT(1)
 #define SW_REG_RST			BIT(0)
 
+/* Register for TOP signal control */
+#define MT7530_TOP_SIG_CTRL		0x7808
+#define TOP_SIG_CTRL_NORMAL		(BIT(17) | BIT(16))
+
 #define SYS_INT_EN			0x7008
 #define SYS_INT_STS			0x700c
 #define MAC_PC_INT			BIT(16)
@@ -294,54 +295,173 @@
 #define HWSTRAP				0x7800
 #define MHWSTRAP			0x7804
 
-/* Internal GPHY Page Control Register */
-#define PHY_CL22_PAGE_CTRL		0x1f
-#define PHY_TR_PAGE			0x52b5
 
-/* Internal GPHY Token Ring Access Registers */
-#define PHY_TR_CTRL			0x10
-#define PHY_TR_LOW_DATA			0x11
-#define PHY_TR_HIGH_DATA		0x12
+#define MT7620_MIB_COUNTER_BASE_PORT	0x4000
+#define MT7620_MIB_COUNTER_PORT_OFFSET	0x100
+#define MT7620_MIB_COUNTER_BASE	0x1010
 
-/* Fields of PHY_TR_CTRL */
-#define PHY_TR_PKT_XMT_STA		BIT(15)
-#define PHY_TR_WR_S			13
-#define PHY_TR_CH_ADDR_S		11
-#define PHY_TR_NODE_ADDR_S		7
-#define PHY_TR_DATA_ADDR_S		1
+/* PPE Accounting Group #0 Byte Counter */
+#define MT7620_MIB_STATS_PPE_AC_BCNT0	0x000
 
-enum phy_tr_wr {
-	PHY_TR_WRITE = 0,
-	PHY_TR_READ = 1,
-};
+/* PPE Accounting Group #0 Packet Counter */
+#define MT7620_MIB_STATS_PPE_AC_PCNT0	0x004
 
-/* Helper macro for GPHY Token Ring Access */
-#define PHY_TR_LOW_VAL(x)		((x) & 0xffff)
-#define PHY_TR_HIGH_VAL(x)		(((x) & 0xff0000) >> 16)
+/* PPE Accounting Group #63 Byte Counter */
+#define MT7620_MIB_STATS_PPE_AC_BCNT63	0x1F8
 
-/* Token Ring Channels */
-#define PMA_CH				0x1
-#define DSP_CH				0x2
+/* PPE Accounting Group #63 Packet Counter */
+#define MT7620_MIB_STATS_PPE_AC_PCNT63	0x1FC
 
-/* Token Ring Nodes */
-#define PMA_NOD				0xf
-#define DSP_NOD				0xd
+/* PPE Meter Group #0 */
+#define MT7620_MIB_STATS_PPE_MTR_CNT0	0x200
 
-/* Token Ring register range */
-enum tr_pma_reg_addr {
-	PMA_MIN = 0x0,
-	PMA_01  = 0x1,
-	PMA_17  = 0x17,
-	PMA_18  = 0x18,
-	PMA_MAX = 0x3d,
-};
+/* PPE Meter Group #63 */
+#define MT7620_MIB_STATS_PPE_MTR_CNT63	0x2FC
 
-enum tr_dsp_reg_addr {
-	DSP_MIN = 0x0,
-	DSP_06  = 0x6,
-	DSP_08  = 0x8,
-	DSP_0f  = 0xf,
-	DSP_10  = 0x10,
-	DSP_MAX = 0x3e,
-};
+/* Transmit good byte count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_TX_GBCNT	0x300
+
+/* Transmit good packet count for CPU GDM (exclude flow control frames) */
+#define MT7620_MIB_STATS_GDM1_TX_GPCNT	0x304
+
+/* Transmit abort count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_TX_SKIPCNT	0x308
+
+/* Transmit collision count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_TX_COLCNT	0x30C
+
+/* Received good byte count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_GBCNT1	0x320
+
+/* Transmit good packet count for CPU GDM (exclude flow control frames) */
+#define MT7620_MIB_STATS_GDM1_TX_GPCNT	0x304
+
+/* Transmit abort count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_TX_SKIPCNT	0x308
+
+/* Transmit collision count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_TX_COLCNT	0x30C
+
+/* Received good byte count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_GBCNT1	0x320
+
+/* Received good packet count for CPU GDM (exclude flow control frame) */
+#define MT7620_MIB_STATS_GDM1_RX_GPCNT1	0x324
+
+/* Received overflow error packet count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_OERCNT	0x328
+
+/* Received FCS error packet count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_FERCNT	0x32C
+
+/* Received too short error packet count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_SERCNT	0x330
+
+/* Received too long error packet count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_LERCNT	0x334
+
+/* Received IP/TCP/UDP checksum error packet count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_CERCNT	0x338
+
+/* Received flow control pkt count for CPU GDM */
+#define MT7620_MIB_STATS_GDM1_RX_FCCNT	0x33C
+
+/* Transmit good byte count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_TX_GBCNT	0x340
+
+/* Transmit good packet count for PPE GDM (exclude flow control frames) */
+#define MT7620_MIB_STATS_GDM2_TX_GPCNT	0x344
+
+/* Transmit abort count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_TX_SKIPCNT	0x348
+
+/* Transmit collision count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_TX_COLCNT	0x34C
+
+/* Received good byte count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_RX_GBCNT	0x360
+
+/* Received good packet count for PPE GDM (exclude flow control frame) */
+#define MT7620_MIB_STATS_GDM2_RX_GPCNT	0x364
+
+/* Received overflow error packet count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_RX_OERCNT	0x368
+
+/* Received FCS error packet count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_RX_FERCNT	0x36C
+
+/* Received too short error packet count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_RX_SERCNT	0x370
+
+/* Received too long error packet count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_RX_LERCNT	0x374
+
+/* Received IP/TCP/UDP checksum error packet count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_RX_CERCNT	0x378
+
+/* Received flow control pkt count for PPE GDM */
+#define MT7620_MIB_STATS_GDM2_RX_FCCNT	0x37C
+
+/* Tx Packet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_TGPCN	0x10
+
+/* Tx Bad Octet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_TBOCN	0x14
+
+/* Tx Good Octet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_TGOCN	0x18
+
+/* Tx Event Packet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_TEPCN	0x1C
+
+/* Rx Packet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_RGPCN	0x20
+
+/* Rx Bad Octet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_RBOCN	0x24
+
+/* Rx Good Octet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_RGOCN	0x28
+
+/* Rx Event Packet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_REPC1N	0x2C
+
+/* Rx Event Packet Counter of Port n */
+#define MT7620_MIB_STATS_PORT_REPC2N	0x30
+
+#define MIRROR_SRC_RX_BIT	BIT(8)
+#define MIRROR_SRC_TX_BIT	BIT(9)
+
+/* registers */
+#define MT7530_MFC	0x10
+#define MT7530_MIRROR_ENABLE	BIT(3)
+
+#define MIRROR_DEST_MASK	0x07
+#define MIRROR_DEST_PORT(x)	((x) & 0x7)
+
+#define MT7531_CFC	0x4
+#define MT7531_MIRROR_ENABLE	BIT(19)
+#define MT7531_MIRROR_MASK	(MIRROR_DEST_MASK << 16)
+#define MT7531_MIRROR_DEST_PORT(port)	(((port) & MIRROR_DEST_MASK) << 16)
+
+#define MT753X_MIRROR_REG(gsw)		(((gsw->model) == MT7531) ? MT7531_CFC : MT7530_MFC)
+#define MT753X_MIRROR_EN(gsw)            (((gsw->model) == MT7531) ? MT7531_MIRROR_ENABLE : MT7530_MIRROR_ENABLE)
+#define MT753X_MIRROR_MASK(gsw)          (((gsw->model) == MT7531) ? MT7531_MIRROR_MASK : MIRROR_DEST_MASK)
+#define MT753X_MIRROR_PORT_SET(gsw, port) (((gsw->model) == MT7531) ? MT7531_MIRROR_DEST_PORT(port) : MIRROR_DEST_PORT(port))
+
+#define REG_ATRD_VALID        0xff000000U
+#define REG_ATRD_PORT_MASK    0xff0U
+
+#define REG_ESW_WT_MAC_ATC  0x80
+#define REG_ESW_TABLE_ATRD  0x8C
+#define REG_ESW_TABLE_TSRA1 0x84
+#define REG_ESW_TABLE_TSRA2 0x88
+
+#define REG_MAC_ATC_START  0x8004
+#define REG_MAC_ATC_NEXT   0x8005
+
+#define REG_MAC_ATC_BUSY      0x8000U
+#define REG_MAC_ATC_SRCH_HIT  0x2000U
+#define REG_MAC_ATC_SRCH_END  0x4000U
+
 #endif /* _MT753X_REGS_H_ */

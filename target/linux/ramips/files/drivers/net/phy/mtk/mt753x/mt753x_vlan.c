@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2018 MediaTek Inc.
  */
@@ -25,12 +25,6 @@ struct mt753x_mapping mt753x_def_mapping[] = {
 		.members = { 0, 0x5d, 0x22 },
 		.etags = { 0, 0, 0 },
 		.vids = { 0, 1, 2 },
-	}, {
-		.name = "lllll",
-		.pvids = { 1, 1, 1, 1, 1, 1, 1 },
-		.members = { 0, 0x7f },
-		.etags = { 0, 0 },
-		.vids = { 0, 1 },
 	},
 };
 
@@ -88,6 +82,7 @@ void mt753x_apply_vlan_config(struct gsw_mt753x *gsw)
 	int i, j;
 	u8 tag_ports;
 	u8 untag_ports;
+	bool is_mirror = false;
 
 	/* set all ports as security mode */
 	for (i = 0; i < MT753X_NUM_PORTS; i++)
@@ -124,10 +119,6 @@ void mt753x_apply_vlan_config(struct gsw_mt753x *gsw)
 			pvc_mode = (0x8100 << STAG_VPID_S) |
 				(VA_TRANSPARENT_PORT << VLAN_ATTR_S);
 
-		if ((gsw->port5_cfg.stag_on && i == 5) ||
-		    (gsw->port6_cfg.stag_on && i == 6))
-			pvc_mode = (u32)((0x8100 << STAG_VPID_S) | PVC_PORT_STAG);
-
 		mt753x_reg_write(gsw, PVC(i), pvc_mode);
 	}
 
@@ -160,6 +151,39 @@ void mt753x_apply_vlan_config(struct gsw_mt753x *gsw)
 		val &= ~GRP_PORT_VID_M;
 		val |= pvid;
 		mt753x_reg_write(gsw, PPBV1(i), val);
+	}
+
+	/* FIXME: MT7530 only supports one monitor port, but MT7631 supports multi,
+	 *        but here just supports one for now.
+	 */
+
+	/* set mirroring source port */
+	for (i = 0; i < MT753X_NUM_PORTS; i++) {
+		u32 val = mt753x_reg_read(gsw, PCR(i));
+		val &= ~(MIRROR_SRC_RX_BIT | MIRROR_SRC_TX_BIT);
+		if (gsw->port_entries[i].mirror_rx) {
+			val |= MIRROR_SRC_RX_BIT;
+			is_mirror = true;
+		}
+		if (gsw->port_entries[i].mirror_tx) {
+			val |= MIRROR_SRC_TX_BIT;
+			is_mirror = true;
+		}
+		mt753x_reg_write(gsw, PCR(i), val);
+	}
+
+	/* set mirroring monitor port */
+	if (is_mirror) {
+		u32 val = mt753x_reg_read(gsw, MT753X_MIRROR_REG(gsw));
+		val |= MT753X_MIRROR_EN(gsw);
+		val &= ~MT753X_MIRROR_MASK(gsw);
+		val |= MT753X_MIRROR_PORT_SET(gsw, gsw->mirror_dest_port);
+		mt753x_reg_write(gsw, MT753X_MIRROR_REG(gsw), val);
+	} else {
+		u32 val = mt753x_reg_read(gsw, MT753X_MIRROR_REG(gsw));
+		val &= ~MT753X_MIRROR_EN(gsw);
+		val &= ~MT753X_MIRROR_MASK(gsw);
+		mt753x_reg_write(gsw, MT753X_MIRROR_REG(gsw), val);
 	}
 }
 

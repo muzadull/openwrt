@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Weijie Gao <weijie.gao@mediatek.com>
@@ -38,6 +38,39 @@ struct mt753x_mib_desc {
 	unsigned int size;
 	unsigned int offset;
 	const char *name;
+};
+
+static const struct mt753x_mib_desc mt7620_mibs[] = {
+	MIB_DESC(1, MT7620_MIB_STATS_PPE_AC_BCNT0, "PPE_AC_BCNT0"),
+	MIB_DESC(1, MT7620_MIB_STATS_PPE_AC_PCNT0, "PPE_AC_PCNT0"),
+	MIB_DESC(1, MT7620_MIB_STATS_PPE_AC_BCNT63, "PPE_AC_BCNT63"),
+	MIB_DESC(1, MT7620_MIB_STATS_PPE_AC_PCNT63, "PPE_AC_PCNT63"),
+	MIB_DESC(1, MT7620_MIB_STATS_PPE_MTR_CNT0, "PPE_MTR_CNT0"),
+	MIB_DESC(1, MT7620_MIB_STATS_PPE_MTR_CNT63, "PPE_MTR_CNT63"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_TX_GBCNT, "GDM1_TX_GBCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_TX_GPCNT, "GDM1_TX_GPCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_TX_SKIPCNT, "GDM1_TX_SKIPCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_TX_COLCNT, "GDM1_TX_COLCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_GBCNT1, "GDM1_RX_GBCNT1"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_GPCNT1, "GDM1_RX_GPCNT1"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_OERCNT, "GDM1_RX_OERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_FERCNT, "GDM1_RX_FERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_SERCNT, "GDM1_RX_SERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_LERCNT, "GDM1_RX_LERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_CERCNT, "GDM1_RX_CERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM1_RX_FCCNT, "GDM1_RX_FCCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_TX_GBCNT, "GDM2_TX_GBCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_TX_GPCNT, "GDM2_TX_GPCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_TX_SKIPCNT, "GDM2_TX_SKIPCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_TX_COLCNT, "GDM2_TX_COLCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_GBCNT, "GDM2_RX_GBCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_GPCNT, "GDM2_RX_GPCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_OERCNT, "GDM2_RX_OERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_FERCNT, "GDM2_RX_FERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_SERCNT, "GDM2_RX_SERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_LERCNT, "GDM2_RX_LERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_CERCNT, "GDM2_RX_CERCNT"),
+	MIB_DESC(1, MT7620_MIB_STATS_GDM2_RX_FCCNT, "GDM2_RX_FCCNT")
 };
 
 static const struct mt753x_mib_desc mt753x_mibs[] = {
@@ -118,7 +151,9 @@ static int mt753x_get_port_pvid(struct switch_dev *dev, int port, int *val)
 	if (port >= MT753X_NUM_PORTS)
 		return -EINVAL;
 
+	mutex_lock(&gsw->reg_mutex);
 	*val = mt753x_reg_read(gsw, PPBV1(port));
+	mutex_unlock(&gsw->reg_mutex);
 	*val &= GRP_PORT_VID_M;
 
 	return 0;
@@ -151,6 +186,8 @@ static int mt753x_get_vlan_ports(struct switch_dev *dev, struct switch_val *val)
 	if (val->port_vlan < 0 || val->port_vlan >= MT753X_NUM_VLANS)
 		return -EINVAL;
 
+	mutex_lock(&gsw->reg_mutex);
+
 	mt753x_vlan_ctrl(gsw, VTCR_READ_VLAN_ENTRY, val->port_vlan);
 
 	member = mt753x_reg_read(gsw, VAWD1);
@@ -158,6 +195,8 @@ static int mt753x_get_vlan_ports(struct switch_dev *dev, struct switch_val *val)
 	member >>= PORT_MEM_S;
 
 	etags = mt753x_reg_read(gsw, VAWD2);
+
+	mutex_unlock(&gsw->reg_mutex);
 
 	for (i = 0; i < MT753X_NUM_PORTS; i++) {
 		struct switch_port *p;
@@ -248,7 +287,11 @@ static int mt753x_get_port_link(struct switch_dev *dev, int port,
 	if (port < 0 || port >= MT753X_NUM_PORTS)
 		return -EINVAL;
 
+	mutex_lock(&gsw->reg_mutex);
+
 	pmsr = mt753x_reg_read(gsw, PMSR(port));
+
+	mutex_unlock(&gsw->reg_mutex);
 
 	link->link = pmsr & MAC_LNK_STS;
 	link->duplex = pmsr & MAC_DPX_STS;
@@ -305,6 +348,11 @@ static u64 get_mib_counter(struct gsw_mt753x *gsw, int i, int port)
 	return (hi << 32) | lo;
 }
 
+static u64 get_mib_counter_7620(struct gsw_mt753x *gsw, int i)
+{
+	return mt753x_reg_read(gsw, MT7620_MIB_COUNTER_BASE + mt7620_mibs[i].offset);
+}
+
 static int mt753x_get_port_mib(struct switch_dev *dev,
 			       const struct switch_attr *attr,
 			       struct switch_val *val)
@@ -324,7 +372,9 @@ static int mt753x_get_port_mib(struct switch_dev *dev,
 
 		len += snprintf(buf + len, sizeof(buf) - len,
 				"%-11s: ", mt753x_mibs[i].name);
+		mutex_lock(&gsw->reg_mutex);
 		counter = get_mib_counter(gsw, i, val->port_vlan);
+		mutex_unlock(&gsw->reg_mutex);
 		len += snprintf(buf + len, sizeof(buf) - len, "%llu\n",
 				counter);
 	}
@@ -342,8 +392,12 @@ static int mt753x_get_port_stats(struct switch_dev *dev, int port,
 	if (port < 0 || port >= MT753X_NUM_PORTS)
 		return -EINVAL;
 
+	mutex_lock(&gsw->reg_mutex);
+
 	stats->tx_bytes = get_mib_counter(gsw, MT753X_PORT_MIB_TXB_ID, port);
 	stats->rx_bytes = get_mib_counter(gsw, MT753X_PORT_MIB_RXB_ID, port);
+
+	mutex_unlock(&gsw->reg_mutex);
 
 	return 0;
 }
@@ -358,17 +412,10 @@ static void mt753x_port_isolation(struct gsw_mt753x *gsw)
 
 	mt753x_reg_write(gsw, PCR(gsw->cpu_port), PORT_MATRIX_M);
 
-	for (i = 0; i < MT753X_NUM_PORTS; i++) {
-		u32 pvc_mode = 0x8100 << STAG_VPID_S;
-
-		if ((gsw->port5_cfg.stag_on && i == 5) ||
-		    (gsw->port6_cfg.stag_on && i == 6))
-			pvc_mode |= PVC_PORT_STAG;
-		else
-			pvc_mode |= (VA_TRANSPARENT_PORT << VLAN_ATTR_S);
-
-		mt753x_reg_write(gsw, PVC(i), pvc_mode);
-	}
+	for (i = 0; i < MT753X_NUM_PORTS; i++)
+		mt753x_reg_write(gsw, PVC(i),
+				 (0x8100 << STAG_VPID_S) |
+				 (VA_TRANSPARENT_PORT << VLAN_ATTR_S));
 }
 
 static int mt753x_apply_config(struct switch_dev *dev)
@@ -376,11 +423,15 @@ static int mt753x_apply_config(struct switch_dev *dev)
 	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
 
 	if (!gsw->global_vlan_enable) {
+		mutex_lock(&gsw->reg_mutex);
 		mt753x_port_isolation(gsw);
+		mutex_unlock(&gsw->reg_mutex);
 		return 0;
 	}
 
+	mutex_lock(&gsw->reg_mutex);
 	mt753x_apply_vlan_config(gsw);
+	mutex_unlock(&gsw->reg_mutex);
 
 	return 0;
 }
@@ -407,7 +458,9 @@ static int mt753x_phy_read16(struct switch_dev *dev, int addr, u8 reg,
 {
 	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
 
+	mutex_lock(&gsw->reg_mutex);
 	*value = gsw->mii_read(gsw, addr, reg);
+	mutex_unlock(&gsw->reg_mutex);
 
 	return 0;
 }
@@ -417,7 +470,245 @@ static int mt753x_phy_write16(struct switch_dev *dev, int addr, u8 reg,
 {
 	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
 
+	mutex_lock(&gsw->reg_mutex);
 	gsw->mii_write(gsw, addr, reg, value);
+	mutex_unlock(&gsw->reg_mutex);
+
+	return 0;
+}
+
+static int mt753x_sw_get_mib(struct switch_dev *dev,
+				  const struct switch_attr *attr,
+				  struct switch_val *val)
+{
+	static char buf[4096];
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+	int i, len = 0;
+
+	len += snprintf(buf + len, sizeof(buf) - len, "Switch MIB counters\n");
+
+	for (i = 0; i < ARRAY_SIZE(mt7620_mibs); ++i) {
+		u64 counter;
+		len += snprintf(buf + len, sizeof(buf) - len,
+				"%-11s: ", mt7620_mibs[i].name);
+		mutex_lock(&gsw->reg_mutex);
+		counter = get_mib_counter_7620(gsw, i);
+		mutex_unlock(&gsw->reg_mutex);
+		len += snprintf(buf + len, sizeof(buf) - len, "%llu\n",
+				counter);
+	}
+
+	val->value.s = buf;
+	val->len = len;
+
+	return 0;
+}
+
+static int
+mt753x_get_mirror_monitor_port(struct switch_dev *dev, const struct switch_attr *attr,
+		struct switch_val *val)
+{
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	val->value.i = gsw->mirror_dest_port;
+
+	return 0;
+}
+
+static int
+mt753x_set_mirror_monitor_port(struct switch_dev *dev, const struct switch_attr *attr,
+		struct switch_val *val)
+{
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	gsw->mirror_dest_port = val->value.i;
+
+	return 0;
+}
+
+static int
+mt753x_get_port_mirror_rx(struct switch_dev *dev, const struct switch_attr *attr,
+		struct switch_val *val)
+{
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	val->value.i = gsw->port_entries[val->port_vlan].mirror_rx;
+
+	return 0;
+}
+
+static int
+mt753x_set_port_mirror_rx(struct switch_dev *dev, const struct switch_attr *attr,
+		struct switch_val *val)
+{
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	gsw->port_entries[val->port_vlan].mirror_rx = val->value.i;
+
+	return 0;
+}
+
+static int
+mt753x_get_port_mirror_tx(struct switch_dev *dev, const struct switch_attr *attr,
+		struct switch_val *val)
+{
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	val->value.i =  gsw->port_entries[val->port_vlan].mirror_tx;
+
+	return 0;
+}
+
+static int
+mt753x_set_port_mirror_tx(struct switch_dev *dev, const struct switch_attr *attr,
+		struct switch_val *val)
+{
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	gsw->port_entries[val->port_vlan].mirror_tx = val->value.i;
+
+	return 0;
+}
+
+static char *mt753x_print_arl_table_row(u32 atrd,
+					u32 mac1,
+					u32 mac2,
+					char *buf,
+					size_t *size)
+{
+	int ret;
+	size_t port;
+	size_t i;
+	u8 port_map;
+	u8 mac[ETH_ALEN];
+
+	mac1 = ntohl(mac1);
+	mac2 = ntohl(mac2);
+	port_map = (u8)((atrd & REG_ATRD_PORT_MASK) >> 4);
+	memcpy(mac, &mac1, sizeof(mac1));
+	memcpy(mac + sizeof(mac1), &mac2, sizeof(mac) - sizeof(mac1));
+	for (port = 0, i = 1; port < MT753X_NUM_PORTS; ++port, i <<= 1) {
+		if (port_map & i) {
+			ret = snprintf(buf, *size, "Port %d: MAC %pM\n", port, mac);
+			if (ret >= *size || ret <= 0) {
+				*buf = 0;
+				buf = NULL;
+				goto out;
+			}
+			buf += ret;
+			*size = *size - ret;
+		}
+	}
+out:
+	return buf;
+}
+
+static int mt753x_get_arl_table(struct switch_dev *dev,
+				const struct switch_attr *attr,
+				struct switch_val *val)
+{
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+	char *buf = gsw->arl_buf;
+	size_t size = sizeof(gsw->arl_buf);
+	size_t count = 0;
+	size_t retry_times = 100;
+	int ret;
+	u32 atc;
+
+	mutex_lock(&gsw->reg_mutex);
+
+	ret = snprintf(buf, size, "address resolution table\n");
+	if (ret >= size || ret <= 0) {
+		gsw->arl_buf[0] = 0;
+		goto out;
+	}
+	buf += ret;
+	size = size - ret;
+
+	mt753x_reg_write(gsw, REG_ESW_WT_MAC_ATC, REG_MAC_ATC_START);
+
+	do {
+		atc = mt753x_reg_read(gsw, REG_ESW_WT_MAC_ATC);
+		if (atc & REG_MAC_ATC_SRCH_HIT && !(atc & REG_MAC_ATC_BUSY)) {
+			u32 atrd;
+
+			++count;
+			atrd = mt753x_reg_read(gsw, REG_ESW_TABLE_ATRD);
+			if (atrd & REG_ATRD_VALID) {
+				u32 mac1;
+				u32 mac2;
+
+				mac1 = mt753x_reg_read(gsw, REG_ESW_TABLE_TSRA1);
+				mac2 = mt753x_reg_read(gsw, REG_ESW_TABLE_TSRA2);
+
+				if (!(atc & REG_MAC_ATC_SRCH_END))
+					mt753x_reg_write(gsw, REG_ESW_WT_MAC_ATC, REG_MAC_ATC_NEXT);
+
+				buf = mt753x_print_arl_table_row(atrd, mac1, mac2, buf, &size);
+				if (!buf) {
+					pr_warn("%s: too many addresses\n", __func__);
+					goto out;
+				}
+			} else if (!(atc & REG_MAC_ATC_SRCH_END)) {
+				mt753x_reg_write(gsw, REG_ESW_WT_MAC_ATC, REG_MAC_ATC_NEXT);
+			}
+		} else {
+			--retry_times;
+			usleep_range(1000, 5000);
+		}
+	} while (!(atc & REG_MAC_ATC_SRCH_END) &&
+		 count < MT753X_NUM_ARL_RECORDS &&
+		 retry_times > 0);
+out:
+	mutex_unlock(&gsw->reg_mutex);
+
+	val->value.s = gsw->arl_buf;
+	val->len = strlen(gsw->arl_buf);
+
+	return 0;
+}
+
+static int mt753x_get_port_power(struct switch_dev *dev,
+                              const struct switch_attr *attr,
+                              struct switch_val *val)
+{
+	u32 reg;
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	if (val->port_vlan >= MT753X_NUM_PHYS)
+		return -EINVAL;
+
+	mutex_lock(&gsw->reg_mutex);
+	reg = gsw->mii_read(gsw, val->port_vlan, MII_BMCR);
+	mutex_unlock(&gsw->reg_mutex);
+	val->value.i = (reg & BMCR_PDOWN) ? 0 : 1;
+
+	return 0;
+}
+
+static int mt753x_set_port_power(struct switch_dev *dev,
+                              const struct switch_attr *attr,
+                              struct switch_val *val)
+{
+	u32 reg;
+	struct gsw_mt753x *gsw = container_of(dev, struct gsw_mt753x, swdev);
+
+	if (val->port_vlan >= MT753X_NUM_PHYS)
+		return -EINVAL;
+
+	mutex_lock(&gsw->reg_mutex);
+
+	if (val->value.i == 0) {
+		reg = gsw->mii_read(gsw, val->port_vlan, MII_BMCR);
+		reg |= BMCR_PDOWN;
+		gsw->mii_write(gsw, val->port_vlan, MII_BMCR, reg);
+	} else {
+		reg = gsw->mii_read(gsw, val->port_vlan, MII_BMCR);
+		reg &= ~BMCR_PDOWN;
+		gsw->mii_write(gsw, val->port_vlan, MII_BMCR, reg);
+	}
+
+	mutex_unlock(&gsw->reg_mutex);
 
 	return 0;
 }
@@ -431,7 +722,26 @@ static const struct switch_attr mt753x_global[] = {
 		.id = MT753X_ATTR_ENABLE_VLAN,
 		.get = mt753x_get_vlan_enable,
 		.set = mt753x_set_vlan_enable,
-	}
+	}, {
+		.type = SWITCH_TYPE_STRING,
+		.name = "mib",
+		.description = "Get MIB counters for switch",
+		.get = mt753x_sw_get_mib,
+		.set = NULL,
+	}, {
+		.type = SWITCH_TYPE_INT,
+		.name = "mirror_monitor_port",
+		.description = "Mirror monitor port",
+		.set = mt753x_set_mirror_monitor_port,
+		.get = mt753x_get_mirror_monitor_port,
+		.max = MT753X_NUM_PORTS - 1
+	}, {
+		.type = SWITCH_TYPE_STRING,
+		.name = "arl_table",
+		.description = "Get ARL table",
+		.set = NULL,
+		.get = mt753x_get_arl_table,
+	},
 };
 
 static const struct switch_attr mt753x_port[] = {
@@ -441,6 +751,27 @@ static const struct switch_attr mt753x_port[] = {
 		.description = "Get MIB counters for port",
 		.get = mt753x_get_port_mib,
 		.set = NULL,
+	}, {
+		.type = SWITCH_TYPE_INT,
+		.name = "enable_mirror_rx",
+		.description = "Enable mirroring of RX packets",
+		.set = mt753x_set_port_mirror_rx,
+		.get = mt753x_get_port_mirror_rx,
+		.max = 1,
+	}, {
+		.type = SWITCH_TYPE_INT,
+		.name = "enable_mirror_tx",
+		.description = "Enable mirroring of TX packets",
+		.set = mt753x_set_port_mirror_tx,
+		.get = mt753x_get_port_mirror_tx,
+		.max = 1,
+	}, {
+		.type = SWITCH_TYPE_INT,
+		.name = "phy_cfg",
+		.description = "Phy config for port (1: enable, 0: disable)",
+		.get = mt753x_get_port_power,
+		.set = mt753x_set_port_power,
+		.max = 1,
 	},
 };
 

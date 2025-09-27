@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+/* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Weijie Gao <weijie.gao@mediatek.com>
@@ -13,7 +13,6 @@
 #include <linux/of_mdio.h>
 #include <linux/workqueue.h>
 #include <linux/gpio/consumer.h>
-#include <linux/phy.h>
 
 #ifdef CONFIG_SWCONFIG
 #include <linux/switch.h>
@@ -31,8 +30,7 @@ struct gsw_mt753x;
 
 enum mt753x_model {
 	MT7530 = 0x7530,
-	MT7531 = 0x7531,
-	MT7988 = 0x7988,
+	MT7531 = 0x7531
 };
 
 struct mt753x_port_cfg {
@@ -42,8 +40,6 @@ struct mt753x_port_cfg {
 	u32 force_link: 1;
 	u32 speed: 2;
 	u32 duplex: 1;
-	bool ssc_on;
-	bool stag_on;
 };
 
 struct mt753x_phy {
@@ -59,24 +55,18 @@ struct gsw_mt753x {
 	struct mii_bus *host_bus;
 	struct mii_bus *gphy_bus;
 	struct mutex mii_lock;	/* MII access lock */
+#ifdef CONFIG_SWCONFIG
+	struct mutex reg_mutex; /* protect among processes for registers access with swconfig api */
+#endif
 	u32 smi_addr;
 	u32 phy_base;
 	int direct_phy_access;
-	bool direct_access;
-
-	void __iomem *base;
-	struct regmap *sysctrl_base;
 
 	enum mt753x_model model;
 	const char *name;
 
 	struct mt753x_port_cfg port5_cfg;
 	struct mt753x_port_cfg port6_cfg;
-
-	bool hw_phy_cal;
-	bool phy_status_poll;
-	struct mt753x_phy phys[MT753X_NUM_PHYS];
-//	int phy_irqs[PHY_MAX_ADDR]; //FIXME
 
 	int phy_link_sts;
 
@@ -87,6 +77,7 @@ struct gsw_mt753x {
 #ifdef CONFIG_SWCONFIG
 	struct switch_dev swdev;
 	u32 cpu_port;
+	u8 mirror_dest_port;
 #endif
 
 	int global_vlan_enable;
@@ -101,6 +92,12 @@ struct gsw_mt753x {
 			  u16 val);
 
 	struct list_head list;
+
+#ifdef CONFIG_SWCONFIG
+#define ARL_LINE_LENGTH	30
+#define MT753X_NUM_ARL_RECORDS	2048
+	char arl_buf[MT753X_NUM_ARL_RECORDS * ARL_LINE_LENGTH + 1];
+#endif
 };
 
 struct chip_rev {
@@ -136,18 +133,8 @@ int mt753x_mmd_ind_read(struct gsw_mt753x *gsw, int addr, int devad, u16 reg);
 void mt753x_mmd_ind_write(struct gsw_mt753x *gsw, int addr, int devad, u16 reg,
 			  u16 val);
 
-int mt753x_tr_read(struct gsw_mt753x *gsw, int addr, u8 ch, u8 node, u8 daddr);
-void mt753x_tr_write(struct gsw_mt753x *gsw, int addr, u8 ch, u8 node, u8 daddr,
-		     u32 data);
-
 void mt753x_irq_worker(struct work_struct *work);
 void mt753x_irq_enable(struct gsw_mt753x *gsw);
-
-int mt753x_phy_calibration(struct gsw_mt753x *gsw, u8 phyaddr);
-int extphy_init(struct gsw_mt753x *gsw, int addr);
-
-int mt753x_phy_calibration(struct gsw_mt753x *gsw, u8 phyaddr);
-int extphy_init(struct gsw_mt753x *gsw, int addr);
 
 /* MDIO Indirect Access Registers */
 #define MII_MMD_ACC_CTL_REG		0x0d

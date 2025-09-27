@@ -25,6 +25,12 @@ void mt753x_irq_enable(struct gsw_mt753x *gsw)
 	val = BIT(MT753X_NUM_PHYS) - 1;
 
 	mt753x_reg_write(gsw, SYS_INT_EN, val);
+
+	if (gsw->model != MT7531) {
+		val = mt753x_reg_read(gsw, MT7530_TOP_SIG_CTRL);
+		val |= TOP_SIG_CTRL_NORMAL;
+		mt753x_reg_write(gsw, MT7530_TOP_SIG_CTRL, val);
+	}
 }
 
 static void display_port_link_status(struct gsw_mt753x *gsw, u32 port)
@@ -32,7 +38,9 @@ static void display_port_link_status(struct gsw_mt753x *gsw, u32 port)
 	u32 pmsr, speed_bits;
 	const char *speed;
 
+	mutex_lock(&gsw->reg_mutex);
 	pmsr = mt753x_reg_read(gsw, PMSR(port));
+	mutex_unlock(&gsw->reg_mutex);
 
 	speed_bits = (pmsr & MAC_SPD_STS_M) >> MAC_SPD_STS_S;
 
@@ -49,9 +57,6 @@ static void display_port_link_status(struct gsw_mt753x *gsw, u32 port)
 	case MAC_SPD_2500:
 		speed = "2.5Gbps";
 		break;
-	default:
-		dev_info(gsw->dev, "Invalid speed\n");
-		return;
 	}
 
 	if (pmsr & MAC_LNK_STS) {
@@ -70,7 +75,10 @@ void mt753x_irq_worker(struct work_struct *work)
 
 	gsw = container_of(work, struct gsw_mt753x, irq_worker);
 
+	mutex_lock(&gsw->reg_mutex);
 	sts = mt753x_reg_read(gsw, SYS_INT_STS);
+	mt753x_reg_write(gsw, SYS_INT_STS, sts);
+	mutex_unlock(&gsw->reg_mutex);
 
 	/* Check for changed PHY link status */
 	for (i = 0; i < MT753X_NUM_PHYS; i++) {
@@ -78,7 +86,9 @@ void mt753x_irq_worker(struct work_struct *work)
 			continue;
 
 		laststs = gsw->phy_link_sts & BIT(i);
+		mutex_lock(&gsw->reg_mutex);
 		physts = !!(gsw->mii_read(gsw, i, MII_BMSR) & BMSR_LSTATUS);
+		mutex_unlock(&gsw->reg_mutex);
 		physts <<= i;
 
 		if (physts ^ laststs) {
@@ -86,8 +96,6 @@ void mt753x_irq_worker(struct work_struct *work)
 			display_port_link_status(gsw, i);
 		}
 	}
-
-	mt753x_reg_write(gsw, SYS_INT_STS, sts);
 
 	enable_irq(gsw->irq);
 }
