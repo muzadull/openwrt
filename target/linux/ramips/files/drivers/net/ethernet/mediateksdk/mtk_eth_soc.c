@@ -6667,6 +6667,8 @@ static int mtk_probe(struct platform_device *pdev)
 	 * for NAPI to work
 	 */
 	init_dummy_netdev(&eth->dummy_dev);
+	eth->dummy_dev.threaded = 1;
+	strcpy(eth->dummy_dev.name, "mtk_eth");	
 
 	for (i = 0; i < MTK_TX_NAPI_NUM; i++) {
 		netif_napi_add_weight(&eth->dummy_dev, &eth->tx_napi[i].napi, mtk_napi_tx,
