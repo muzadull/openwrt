@@ -14,7 +14,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	 * for NAPI to work
  	 */
  	init_dummy_netdev(&eth->dummy_dev);
-+	eth->dummy_dev.threaded = 1;
++	eth->dummy_dev.threaded = 0;
 +	strcpy(eth->dummy_dev.name, "mtk_eth");
  	netif_napi_add(&eth->dummy_dev, &eth->tx_napi, mtk_napi_tx);
  	netif_napi_add(&eth->dummy_dev, &eth->rx_napi, mtk_napi_rx);
