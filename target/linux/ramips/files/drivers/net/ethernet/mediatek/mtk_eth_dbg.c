@@ -1066,7 +1066,7 @@ int mtk_tx_ring_read(struct seq_file *m, void *v)
 
 		tx_ring = ring->dma + i * eth->soc->tx.desc_size;
 
-		seq_printf(m, "%04d (0x%llx): %08x %08x %08x %08x", i, addr,
+		seq_printf(m, "%04d (0x%llx): %08x %08x %08x %08x", i, (unsigned long long)addr,
 			   tx_ring->txd1, tx_ring->txd2,
 			   tx_ring->txd3, tx_ring->txd4);
 
@@ -1107,7 +1107,7 @@ int mtk_hwtx_ring_show(struct seq_file *m, void *v)
 
 		hwtx_ring = eth->fq_ring.scratch_ring + i * eth->soc->tx.desc_size;
 
-		seq_printf(m, "%04d (0x%llx): %08x %08x %08x %08x", i, addr,
+		seq_printf(m, "%04d (0x%llx): %08x %08x %08x %08x", i, (unsigned long long)addr,
 			   hwtx_ring->txd1, hwtx_ring->txd2,
 			   hwtx_ring->txd3, hwtx_ring->txd4);
 
@@ -1156,7 +1156,7 @@ int mtk_rx_ring_show(struct seq_file *m, void *v)
 
 			rx_ring = ring->dma + i * eth->soc->rx.desc_size;
 
-			seq_printf(m, "%04d (0x%llx): %08x %08x %08x %08x", i, addr,
+			seq_printf(m, "%04d (0x%llx): %08x %08x %08x %08x", i, (unsigned long long)addr,
 				   rx_ring->rxd1, rx_ring->rxd2,
 				   rx_ring->rxd3, rx_ring->rxd4);
 
