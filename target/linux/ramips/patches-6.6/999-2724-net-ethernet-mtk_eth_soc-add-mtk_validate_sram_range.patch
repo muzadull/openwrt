@@ -24,12 +24,12 @@ index 67f9ae5..63dee21 100644
  	return (void *)data;
  }
  
-+static bool mtk_validate_sram_range(struct mtk_eth *eth, u64 offset, u64 size)
++static bool mtk_validate_sram_range(struct mtk_eth *eth, unsigned long offset, unsigned long size)
 +{
-+	u64 start, end;
++	unsigned long start, end;
 +
-+	start = (u64)eth->sram_base;
-+	end = (u64)eth->sram_base + eth->sram_size - 1;
++	start = (unsigned long)eth->sram_base;
++	end = (unsigned long)eth->sram_base + eth->sram_size - 1;
 +	if ((offset >= start) && (offset + size - 1 <= end))
 +		return true;
 +
@@ -51,7 +51,7 @@ index 67f9ae5..63dee21 100644
 -						       &eth->phy_scratch_ring,
 -						       GFP_KERNEL);
 +	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SRAM) &&
-+	    mtk_validate_sram_range(eth, (u64)eth->sram_base,
++	    mtk_validate_sram_range(eth, (unsigned long)eth->sram_base,
 +				    cnt * soc->tx.desc_size)) {
 +		eth->fq_ring.scratch_ring = eth->sram_base;
 +		eth->fq_ring.in_sram = true;
@@ -111,7 +111,7 @@ index 67f9ae5..63dee21 100644
  
 -	if (MTK_HAS_CAPS(soc->caps, MTK_SRAM)) {
 +	if (MTK_HAS_CAPS(soc->caps, MTK_SRAM) &&
-+	    mtk_validate_sram_range(eth, (u64)eth->sram_base + soc->tx.fq_dma_size * sz,
++	    mtk_validate_sram_range(eth, (unsigned long)eth->sram_base + soc->tx.fq_dma_size * sz,
 +				    ring_size * sz)) {
  		ring->dma = eth->sram_base + soc->tx.fq_dma_size * sz;
 -		ring->phys = eth->phy_scratch_ring + soc->tx.fq_dma_size * (dma_addr_t)sz;
@@ -147,7 +147,7 @@ index 67f9ae5..63dee21 100644
  	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SRAM) ||
 -	    rx_flag != MTK_RX_FLAGS_NORMAL) {
 +	    rx_flag != MTK_RX_FLAGS_NORMAL ||
-+	    !mtk_validate_sram_range(eth, (u64)tx_ring->dma + offset,
++	    !mtk_validate_sram_range(eth, (unsigned long)tx_ring->dma + offset,
 +				     rx_dma_size * eth->soc->rx.desc_size)) {
  		ring->dma = dma_alloc_coherent(eth->dma_dev,
  				rx_dma_size * eth->soc->rx.desc_size,
@@ -270,7 +270,7 @@ index 83b689b..d9934bb 100644
  	void __iomem			*base;
  	void __iomem			*esw_base;
  	void				*sram_base;
-+	u64				sram_size;
++	unsigned long				sram_size;
  	spinlock_t			page_lock;
  	spinlock_t			tx_irq_lock;
  	spinlock_t			rx_irq_lock;
