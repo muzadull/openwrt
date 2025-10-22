@@ -1,0 +1,10 @@
+--- a/dma.c
++++ b/dma.c
+@@ -1111,7 +1111,7 @@ mt76_dma_init(struct mt76_dev *dev,
+ 
+ 	snprintf(dev->napi_dev->name, sizeof(dev->napi_dev->name), "%s",
+ 		 wiphy_name(dev->hw->wiphy));
+-	dev->napi_dev->threaded = 1;
++	dev->napi_dev->threaded = 0;
+ 	init_completion(&dev->mmio.wed_reset);
+ 	init_completion(&dev->mmio.wed_reset_complete);
