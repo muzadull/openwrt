@@ -50,6 +50,9 @@ function set_task_cpu(pid, cpu) {
 	let name = task_name(pid);
 	if (!name)
 		return;
+        if (is_single_core_ht && match(name, /mt76-tx (phy\d+)/)) {
+                cpu = 1;
+        }
 	if (debug || do_nothing)
 		warn(`taskset -p -c ${cpu} ${name}\n`);
 	if (!do_nothing)
