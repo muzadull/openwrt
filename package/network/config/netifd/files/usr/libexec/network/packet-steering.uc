@@ -281,6 +281,42 @@ for (let devname in phys_devs) {
 	cpu_add_weight(dev.napi_cpu, eth_bias);
 }
 
+function set_wireless_irq_affinity(cpu_id)
+{
+         let lines = split(readfile("/proc/interrupts"), "\n");
+         let matched = 0;
+
+         if (debug)
+                 warn("DEBUG: Scanning /proc/interrupts for wireless IRQs\n");
+
+         for (let line in lines) {
+                 if (!match(line, /mt76[^ ]*e/))
+                         continue;
+
+                 let irq_match = match(line, /^\s*(\d+):/);
+                 if (!irq_match)
+                         continue;
+
+                 let irq = irq_match[1];
+                 let mask = sprintf("%x", 1 << cpu_id);
+                 matched++;
+
+                 if (debug)
+                         warn(`DEBUG: Wireless IRQ ${irq} ? ${trim(line)}\n`);
+
+                 if (debug || do_nothing)
+                         warn(`echo ${mask} > /proc/irq/${irq}/smp_affinity\n`);
+                 if (!do_nothing)
+                         writefile(`/proc/irq/${irq}/smp_affinity`, mask);
+         }
+
+         if (debug && matched == 0)
+                 warn("DEBUG: No wireless IRQs found\n");
+}
+
+if (is_single_core_ht)
+        set_wireless_irq_affinity(1);
+
 // Assign WLAN devices
 for (let devname in phys_devs) {
 	let dev = phys_devs[devname];
