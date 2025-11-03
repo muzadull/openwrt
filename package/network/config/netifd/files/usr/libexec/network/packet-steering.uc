@@ -266,6 +266,42 @@ function assign_dev_cpu(dev) {
 	}
 }
 
+function set_ethernet_irq_affinity(cpu_id)
+{
+         let lines = split(readfile("/proc/interrupts"), "\n");
+         let matched = 0;
+
+         if (debug)
+                 warn("DEBUG: Scanning /proc/interrupts for Ethernet IRQs\n");
+
+         for (let line in lines) {
+                 if (!match(line, /eth|mtk_eth/))
+                         continue;
+
+                 let irq_match = match(line, /^\s*(\d+):/);
+                 if (!irq_match)
+                         continue;
+
+                 let irq = irq_match[1];
+                 let mask = sprintf("%x", 1 << cpu_id);
+                 matched++;
+
+                 if (debug)
+                         warn(`DEBUG: Ethernet IRQ ${irq} ? ${trim(line)}\n`);
+
+                 if (debug || do_nothing)
+                         warn(`echo ${mask} > /proc/irq/${irq}/smp_affinity\n`);
+                 if (!do_nothing)
+                         writefile(`/proc/irq/${irq}/smp_affinity`, mask);
+         }
+
+         if (debug && matched == 0)
+                 warn("DEBUG: No Ethernet IRQs found\n");
+}
+
+if (is_single_core_ht)
+        set_ethernet_irq_affinity(1);
+
 // Assign ethernet devices first
 for (let devname in phys_devs) {
 	let dev = phys_devs[devname];
