@@ -11,6 +11,7 @@ let disable;
 let cpus;
 let all_cpus;
 let local_flows = 0;
+let is_single_core_ht = false;
 
 while (length(ARGV) > 0) {
 	let arg = shift(ARGV);
@@ -113,6 +114,18 @@ cpus = map(glob("/sys/bus/cpu/devices/*"), (path) => {
 cpus = slice(cpus, 0, 64);
 if (length(cpus) < 2)
 	exit(0);
+
+// Detect single-core hyperthreaded systems
+let unique_cores = {};
+for (let i = 0; i < length(cpus); i++) {
+        let cpu = cpus[i];
+        if (cpu && cpu.core != null)
+                unique_cores[cpu.core] = true;
+}
+
+is_single_core_ht = length(keys(unique_cores)) == 1;
+if (debug)
+        warn("DEBUG: is_single_core_ht = " + is_single_core_ht + "\n");
 
 function cpu_add_weight(cpu_id, weight)
 {
