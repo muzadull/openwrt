@@ -69,13 +69,9 @@ function cpu_mask(cpu)
 function set_netdev_cpu(dev, cpu, rx_queue) {
 	rx_queue ??= "rx-*";
 	let queues = glob(`/sys/class/net/${dev}/queues/${rx_queue}/rps_cpus`);
-        let val;
-        if (is_single_core_ht && match(dev, /^phy\d+-ap\d+$/))
-                val = 2;
-        else if (disable)
-                val = 0;
-        else
-                val = cpu_mask(cpu);
+	let val = cpu_mask(cpu);
+	if (disable)
+		val = 0;
 	for (let queue in queues) {
 		if (debug || do_nothing)
 			warn(`echo ${val} > ${queue}\n`);
@@ -254,11 +250,7 @@ function assign_dev_cpu(dev) {
 		return assign_dev_queues_cpu(dev);
 
 	if (length(dev.tasks) > 0) {
-                let cpu;
-                if (is_single_core_ht && length(dev.phy) > 0)
-                        cpu = dev.napi_cpu = 1;
-                else
-                        cpu = dev.napi_cpu = get_next_cpu(napi_weight);
+		let cpu = dev.napi_cpu = get_next_cpu(napi_weight);
 		for (let task in dev.tasks)
 			set_task_cpu(task, cpu);
 	}
